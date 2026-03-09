@@ -13,11 +13,11 @@ This guide walks you through adding typewriter to your Rust project and generati
 
 ## Installation
 
-Add `typewriter` and `serde` to your `Cargo.toml`:
+Add `typebridge` and `serde` to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-typewriter = "0.1"
+typebridge = "0.1"
 serde = { version = "1", features = ["derive"] }
 ```
 
@@ -25,10 +25,10 @@ By default, both **TypeScript** and **Python** emitters are enabled. To use only
 
 ```toml
 # TypeScript only
-typewriter = { version = "0.1", default-features = false, features = ["typescript"] }
+typebridge = { version = "0.1", default-features = false, features = ["typescript"] }
 
 # Python only
-typewriter = { version = "0.1", default-features = false, features = ["python"] }
+typebridge = { version = "0.1", default-features = false, features = ["python"] }
 ```
 
 ---

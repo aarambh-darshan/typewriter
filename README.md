@@ -3,8 +3,8 @@
 > **Cross-Language Type Synchronization SDK for Rust**
 > Define your types once in Rust. Get perfectly matching types in TypeScript, Python, Go, Swift, and Kotlin — automatically, forever.
 
-[![Crates.io](https://img.shields.io/crates/v/typewriter.svg)](https://crates.io/crates/typewriter)
-[![Docs.rs](https://docs.rs/typewriter/badge.svg)](https://docs.rs/typewriter)
+[![Crates.io](https://img.shields.io/crates/v/typebridge.svg)](https://crates.io/crates/typebridge)
+[![Docs.rs](https://docs.rs/typebridge/badge.svg)](https://docs.rs/typebridge)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![CI](https://github.com/aarambh-darshan/typewriter/actions/workflows/ci.yml/badge.svg)](https://github.com/aarambh-darshan/typewriter/actions)
 [![GitHub](https://img.shields.io/badge/github-aarambh--darshan-blue?logo=github)](https://github.com/aarambh-darshan/typewriter)
@@ -74,7 +74,7 @@ pub struct UserProfile {
 
 ```toml
 [dependencies]
-typewriter = "0.1"
+typebridge = "0.1"
 serde = { version = "1", features = ["derive"] }
 ```
 
