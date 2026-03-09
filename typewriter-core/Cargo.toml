@@ -4,6 +4,12 @@ version = "0.1.0"
 edition = "2021"
 description = "Core IR types, traits, and config for the typewriter type sync SDK"
 license = "Apache-2.0"
+repository = "https://github.com/aarambh-darshan/typewriter"
+homepage = "https://github.com/aarambh-darshan/typewriter"
+readme = "README.md"
+keywords = ["codegen", "typescript", "python", "type-sync", "serde"]
+categories = ["development-tools", "code-generators"]
+authors = ["Darshan Vichhi <aarambhdarshan@gmail.com>"]
 
 [dependencies]
 serde = { workspace = true }

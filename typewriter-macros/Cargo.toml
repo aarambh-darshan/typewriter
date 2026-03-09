@@ -4,6 +4,12 @@ version = "0.1.0"
 edition = "2021"
 description = "Proc macro crate for the typewriter type sync SDK"
 license = "Apache-2.0"
+repository = "https://github.com/aarambh-darshan/typewriter"
+homepage = "https://github.com/aarambh-darshan/typewriter"
+readme = "README.md"
+keywords = ["codegen", "proc-macro", "derive", "type-sync"]
+categories = ["development-tools", "code-generators"]
+authors = ["Darshan Vichhi <aarambhdarshan@gmail.com>"]
 
 [lib]
 proc-macro = true
@@ -12,9 +18,9 @@ proc-macro = true
 syn = { workspace = true }
 quote = { workspace = true }
 proc-macro2 = { workspace = true }
-typewriter-core = { path = "../typewriter-core" }
-typewriter-typescript = { path = "../typewriter-typescript", optional = true }
-typewriter-python = { path = "../typewriter-python", optional = true }
+typewriter-core = { path = "../typewriter-core", version = "0.1.0" }
+typewriter-typescript = { path = "../typewriter-typescript", version = "0.1.0", optional = true }
+typewriter-python = { path = "../typewriter-python", version = "0.1.0", optional = true }
 
 [features]
 default = ["typescript", "python"]

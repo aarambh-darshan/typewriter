@@ -4,10 +4,16 @@ version = "0.1.0"
 edition = "2021"
 description = "Cross-language type synchronization SDK for Rust — define once, generate everywhere"
 license = "Apache-2.0"
+repository = "https://github.com/aarambh-darshan/typewriter"
+homepage = "https://github.com/aarambh-darshan/typewriter"
+readme = "README.md"
+keywords = ["codegen", "typescript", "python", "type-sync", "derive"]
+categories = ["development-tools", "code-generators"]
+authors = ["Darshan Vichhi <aarambhdarshan@gmail.com>"]
 
 [dependencies]
-typewriter-macros = { path = "../typewriter-macros" }
-typewriter-core = { path = "../typewriter-core" }
+typewriter-macros = { path = "../typewriter-macros", version = "0.1.0" }
+typewriter-core = { path = "../typewriter-core", version = "0.1.0" }
 
 [features]
 default = ["typescript", "python"]
