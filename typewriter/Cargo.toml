@@ -1,5 +1,5 @@
 [package]
-name = "typewriter"
+name = "typebridge"
 version = "0.1.0"
 edition = "2021"
 description = "Cross-language type synchronization SDK for Rust — define once, generate everywhere"
