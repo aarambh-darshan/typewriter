@@ -1,0 +1,15 @@
+[package]
+name = "typewriter"
+version = "0.1.0"
+edition = "2021"
+description = "Cross-language type synchronization SDK for Rust — define once, generate everywhere"
+license = "Apache-2.0"
+
+[dependencies]
+typewriter-macros = { path = "../typewriter-macros" }
+typewriter-core = { path = "../typewriter-core" }
+
+[features]
+default = ["typescript", "python"]
+typescript = ["typewriter-macros/typescript"]
+python = ["typewriter-macros/python"]

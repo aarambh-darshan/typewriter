@@ -1,0 +1,9 @@
+[package]
+name = "typewriter-python"
+version = "0.1.0"
+edition = "2021"
+description = "Python Pydantic emitter for the typewriter type sync SDK"
+license = "Apache-2.0"
+
+[dependencies]
+typewriter-core = { path = "../typewriter-core" }

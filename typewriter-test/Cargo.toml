@@ -1,0 +1,11 @@
+[package]
+name = "typewriter-test"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dev-dependencies]
+typewriter-core = { path = "../typewriter-core" }
+typewriter-typescript = { path = "../typewriter-typescript" }
+typewriter-python = { path = "../typewriter-python" }
+insta = { workspace = true }

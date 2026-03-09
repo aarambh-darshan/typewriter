@@ -1,0 +1,22 @@
+[package]
+name = "typewriter-macros"
+version = "0.1.0"
+edition = "2021"
+description = "Proc macro crate for the typewriter type sync SDK"
+license = "Apache-2.0"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+syn = { workspace = true }
+quote = { workspace = true }
+proc-macro2 = { workspace = true }
+typewriter-core = { path = "../typewriter-core" }
+typewriter-typescript = { path = "../typewriter-typescript", optional = true }
+typewriter-python = { path = "../typewriter-python", optional = true }
+
+[features]
+default = ["typescript", "python"]
+typescript = ["dep:typewriter-typescript"]
+python = ["dep:typewriter-python"]

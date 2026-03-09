@@ -1,0 +1,9 @@
+[package]
+name = "typewriter-typescript"
+version = "0.1.0"
+edition = "2021"
+description = "TypeScript emitter for the typewriter type sync SDK"
+license = "Apache-2.0"
+
+[dependencies]
+typewriter-core = { path = "../typewriter-core" }

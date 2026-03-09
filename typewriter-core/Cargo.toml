@@ -1,0 +1,11 @@
+[package]
+name = "typewriter-core"
+version = "0.1.0"
+edition = "2021"
+description = "Core IR types, traits, and config for the typewriter type sync SDK"
+license = "Apache-2.0"
+
+[dependencies]
+serde = { workspace = true }
+toml = { workspace = true }
+anyhow = { workspace = true }
