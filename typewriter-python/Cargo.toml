@@ -8,7 +8,7 @@ repository = "https://github.com/aarambh-darshan/typewriter"
 homepage = "https://github.com/aarambh-darshan/typewriter"
 readme = "README.md"
 keywords = ["codegen", "python", "pydantic", "type-sync"]
-categories = ["development-tools", "code-generators"]
+categories = ["development-tools::build-utils"]
 authors = ["Darshan Vichhi <aarambhdarshan@gmail.com>"]
 
 [dependencies]
