@@ -16,7 +16,7 @@
 - [x] Basic `#[serde(rename)]` and `#[serde(skip)]` compatibility
 - [x] `typewriter.toml` config file parsing
 - [x] Unit tests + snapshot tests (41 tests passing)
-- [ ] Publish `typewriter v0.1.0` to crates.io
+- [x] Publish to crates.io as [`typebridge`](https://crates.io/crates/typebridge) v0.1.0
 
 ---
 
