@@ -16,14 +16,20 @@ pub fn emit_all(type_def: &TypeDef, targets: &[Language], config: &TypewriterCon
         match target {
             #[cfg(feature = "typescript")]
             Language::TypeScript => {
-                let mapper = typewriter_typescript::TypeScriptMapper::new()
+                let mut mapper = typewriter_typescript::TypeScriptMapper::new()
                     .with_readonly(config.ts_readonly());
+                if let Some(style) = config.ts_file_style() {
+                    mapper = mapper.with_file_style(style);
+                }
                 let output_dir = base_path.join(config.ts_output_dir());
                 emit_single(&mapper, type_def, &output_dir);
             }
             #[cfg(feature = "python")]
             Language::Python => {
-                let mapper = typewriter_python::PythonMapper::new();
+                let mut mapper = typewriter_python::PythonMapper::new();
+                if let Some(style) = config.py_file_style() {
+                    mapper = mapper.with_file_style(style);
+                }
                 let output_dir = base_path.join(config.py_output_dir());
                 emit_single(&mapper, type_def, &output_dir);
             }

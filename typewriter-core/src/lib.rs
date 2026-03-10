@@ -8,7 +8,9 @@
 pub mod config;
 pub mod ir;
 pub mod mapper;
+pub mod naming;
 
 pub use config::TypewriterConfig;
 pub use ir::*;
 pub use mapper::TypeMapper;
+pub use naming::{to_file_style, FileStyle};

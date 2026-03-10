@@ -11,12 +11,12 @@
 
 ```toml
 [dependencies]
-typebridge = "0.1"
+typebridge = "0.1.1"
 serde = { version = "1", features = ["derive"] }
 ```
 
 ```rust
-use typewriter::TypeWriter;
+use typebridge::TypeWriter;
 use serde::{Serialize, Deserialize};
 
 #[derive(Serialize, Deserialize, TypeWriter)]

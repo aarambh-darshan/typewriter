@@ -6,7 +6,7 @@
 //! Run `cargo build -p typewriter-example` to generate the output files.
 
 use serde::{Deserialize, Serialize};
-use typewriter::TypeWriter;
+use typebridge::TypeWriter;
 
 // ─────────────────────────────────────────────────────────────
 // 1. Simple Struct — generates interface/BaseModel

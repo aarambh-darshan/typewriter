@@ -1,4 +1,4 @@
-//! # typewriter
+//! # typebridge
 //!
 //! Cross-Language Type Synchronization SDK for Rust.
 //!
@@ -8,7 +8,7 @@
 //! # Usage
 //!
 //! ```rust,ignore
-//! use typewriter::TypeWriter;
+//! use typebridge::TypeWriter;
 //! use serde::{Serialize, Deserialize};
 //!
 //! #[derive(Serialize, Deserialize, TypeWriter)]

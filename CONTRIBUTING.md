@@ -113,7 +113,7 @@ mkdir -p typewriter-go/src
 ```toml
 [package]
 name = "typewriter-go"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 
 [dependencies]

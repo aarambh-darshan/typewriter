@@ -13,10 +13,10 @@
 
 ## Usage
 
-Most users should depend on the main [`typewriter`](https://crates.io/crates/typewriter) crate, which re-exports this macro.
+Most users should depend on the main [`typebridge`](https://crates.io/crates/typebridge) crate, which re-exports this macro.
 
 ```rust
-use typewriter::TypeWriter;
+use typebridge::TypeWriter;
 
 #[derive(TypeWriter)]
 #[sync_to(typescript, python)]

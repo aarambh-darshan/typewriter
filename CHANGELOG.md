@@ -17,6 +17,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.1.1] - 2026-03-10
+
+### Fixed
+
+- **`file_style` configuration now works** — `snake_case` and `PascalCase` were being ignored in `typewriter.toml`; only `kebab-case` was generated regardless of config. The `file_naming()` method in both TypeScript and Python mappers now correctly reads and applies the configured style.
+
+### Added
+
+#### Core (`typewriter-core`)
+- New `naming` module with shared `FileStyle` enum and `to_file_style()` conversion function
+- `ts_file_style()` and `py_file_style()` helper methods on `TypewriterConfig`
+- `file_style` field added to `PythonConfig` (TypeScript already had it)
+- 5 new unit tests for file naming utilities
+
+#### TypeScript Emitter (`typewriter-typescript`)
+- `file_style` field on `TypeScriptMapper` with `with_file_style()` builder
+- 4 new tests: `test_file_naming_snake`, `test_file_naming_pascal`, `test_output_filename_pascal`
+
+#### Python Emitter (`typewriter-python`)
+- `file_style` field on `PythonMapper` with `with_file_style()` builder
+- 5 new tests: `test_file_naming_kebab`, `test_file_naming_pascal`, `test_output_filename_pascal`
+
+#### Emitter Dispatcher
+- Now passes `file_style` from `typewriter.toml` config to both mappers
+
+### Changed
+
+- All code examples updated: `use typewriter::TypeWriter` → `use typebridge::TypeWriter` across all `.rs` files, docs, READMEs, and content files
+- Example crate dependency key renamed from `typewriter` to `typebridge` in `Cargo.toml`
+- Removed duplicate `to_kebab_case()` and `to_snake_case()` from individual mappers — now uses shared `naming` module
+- **53 total tests — all passing** (was 41)
+
+---
+
 ## [0.1.0] - 2026-03-09
 
 ### 🎉 Initial Release — MVP
@@ -82,12 +116,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `README.md` with quick start, examples, type mapping reference
 - `ARCHITECTURE.md` with data flow diagrams and crate relationships
 - `CONTRIBUTING.md` with development setup and emitter guide
-- `ROADMAP.md` with 5 phases and YouTube series plan
+- `ROADMAP.md` with 5 phases
 - `CHANGELOG.md` (this file)
 - `docs/` folder with 7 detailed guides
 - Working `example/` crate with 5 use cases
 
 ---
 
-[unreleased]: https://github.com/aarambh-darshan/typewriter/compare/v0.1.0...HEAD
+[unreleased]: https://github.com/aarambh-darshan/typewriter/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/aarambh-darshan/typewriter/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/aarambh-darshan/typewriter/releases/tag/v0.1.0
+

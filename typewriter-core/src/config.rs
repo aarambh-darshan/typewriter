@@ -31,6 +31,8 @@ pub struct TypeScriptConfig {
 pub struct PythonConfig {
     /// Output directory for generated `.py` files
     pub output_dir: Option<String>,
+    /// File naming style: `snake_case` (default), `kebab-case`, `PascalCase`
+    pub file_style: Option<String>,
     /// Use Pydantic v2 BaseModel (default: true)
     pub pydantic_v2: Option<bool>,
     /// Use `@dataclass` instead of BaseModel
@@ -80,6 +82,26 @@ impl TypewriterConfig {
             .as_ref()
             .and_then(|ts| ts.readonly)
             .unwrap_or(false)
+    }
+
+    /// Get the TypeScript file naming style.
+    ///
+    /// Returns the parsed `FileStyle` from config, or `None` to use the emitter's default.
+    pub fn ts_file_style(&self) -> Option<crate::naming::FileStyle> {
+        self.typescript
+            .as_ref()
+            .and_then(|ts| ts.file_style.as_deref())
+            .and_then(crate::naming::FileStyle::from_str)
+    }
+
+    /// Get the Python file naming style.
+    ///
+    /// Returns the parsed `FileStyle` from config, or `None` to use the emitter's default.
+    pub fn py_file_style(&self) -> Option<crate::naming::FileStyle> {
+        self.python
+            .as_ref()
+            .and_then(|py| py.file_style.as_deref())
+            .and_then(crate::naming::FileStyle::from_str)
     }
 }
 

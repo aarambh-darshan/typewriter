@@ -4,7 +4,7 @@
 
 ---
 
-## Phase 1 — MVP `v0.1.0` ✅ *(Current)*
+## Phase 1 — MVP `v0.1.1` ✅ *(Current)*
 
 > **Goal:** Working proc macro that generates TypeScript and Python from Rust structs/enums.
 
@@ -16,7 +16,7 @@
 - [x] Basic `#[serde(rename)]` and `#[serde(skip)]` compatibility
 - [x] `typewriter.toml` config file parsing
 - [x] Unit tests + snapshot tests (41 tests passing)
-- [x] Publish to crates.io as [`typebridge`](https://crates.io/crates/typebridge) v0.1.0
+- [x] Publish to crates.io as [`typebridge`](https://crates.io/crates/typebridge) v0.1.1
 
 ---
 
@@ -77,18 +77,6 @@
 - [ ] Bidirectional sync: detect foreign language types, suggest Rust structs
 - [ ] Web playground: paste Rust → see all language outputs live
 - [ ] Full workspace support for Cargo monorepos
-
----
-
-## 🎬 YouTube Series Plan
-
-| Part | Title | Content |
-|---|---|---|
-| **1** | *Building a Rust Proc Macro from Scratch* | `syn`, `DeriveInput`, `TokenStream`, derive macros |
-| **2** | *Generating TypeScript from Rust Types* | `TypeMapper` trait, TS emitter, `insta` snapshots |
-| **3** | *Polyglot Type Sync — Python, Go, Swift* | 3 more emitters, enum handling, serde compat |
-| **4** | *Building the CLI with Watch Mode* | `clap`, `notify` file watcher, CI drift gate |
-| **5** | *Shipping to crates.io — Full Demo* | Publishing, CI, live demo with Rust + Next.js |
 
 ---
 

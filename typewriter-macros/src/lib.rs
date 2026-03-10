@@ -13,7 +13,7 @@ use proc_macro::TokenStream;
 /// # Usage
 ///
 /// ```rust,ignore
-/// use typewriter::TypeWriter;
+/// use typebridge::TypeWriter;
 ///
 /// #[derive(TypeWriter)]
 /// #[sync_to(typescript, python)]
