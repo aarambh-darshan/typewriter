@@ -28,7 +28,8 @@
 - [ ] Swift emitter: `Codable` structs + enums + `CodingKeys`
 - [ ] Kotlin emitter: data class + `kotlinx.serialization` + `@SerialName`
 - [ ] Enum support: all 4 serde representations (external, internal, adjacent, untagged)
-- [ ] Generic type support: `MyType<T>`, `Vec<MyType<T>>` — full nesting
+- [x] Generic type support: `MyType<T>`, `Vec<MyType<T>>` — full nesting *(v0.1.2)*
+- [x] Cross-file import generation: auto `import type` (TS) / `from .x import X` (Python) *(v0.1.2)*
 - [ ] Per-field attributes: `#[tw(rename)]`, `#[tw(skip)]`, `#[tw(type)]`
 - [ ] `#[serde(flatten)]` support
 - [ ] Snapshot test suite via `insta` for all 5 languages

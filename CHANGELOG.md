@@ -17,6 +17,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.1.2] - 2026-03-13
+
+### Added
+
+#### Generic Type Support (Phase 2)
+- **Full generic struct support** — `Pagination<T>` generates `export interface Pagination<T>` (TS) and `class Pagination(BaseModel, Generic[T])` (Python)
+- `map_generic()` method on `TypeMapper` trait — default `Name<A, B>` format, Python overrides with `Name[A, B]`
+- Generic structs in Python auto-generate `TypeVar` declarations and `from typing import Generic, TypeVar` imports
+- Nested generics work: `Vec<Pagination<User>>` → `Pagination<User>[]` (TS) / `list[Pagination[User]]` (Python)
+
+#### Cross-File Import Generation
+- **Auto-generated imports** when a struct references another type:
+  - TypeScript: `import type { FilterUserDto } from './filter-user-dto';`
+  - Python: `from .filter_user_dto import FilterUserDto`
+- `collect_referenced_types()` on `TypeDef` — recursively extracts external type names from all fields
+- `emit_imports()` on `TypeMapper` trait — language-specific import rendering
+- Works with `Vec<X>`, `Option<X>`, `HashMap<K, V>`, `Generic<X>`, and deeply nested references
+- Excludes the struct's own generic params (`T`, `U`) from imports
+
+#### Example
+- Added `Pagination<T>` generic struct to the example crate
+
+---
+
 ## [0.1.1] - 2026-03-10
 
 ### Fixed
@@ -123,7 +147,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[unreleased]: https://github.com/aarambh-darshan/typewriter/compare/v0.1.1...HEAD
+[unreleased]: https://github.com/aarambh-darshan/typewriter/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/aarambh-darshan/typewriter/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/aarambh-darshan/typewriter/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/aarambh-darshan/typewriter/releases/tag/v0.1.0
 

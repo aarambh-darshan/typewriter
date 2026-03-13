@@ -147,6 +147,93 @@ impl TypeDef {
             TypeDef::Enum(e) => &e.name,
         }
     }
+
+    /// Get the generic type parameter names (empty for enums and non-generic structs).
+    pub fn generics(&self) -> &[String] {
+        match self {
+            TypeDef::Struct(s) => &s.generics,
+            TypeDef::Enum(_) => &[],
+        }
+    }
+
+    /// Collect all externally-referenced type names used in fields.
+    ///
+    /// Returns type names that appear as `Named("X")` or `Generic("X", ...)`,
+    /// excluding the struct's own generic parameters (like `T`, `U`).
+    ///
+    /// These are the types that need cross-file imports.
+    pub fn collect_referenced_types(&self) -> std::collections::BTreeSet<String> {
+        let mut refs = std::collections::BTreeSet::new();
+        let own_generics: std::collections::HashSet<&str> =
+            self.generics().iter().map(|s| s.as_str()).collect();
+
+        match self {
+            TypeDef::Struct(s) => {
+                for field in &s.fields {
+                    if !field.skip {
+                        collect_type_refs(&field.ty, &own_generics, &mut refs);
+                    }
+                }
+            }
+            TypeDef::Enum(e) => {
+                for variant in &e.variants {
+                    match &variant.kind {
+                        VariantKind::Struct(fields) => {
+                            for field in fields {
+                                if !field.skip {
+                                    collect_type_refs(&field.ty, &own_generics, &mut refs);
+                                }
+                            }
+                        }
+                        VariantKind::Tuple(types) => {
+                            for ty in types {
+                                collect_type_refs(ty, &own_generics, &mut refs);
+                            }
+                        }
+                        VariantKind::Unit => {}
+                    }
+                }
+            }
+        }
+
+        refs
+    }
+}
+
+/// Recursively collect referenced type names from a `TypeKind`.
+fn collect_type_refs(
+    ty: &TypeKind,
+    own_generics: &std::collections::HashSet<&str>,
+    refs: &mut std::collections::BTreeSet<String>,
+) {
+    match ty {
+        TypeKind::Named(name) => {
+            if !own_generics.contains(name.as_str()) {
+                refs.insert(name.clone());
+            }
+        }
+        TypeKind::Generic(name, params) => {
+            if !own_generics.contains(name.as_str()) {
+                refs.insert(name.clone());
+            }
+            for p in params {
+                collect_type_refs(p, own_generics, refs);
+            }
+        }
+        TypeKind::Option(inner) | TypeKind::Vec(inner) => {
+            collect_type_refs(inner, own_generics, refs);
+        }
+        TypeKind::HashMap(k, v) => {
+            collect_type_refs(k, own_generics, refs);
+            collect_type_refs(v, own_generics, refs);
+        }
+        TypeKind::Tuple(elements) => {
+            for e in elements {
+                collect_type_refs(e, own_generics, refs);
+            }
+        }
+        TypeKind::Primitive(_) | TypeKind::Unit => {}
+    }
 }
 
 /// The target languages that typewriter can generate code for.

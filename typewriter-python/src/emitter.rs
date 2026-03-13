@@ -15,12 +15,26 @@ pub fn render_model(mapper: &PythonMapper, def: &StructDef) -> String {
     let imports = collect_imports_from_struct(def);
     output.push_str(&render_imports(&imports));
 
-    // Class definition
+    // TypeVar declarations for generic structs
+    if !def.generics.is_empty() {
+        output.push('\n');
+        for param in &def.generics {
+            output.push_str(&format!("{} = TypeVar(\"{}\")\n", param, param));
+        }
+    }
+
+    // Class definition with optional Generic[T] base
+    let class_bases = if def.generics.is_empty() {
+        "BaseModel".to_string()
+    } else {
+        format!("BaseModel, Generic[{}]", def.generics.join(", "))
+    };
+
     if let Some(doc) = &def.doc {
-        output.push_str(&format!("\n\nclass {}(BaseModel):\n", def.name));
+        output.push_str(&format!("\n\nclass {}({}):\n", def.name, class_bases));
         output.push_str(&format!("    \"\"\"{}\"\"\"\n\n", doc.trim()));
     } else {
-        output.push_str(&format!("\n\nclass {}(BaseModel):\n", def.name));
+        output.push_str(&format!("\n\nclass {}({}):\n", def.name, class_bases));
     }
 
     let visible_fields: Vec<&FieldDef> = def.fields.iter().filter(|f| !f.skip).collect();
@@ -194,6 +208,11 @@ fn collect_imports_from_struct(def: &StructDef) -> BTreeSet<String> {
     imports.insert("from __future__ import annotations".to_string());
     imports.insert("from pydantic import BaseModel".to_string());
 
+    // Generic struct needs Generic + TypeVar
+    if !def.generics.is_empty() {
+        imports.insert("from typing import Generic, TypeVar".to_string());
+    }
+
     for field in &def.fields {
         if field.skip {
             continue;
@@ -236,6 +255,11 @@ fn collect_type_imports(ty: &TypeKind, imports: &mut BTreeSet<String>) {
         TypeKind::Tuple(elements) => {
             for e in elements {
                 collect_type_imports(e, imports);
+            }
+        }
+        TypeKind::Generic(_name, params) => {
+            for p in params {
+                collect_type_imports(p, imports);
             }
         }
         _ => {}

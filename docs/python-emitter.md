@@ -55,6 +55,78 @@ class Order(BaseModel):
 
 ---
 
+## Generic Structs
+
+Generic Rust structs become Python `Generic` classes with `TypeVar`:
+
+```rust
+#[derive(TypeWriter)]
+#[sync_to(python)]
+pub struct Pagination<T> {
+    pub items: Vec<T>,
+    pub total: u64,
+    pub page: u32,
+}
+```
+
+```python
+from __future__ import annotations
+from pydantic import BaseModel
+from typing import Generic, TypeVar
+
+T = TypeVar("T")
+
+
+class Pagination(BaseModel, Generic[T]):
+    items: list[T]
+    total: int
+    page: int
+
+    class Config:
+        populate_by_name = True
+```
+
+- `TypeVar` declarations are auto-generated for each generic parameter
+- `from typing import Generic, TypeVar` is added automatically
+- Nested generics work: `Vec<Pagination<User>>` → `list[Pagination[User]]`
+
+---
+
+## Cross-File Imports
+
+When a struct references another custom type, typebridge auto-generates the import:
+
+```rust
+#[derive(TypeWriter)]
+#[sync_to(python)]
+pub struct UserData {
+    pub user: FilterUserDto,
+    pub roles: Vec<UserRole>,
+}
+```
+
+```python
+from .filter_user_dto import FilterUserDto
+from .user_role import UserRole
+
+from __future__ import annotations
+from pydantic import BaseModel
+
+
+class UserData(BaseModel):
+    user: FilterUserDto
+    roles: list[UserRole]
+
+    class Config:
+        populate_by_name = True
+```
+
+- Uses relative imports (`from .module import Class`)
+- Module names follow your configured `file_style` (snake_case by default)
+- Works with `Vec<X>`, `Option<X>`, `dict[K, X]`, and nested generics
+
+---
+
 ## Automatic Import Collection
 
 The emitter automatically collects and deduplicates all needed imports:

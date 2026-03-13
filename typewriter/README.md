@@ -11,7 +11,7 @@
 
 ```toml
 [dependencies]
-typebridge = "0.1.1"
+typebridge = "0.1.2"
 serde = { version = "1", features = ["derive"] }
 ```
 

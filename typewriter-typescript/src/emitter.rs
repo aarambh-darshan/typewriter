@@ -14,7 +14,16 @@ pub fn render_interface(mapper: &TypeScriptMapper, def: &StructDef) -> String {
         output.push_str(&format!("/**\n * {}\n */\n", doc.trim()));
     }
 
-    output.push_str(&format!("export interface {} {{\n", def.name));
+    // Interface declaration with optional generic params
+    if def.generics.is_empty() {
+        output.push_str(&format!("export interface {} {{\n", def.name));
+    } else {
+        output.push_str(&format!(
+            "export interface {}<{}> {{\n",
+            def.name,
+            def.generics.join(", ")
+        ));
+    }
 
     for field in &def.fields {
         if field.skip {
