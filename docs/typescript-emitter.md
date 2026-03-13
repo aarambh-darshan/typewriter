@@ -105,6 +105,61 @@ function area(shape: Shape): number {
 
 ---
 
+## Generic Structs
+
+Generic Rust structs become generic TypeScript interfaces:
+
+```rust
+#[derive(TypeWriter)]
+#[sync_to(typescript)]
+pub struct Pagination<T> {
+    pub items: Vec<T>,
+    pub total: u64,
+    pub page: u32,
+}
+```
+
+```typescript
+export interface Pagination<T> {
+  items: T[];
+  total: bigint;
+  page: number;
+}
+```
+
+Nested generics work too — `Vec<Pagination<User>>` becomes `Pagination<User>[]`.
+
+---
+
+## Cross-File Imports
+
+When a struct references another custom type, typebridge auto-generates the import:
+
+```rust
+#[derive(TypeWriter)]
+#[sync_to(typescript)]
+pub struct UserData {
+    pub user: FilterUserDto,
+    pub roles: Vec<UserRole>,
+}
+```
+
+```typescript
+import type { FilterUserDto } from './filter-user-dto';
+import type { UserRole } from './user-role';
+
+export interface UserData {
+  user: FilterUserDto;
+  roles: UserRole[];
+}
+```
+
+- Uses `import type` for type-only imports (best practice)
+- File paths follow your configured `file_style` (kebab-case by default)
+- Works with `Vec<X>`, `Option<X>`, `HashMap<K, X>`, and nested generics
+
+---
+
 ## Readonly Mode
 
 Enable via `typewriter.toml` or `#[tw(readonly)]`:

@@ -59,6 +59,16 @@ pub trait TypeMapper {
     /// File extension for the output file (without the leading dot).
     fn file_extension(&self) -> &str;
 
+    /// Map a generic type `Name<A, B>` to the target language.
+    ///
+    /// # Examples
+    /// - `Pagination<User>` → `"Pagination<User>"` (TS)
+    /// - `Pagination<User>` → `"Pagination[User]"` (Python)
+    fn map_generic(&self, name: &str, params: &[TypeKind]) -> String {
+        let param_strs: Vec<String> = params.iter().map(|p| self.map_type(p)).collect();
+        format!("{}<{}>", name, param_strs.join(", "))
+    }
+
     /// Naming convention for output files.
     ///
     /// # Examples
@@ -78,17 +88,32 @@ pub trait TypeMapper {
             TypeKind::HashMap(k, v) => self.map_hashmap(k, v),
             TypeKind::Tuple(elements) => self.map_tuple(elements),
             TypeKind::Named(name) => self.map_named(name),
-            TypeKind::Generic(name, _params) => self.map_named(name),
+            TypeKind::Generic(name, params) => self.map_generic(name, params),
             TypeKind::Unit => "void".to_string(),
         }
     }
 
+    /// Generate import statements for types referenced by this type definition.
+    ///
+    /// Override this in language mappers to produce language-specific imports.
+    /// Default: no imports.
+    fn emit_imports(&self, _def: &TypeDef) -> String {
+        String::new()
+    }
+
     /// Emit a complete `TypeDef` (struct or enum) as target language source code.
     ///
-    /// Includes the file header and footer wrapping the type definition.
+    /// Includes the file header, import statements, and the type definition.
     fn emit_type_def(&self, def: &TypeDef) -> String {
         let type_name = def.name();
         let mut output = self.file_header(type_name);
+
+        // Cross-file imports
+        let imports = self.emit_imports(def);
+        if !imports.is_empty() {
+            output.push_str(&imports);
+            output.push('\n');
+        }
 
         match def {
             TypeDef::Struct(s) => output.push_str(&self.emit_struct(s)),

@@ -102,6 +102,24 @@ pub struct UserRecord {
     pub internal_notes: String,
 }
 
+// ─────────────────────────────────────────────────────────────
+// 6. Generic Struct — generates generic interface / Generic[T]
+// ─────────────────────────────────────────────────────────────
+
+/// A paginated response wrapper.
+#[derive(Debug, Serialize, Deserialize, TypeWriter)]
+#[sync_to(typescript, python)]
+pub struct Pagination<T> {
+    /// The items on this page
+    pub items: Vec<T>,
+    /// Total number of items across all pages
+    pub total: u64,
+    /// Current page number (1-indexed)
+    pub page: u32,
+    /// Number of items per page
+    pub per_page: u32,
+}
+
 fn main() {
     println!("✅ typewriter example built successfully!");
     println!("📁 Check ./generated/typescript/ and ./generated/python/ for output files.");
@@ -112,4 +130,5 @@ fn main() {
     println!("  • UserRole      → user-role.ts / user_role.py");
     println!("  • Notification  → notification.ts / notification.py");
     println!("  • UserRecord    → user-record.ts / user_record.py");
+    println!("  • Pagination<T> → pagination.ts / pagination.py");
 }

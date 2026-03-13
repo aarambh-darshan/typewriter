@@ -1,6 +1,6 @@
 [package]
 name = "typebridge"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 description = "Cross-language type synchronization SDK for Rust — define once, generate everywhere"
 license = "Apache-2.0"
@@ -12,8 +12,8 @@ categories = ["development-tools::build-utils"]
 authors = ["Darshan Vichhi <aarambhdarshan@gmail.com>"]
 
 [dependencies]
-typewriter-macros = { path = "../typewriter-macros", version = "0.1.1" }
-typewriter-core = { path = "../typewriter-core", version = "0.1.1" }
+typewriter-macros = { path = "../typewriter-macros", version = "0.1.2" }
+typewriter-core = { path = "../typewriter-core", version = "0.1.2" }
 
 [features]
 default = ["typescript", "python"]
