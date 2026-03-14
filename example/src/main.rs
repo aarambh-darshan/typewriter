@@ -14,7 +14,7 @@ use typebridge::TypeWriter;
 
 /// A user profile in the system.
 #[derive(Debug, Serialize, Deserialize, TypeWriter)]
-#[sync_to(typescript, python)]
+#[sync_to(typescript, python, go)]
 pub struct UserProfile {
     /// Unique user identifier
     pub id: String,
@@ -36,7 +36,7 @@ pub struct UserProfile {
 
 /// An API response wrapper.
 #[derive(Debug, Serialize, Deserialize, TypeWriter)]
-#[sync_to(typescript, python)]
+#[sync_to(typescript, python, go)]
 pub struct ApiResponse {
     /// HTTP status code
     pub status_code: u32,
@@ -54,7 +54,7 @@ pub struct ApiResponse {
 
 /// User roles in the application.
 #[derive(Debug, Serialize, Deserialize, TypeWriter)]
-#[sync_to(typescript, python)]
+#[sync_to(typescript, python, go)]
 pub enum UserRole {
     Admin,
     Moderator,
@@ -69,7 +69,7 @@ pub enum UserRole {
 /// Notification types sent to users.
 #[derive(Debug, Serialize, Deserialize, TypeWriter)]
 #[serde(tag = "type")]
-#[sync_to(typescript, python)]
+#[sync_to(typescript, python, go)]
 pub enum Notification {
     /// A simple text message
     Message { title: String, body: String },
@@ -89,7 +89,7 @@ pub enum Notification {
 
 /// Internal user record (password_hash excluded from generated types).
 #[derive(Debug, Serialize, Deserialize, TypeWriter)]
-#[sync_to(typescript, python)]
+#[sync_to(typescript, python, go)]
 pub struct UserRecord {
     pub id: String,
     pub username: String,
@@ -108,7 +108,7 @@ pub struct UserRecord {
 
 /// A paginated response wrapper.
 #[derive(Debug, Serialize, Deserialize, TypeWriter)]
-#[sync_to(typescript, python)]
+#[sync_to(typescript, python, go)]
 pub struct Pagination<T> {
     /// The items on this page
     pub items: Vec<T>,
@@ -122,13 +122,13 @@ pub struct Pagination<T> {
 
 fn main() {
     println!("✅ typewriter example built successfully!");
-    println!("📁 Check ./generated/typescript/ and ./generated/python/ for output files.");
+    println!("📁 Check ./generated/typescript/, ./generated/python/, and ./generated/go/ for output files.");
     println!();
     println!("Generated types:");
-    println!("  • UserProfile   → user-profile.ts / user_profile.py");
-    println!("  • ApiResponse   → api-response.ts / api_response.py");
-    println!("  • UserRole      → user-role.ts / user_role.py");
-    println!("  • Notification  → notification.ts / notification.py");
-    println!("  • UserRecord    → user-record.ts / user_record.py");
-    println!("  • Pagination<T> → pagination.ts / pagination.py");
+    println!("  • UserProfile   → user-profile.ts / user_profile.py / user_profile.go");
+    println!("  • ApiResponse   → api-response.ts / api_response.py / api_response.go");
+    println!("  • UserRole      → user-role.ts / user_role.py / user_role.go");
+    println!("  • Notification  → notification.ts / notification.py / notification.go");
+    println!("  • UserRecord    → user-record.ts / user_record.py / user_record.go");
+    println!("  • Pagination<T> → pagination.ts / pagination.py / pagination.go");
 }

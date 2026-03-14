@@ -13,6 +13,8 @@ pub struct TypewriterConfig {
     pub typescript: Option<TypeScriptConfig>,
     /// Python emitter configuration
     pub python: Option<PythonConfig>,
+    /// Go emitter configuration
+    pub go: Option<GoConfig>,
 }
 
 /// TypeScript-specific configuration.
@@ -37,6 +39,17 @@ pub struct PythonConfig {
     pub pydantic_v2: Option<bool>,
     /// Use `@dataclass` instead of BaseModel
     pub use_dataclass: Option<bool>,
+}
+
+/// Go-specific configuration.
+#[derive(Debug, Clone, Deserialize)]
+pub struct GoConfig {
+    /// Output directory for generated `.go` files
+    pub output_dir: Option<String>,
+    /// File naming style: `snake_case` (default), `kebab-case`, `PascalCase`
+    pub file_style: Option<String>,
+    /// Package name for generated files (default: "types")
+    pub package_name: Option<String>,
 }
 
 impl TypewriterConfig {
@@ -103,6 +116,32 @@ impl TypewriterConfig {
             .and_then(|py| py.file_style.as_deref())
             .and_then(crate::naming::FileStyle::from_str)
     }
+
+    /// Get the Go output directory, with a default fallback.
+    pub fn go_output_dir(&self) -> &str {
+        self.go
+            .as_ref()
+            .and_then(|go| go.output_dir.as_deref())
+            .unwrap_or("./generated/go")
+    }
+
+    /// Get the Go file naming style.
+    ///
+    /// Returns the parsed `FileStyle` from config, or `None` to use the emitter's default.
+    pub fn go_file_style(&self) -> Option<crate::naming::FileStyle> {
+        self.go
+            .as_ref()
+            .and_then(|go| go.file_style.as_deref())
+            .and_then(crate::naming::FileStyle::from_str)
+    }
+
+    /// Get the Go package name.
+    pub fn go_package_name(&self) -> &str {
+        self.go
+            .as_ref()
+            .and_then(|go| go.package_name.as_deref())
+            .unwrap_or("types")
+    }
 }
 
 #[cfg(test)]
@@ -114,8 +153,11 @@ mod tests {
         let config = TypewriterConfig::default();
         assert!(config.typescript.is_none());
         assert!(config.python.is_none());
+        assert!(config.go.is_none());
         assert_eq!(config.ts_output_dir(), "./generated/typescript");
         assert_eq!(config.py_output_dir(), "./generated/python");
+        assert_eq!(config.go_output_dir(), "./generated/go");
+        assert_eq!(config.go_package_name(), "types");
         assert!(!config.ts_readonly());
     }
 
@@ -130,6 +172,10 @@ readonly = true
 [python]
 output_dir = "../api/schemas"
 pydantic_v2 = true
+
+[go]
+output_dir = "../backend/types"
+package_name = "api_types"
 "#;
         let config: TypewriterConfig = toml::from_str(toml_str).unwrap();
 
@@ -147,6 +193,14 @@ pydantic_v2 = true
             Some("../api/schemas")
         );
         assert_eq!(config.python.as_ref().unwrap().pydantic_v2, Some(true));
+        assert_eq!(
+            config.go.as_ref().unwrap().output_dir.as_deref(),
+            Some("../backend/types")
+        );
+        assert_eq!(
+            config.go.as_ref().unwrap().package_name.as_deref(),
+            Some("api_types")
+        );
     }
 
     #[test]

@@ -4,6 +4,7 @@ members = [
     "typewriter-macros",
     "typewriter-typescript",
     "typewriter-python",
+    "typewriter-go",
     "typewriter",
     "typewriter-test",
     "example",

@@ -33,6 +33,15 @@ pub fn emit_all(type_def: &TypeDef, targets: &[Language], config: &TypewriterCon
                 let output_dir = base_path.join(config.py_output_dir());
                 emit_single(&mapper, type_def, &output_dir);
             }
+            #[cfg(feature = "go")]
+            Language::Go => {
+                let mut mapper = typewriter_go::GoMapper::new();
+                if let Some(style) = config.go_file_style() {
+                    mapper = mapper.with_file_style(style);
+                }
+                let output_dir = base_path.join(config.go_output_dir());
+                emit_single(&mapper, type_def, &output_dir);
+            }
             _ => {
                 // Language not enabled via feature flags — silently skip
                 // In a future version, this could emit a compile warning
