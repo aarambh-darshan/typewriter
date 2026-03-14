@@ -17,6 +17,10 @@ readonly = false
 [python]
 output_dir = "../api/schemas"
 pydantic_v2 = true
+
+[go]
+output_dir = "../backend/types"
+package_name = "api_types"
 ```
 
 ---
@@ -70,6 +74,25 @@ use_dataclass = false
 
 ---
 
+## Go Configuration
+
+```toml
+[go]
+# Where generated .go files are written
+# Default: "./generated/go"
+output_dir = "../backend/types"
+
+# File naming convention for output files
+# Default: "snake_case"
+file_style = "snake_case"
+
+# Go package name used inside the generated files
+# Default: "types"
+package_name = "api_types"
+```
+
+---
+
 ## Default Behavior (No Config File)
 
 If no `typewriter.toml` exists, typewriter uses these defaults:
@@ -81,6 +104,8 @@ If no `typewriter.toml` exists, typewriter uses these defaults:
 | TypeScript readonly | `false` |
 | Python output dir | `./generated/python` |
 | Python pydantic_v2 | `true` |
+| Go output dir | `./generated/go` |
+| Go package name | `types` |
 
 ---
 

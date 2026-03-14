@@ -15,6 +15,7 @@
 | [Custom Attributes](custom-attributes.md) | `#[tw(skip)]`, `#[tw(rename)]`, `#[tw(optional)]` reference |
 | [TypeScript Emitter](typescript-emitter.md) | Interfaces, discriminated unions, readonly, file styles |
 | [Python Emitter](python-emitter.md) | Pydantic v2 BaseModel, Enum, Union with Literal |
+| [Go Emitter](go-emitter.md) | Structs, Interfaces, custom UnmarshalJSON |
 
 ---
 

@@ -24,7 +24,7 @@
 
 > **Goal:** All 5 language emitters. Full enum support. Generics. Feature-complete proc macro API.
 
-- [ ] Go emitter: structs + json tags + pointer types for `Option<T>`
+- [x] Go emitter: structs + interfaces (`*T` for `Option<T>`, tags)
 - [ ] Swift emitter: `Codable` structs + enums + `CodingKeys`
 - [ ] Kotlin emitter: data class + `kotlinx.serialization` + `@SerialName`
 - [ ] Enum support: all 4 serde representations (external, internal, adjacent, untagged)

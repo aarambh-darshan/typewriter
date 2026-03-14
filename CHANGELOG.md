@@ -10,10 +10,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned
-- Go emitter (`typewriter-go`)
 - Swift emitter (`typewriter-swift`)
 - Kotlin emitter (`typewriter-kotlin`)
 - CLI tool with `generate`, `check`, `watch` commands
+
+---
+
+## [0.1.3] - 2026-03-14
+
+### Added
+
+#### Go Emitter (`typewriter-go`)
+- **Native struct generation** — mapping Rust structures strictly to JSON-tagged structs with capital case exportability rules.
+- **Interface discriminated unions** — mapped enum data types to an internal interface type with custom structs binding the generic trait.
+- **`omitempty` pointers** — translating `Option<T>` fields to `*T` with `json:\"field,omitempty\"` tagging natively in Go.
+- **Unit enum constants** — implemented simple enum variations via string aliases and block `const` structures.
+- Updated all cross-workspace macro plumbing (`typewriter-core`, `typewriter-macros`, `typewriter`) to integrate the `go` configuration key.
+- Full workspace test snapshot integration.
 
 ---
 
@@ -147,7 +160,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[unreleased]: https://github.com/aarambh-darshan/typewriter/compare/v0.1.2...HEAD
+[unreleased]: https://github.com/aarambh-darshan/typewriter/compare/v0.1.3...HEAD
+[0.1.3]: https://github.com/aarambh-darshan/typewriter/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/aarambh-darshan/typewriter/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/aarambh-darshan/typewriter/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/aarambh-darshan/typewriter/releases/tag/v0.1.0
