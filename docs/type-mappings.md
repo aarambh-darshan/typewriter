@@ -6,56 +6,56 @@ Complete reference of how Rust types map to TypeScript and Python.
 
 ## Primitive Types
 
-| Rust Type | TypeScript | Python | Go | Notes |
-|---|---|---|---|---|
-| `String` | `string` | `str` | `string` | |
-| `&str` | `string` | `str` | `string` | Treated same as `String` |
-| `bool` | `boolean` | `bool` | `bool` | |
-| `u8` | `number` | `int` | `uint8` | |
-| `u16` | `number` | `int` | `uint16` | |
-| `u32` | `number` | `int` | `uint32` | |
-| `u64` | `bigint` | `int` | `uint64` | TS uses `bigint` for 64-bit+ integers |
-| `u128` | `bigint` | `int` | `string` | Go does not have native u128, mapped to string |
-| `i8` | `number` | `int` | `int8` | |
-| `i16` | `number` | `int` | `int16` | |
-| `i32` | `number` | `int` | `int32` | |
-| `i64` | `bigint` | `int` | `int64` | |
-| `i128` | `bigint` | `int` | `string` | Go does not have native i128, mapped to string |
-| `f32` | `number` | `float` | `float32` | |
-| `f64` | `number` | `float` | `float64` | |
+| Rust Type | TypeScript | Python | Go | Swift | Kotlin | Notes |
+|---|---|---|---|---|---|---|
+| `String` | `string` | `str` | `string` | `String` | `String` | |
+| `&str` | `string` | `str` | `string` | `String` | `String` | Treated same as `String` |
+| `bool` | `boolean` | `bool` | `bool` | `Bool` | `Boolean` | |
+| `u8` | `number` | `int` | `uint8` | `UInt8` | `UByte` | |
+| `u16` | `number` | `int` | `uint16` | `UInt16` | `UShort` | |
+| `u32` | `number` | `int` | `uint32` | `UInt32` | `UInt` | |
+| `u64` | `bigint` | `int` | `uint64` | `UInt64` | `ULong` | TS uses `bigint` for 64-bit+ integers |
+| `u128` | `bigint` | `int` | `string` | `String` | `String` | Mapped to string where 128-bit unsupported |
+| `i8` | `number` | `int` | `int8` | `Int8` | `Byte` | |
+| `i16` | `number` | `int` | `int16` | `Int16` | `Short` | |
+| `i32` | `number` | `int` | `int32` | `Int32` | `Int` | |
+| `i64` | `bigint` | `int` | `int64` | `Int64` | `Long` | |
+| `i128` | `bigint` | `int` | `string` | `String` | `String` | Mapped to string where 128-bit unsupported |
+| `f32` | `number` | `float` | `float32` | `Float` | `Float` | |
+| `f64` | `number` | `float` | `float64` | `Double` | `Double` | |
 
 ---
 
 ## Special Types
 
-| Rust Type | TypeScript | Python | Go | Notes |
-|---|---|---|---|---|
-| `Uuid` | `string` | `UUID` | `string` | Python imports `from uuid import UUID` |
-| `DateTime<Utc>` | `string` | `datetime` | `time.Time` | ISO 8601 string in TS; Python imports `datetime`; Go imports `time` |
-| `NaiveDate` | `string` | `date` | `time.Time` | Python imports `date`; Go imports `time` |
-| `serde_json::Value` | `unknown` | `Any` | `interface{}` | Python imports `from typing import Any` |
+| Rust Type | TypeScript | Python | Go | Swift | Kotlin | Notes |
+|---|---|---|---|---|---|---|
+| `Uuid` | `string` | `UUID` | `string` | `UUID` | `String` | Python imports `from uuid import UUID`; Swift imports `Foundation` |
+| `DateTime<Utc>` | `string` | `datetime` | `time.Time` | `Date` | `kotlinx.datetime.Instant` | ISO 8601 string in TS; language-native otherwise |
+| `NaiveDate` | `string` | `date` | `time.Time` | `Date` | `kotlinx.datetime.LocalDate` | |
+| `serde_json::Value` | `unknown` | `Any` | `interface{}` | `AnyCodable` | `JsonElement` | |
 
 ---
 
 ## Collection Types
 
-| Rust Type | TypeScript | Python | Go | Notes |
-|---|---|---|---|---|
-| `Vec<T>` | `T[]` | `list[T]` | `[]T` | |
-| `HashMap<K, V>` | `Record<K, V>` | `dict[K, V]` | `map[K]V` | Also works with `BTreeMap` |
-| `(A, B)` | `[A, B]` | `tuple[A, B]` | `struct { Field0 A; Field1 B }` | Tuples are translated to anonymous structs element-wise. |
-| `(A, B, C)` | `[A, B, C]` | `tuple[A, B, C]` | `struct { Field0 A; ... }` | |
+| Rust Type | TypeScript | Python | Go | Swift | Kotlin | Notes |
+|---|---|---|---|---|---|---|
+| `Vec<T>` | `T[]` | `list[T]` | `[]T` | `[T]` | `List<T>` | |
+| `HashMap<K, V>` | `Record<K, V>` | `dict[K, V]` | `map[K]V` | `[K: V]` | `Map<K, V>` | Also works with `BTreeMap` |
+| `(A, B)` | `[A, B]` | `tuple[A, B]` | `struct { Field0 A; Field1 B }` | `(A, B)` | `Pair<A, B>` | Tuples are translated element-wise. |
+| `(A, B, C)` | `[A, B, C]` | `tuple[A, B, C]` | `struct { Field0 A; ... }` | `(A, B, C)` | `Triple<A, B, C>` | |
 
 ---
 
 ## Wrapper Types
 
-| Rust Type | TypeScript | Python | Go | Notes |
-|---|---|---|---|---|
-| `Option<T>` | `T \| undefined` | `Optional[T]` | `*T` | Field becomes `field?: T` in TS; `= None` deep in Python; `omitempty` in Go JSON tags. |
-| `Box<T>` | (unwrapped to `T`) | (unwrapped to `T`) | (unwrapped to `T`) | Transparent — type is treated as `T` |
-| `Arc<T>` | (unwrapped to `T`) | (unwrapped to `T`) | (unwrapped to `T`) | Transparent |
-| `Rc<T>` | (unwrapped to `T`) | (unwrapped to `T`) | (unwrapped to `T`) | Transparent |
+| Rust Type | TypeScript | Python | Go | Swift | Kotlin | Notes |
+|---|---|---|---|---|---|---|
+| `Option<T>` | `T \| undefined` | `Optional[T]` | `*T` | `T?` | `T?` | Field becomes `field?: T` in TS; `= None` deep in Python; `omitempty` in Go JSON tags. |
+| `Box<T>` | (unwrapped to `T`) | (unwrapped to `T`) | (unwrapped to `T`) | (unwrapped to `T`) | (unwrapped to `T`) | Transparent — type is treated as `T` |
+| `Arc<T>` | (unwrapped to `T`) | (unwrapped to `T`) | (unwrapped to `T`) | (unwrapped to `T`) | (unwrapped to `T`) | Transparent |
+| `Rc<T>` | (unwrapped to `T`) | (unwrapped to `T`) | (unwrapped to `T`) | (unwrapped to `T`) | (unwrapped to `T`) | Transparent |
 
 ---
 

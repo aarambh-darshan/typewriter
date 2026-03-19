@@ -1,0 +1,14 @@
+[package]
+name = "typewriter-kotlin"
+version = "0.2.0"
+edition = "2021"
+description = "Kotlin emitter for the typewriter type sync SDK"
+license = "Apache-2.0"
+repository = "https://github.com/aarambh-darshan/typewriter"
+homepage = "https://github.com/aarambh-darshan/typewriter"
+keywords = ["codegen", "kotlin", "type-sync", "types"]
+categories = ["development-tools::build-utils"]
+authors = ["Darshan Vichhi <aarambhdarshan@gmail.com>"]
+
+[dependencies]
+typewriter-core = { path = "../typewriter-core", version = "0.2.0" }

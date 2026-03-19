@@ -16,6 +16,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.2.0] - 2026-03-19
+
+### Added
+
+#### New Emitters
+- **Swift Emitter** (`typewriter-swift`) — generates `Codable` structs and enums.
+- **Kotlin Emitter** (`typewriter-kotlin`) — generates `data class`es and `sealed class`es with `kotlinx.serialization`.
+
+#### Core Features
+- **Comprehensive Enum Support**: All 5 emitters now fully support serde's `External`, `Internal`, `Adjacent`, and `Untagged` representation formats.
+- **Type Overrides**: Added `#[tw(type = "X")]` attribute parsing to force specific generated types per-field.
+- **Flatten Support**: Added support for `#[serde(flatten)]` by emitting `// @flatten` comments as a standardized signal in generated code.
+- **Testing Infrastructure**: Added strict `trybuild` compile-error tests to prevent misuse of `#[derive(TypeWriter)]` attributes. Over 15 new snapshot tests for advanced enum representations.
+
+---
+
 ## [0.1.3] - 2026-03-14
 
 ### Added
@@ -160,7 +176,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[unreleased]: https://github.com/aarambh-darshan/typewriter/compare/v0.1.3...HEAD
+[unreleased]: https://github.com/aarambh-darshan/typewriter/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/aarambh-darshan/typewriter/compare/v0.1.3...v0.2.0
 [0.1.3]: https://github.com/aarambh-darshan/typewriter/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/aarambh-darshan/typewriter/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/aarambh-darshan/typewriter/compare/v0.1.0...v0.1.1

@@ -18,6 +18,7 @@ fn test_simple_struct_snapshot() {
                 doc: Some("Unique identifier".to_string()),
                 skip: false,
                 flatten: false,
+                type_override: None,
             },
             FieldDef {
                 name: "email".to_string(),
@@ -27,6 +28,7 @@ fn test_simple_struct_snapshot() {
                 doc: None,
                 skip: false,
                 flatten: false,
+                type_override: None,
             },
             FieldDef {
                 name: "age".to_string(),
@@ -36,6 +38,7 @@ fn test_simple_struct_snapshot() {
                 doc: None,
                 skip: false,
                 flatten: false,
+                type_override: None,
             },
             FieldDef {
                 name: "role".to_string(),
@@ -45,6 +48,7 @@ fn test_simple_struct_snapshot() {
                 doc: None,
                 skip: false,
                 flatten: false,
+                type_override: None,
             },
             FieldDef {
                 name: "created_at".to_string(),
@@ -54,6 +58,7 @@ fn test_simple_struct_snapshot() {
                 doc: None,
                 skip: false,
                 flatten: false,
+                type_override: None,
             },
         ],
         doc: Some("User profile information".to_string()),
@@ -78,6 +83,7 @@ fn test_struct_with_collections_snapshot() {
                 doc: None,
                 skip: false,
                 flatten: false,
+                type_override: None,
             },
             FieldDef {
                 name: "metadata".to_string(),
@@ -90,6 +96,7 @@ fn test_struct_with_collections_snapshot() {
                 doc: None,
                 skip: false,
                 flatten: false,
+                type_override: None,
             },
             FieldDef {
                 name: "coordinates".to_string(),
@@ -102,6 +109,7 @@ fn test_struct_with_collections_snapshot() {
                 doc: None,
                 skip: false,
                 flatten: false,
+                type_override: None,
             },
         ],
         doc: None,
@@ -168,6 +176,7 @@ fn test_tagged_enum_snapshot() {
                     doc: None,
                     skip: false,
                     flatten: false,
+                type_override: None,
                 }]),
                 doc: None,
             },
@@ -183,6 +192,7 @@ fn test_tagged_enum_snapshot() {
                         doc: None,
                         skip: false,
                         flatten: false,
+                type_override: None,
                     },
                     FieldDef {
                         name: "code".to_string(),
@@ -192,6 +202,7 @@ fn test_tagged_enum_snapshot() {
                         doc: None,
                         skip: false,
                         flatten: false,
+                type_override: None,
                     },
                 ]),
                 doc: None,
@@ -221,6 +232,7 @@ fn test_readonly_struct_snapshot() {
                 doc: None,
                 skip: false,
                 flatten: false,
+                type_override: None,
             },
             FieldDef {
                 name: "value".to_string(),
@@ -230,12 +242,39 @@ fn test_readonly_struct_snapshot() {
                 doc: None,
                 skip: false,
                 flatten: false,
+                type_override: None,
             },
         ],
         doc: None,
         generics: vec![],
     });
 
+    let output = mapper.emit_type_def(&def);
+    insta::assert_snapshot!(output);
+}
+
+mod common;
+
+#[test]
+fn test_external_enum_snapshot() {
+    let mapper = TypeScriptMapper::new();
+    let def = common::external_enum_def();
+    let output = mapper.emit_type_def(&def);
+    insta::assert_snapshot!(output);
+}
+
+#[test]
+fn test_adjacent_enum_snapshot() {
+    let mapper = TypeScriptMapper::new();
+    let def = common::adjacent_enum_def();
+    let output = mapper.emit_type_def(&def);
+    insta::assert_snapshot!(output);
+}
+
+#[test]
+fn test_untagged_enum_snapshot() {
+    let mapper = TypeScriptMapper::new();
+    let def = common::untagged_enum_def();
     let output = mapper.emit_type_def(&def);
     insta::assert_snapshot!(output);
 }

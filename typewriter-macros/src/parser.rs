@@ -92,6 +92,7 @@ fn parse_fields(fields: &Fields) -> syn::Result<Vec<FieldDef>> {
                 let skip = has_serde_skip(&f.attrs) || has_tw_attr(&f.attrs, "skip");
                 let flatten = has_serde_flatten(&f.attrs);
                 let doc = extract_doc_comment(&f.attrs);
+                let type_override = get_tw_type_override(&f.attrs);
 
                 Ok(FieldDef {
                     name,
@@ -101,6 +102,7 @@ fn parse_fields(fields: &Fields) -> syn::Result<Vec<FieldDef>> {
                     doc,
                     skip,
                     flatten,
+                    type_override,
                 })
             })
             .collect(),
@@ -260,6 +262,7 @@ fn parse_variant(variant: &syn::Variant) -> syn::Result<VariantDef> {
                     let field_rename = get_rename(&f.attrs);
                     let skip = has_serde_skip(&f.attrs) || has_tw_attr(&f.attrs, "skip");
                     let fdoc = extract_doc_comment(&f.attrs);
+                    let type_override = get_tw_type_override(&f.attrs);
 
                     FieldDef {
                         name: fname,
@@ -269,6 +272,7 @@ fn parse_variant(variant: &syn::Variant) -> syn::Result<VariantDef> {
                         doc: fdoc,
                         skip,
                         flatten: false,
+                        type_override,
                     }
                 })
                 .collect();
@@ -429,6 +433,27 @@ fn has_tw_attr(attrs: &[Attribute], attr_name: &str) -> bool {
         }
     }
     false
+}
+
+/// Get the type override from `#[tw(type = "X")]`.
+fn get_tw_type_override(attrs: &[Attribute]) -> Option<String> {
+    for attr in attrs {
+        if attr.path().is_ident("tw") {
+            let mut type_val = None;
+            let _ = attr.parse_nested_meta(|meta| {
+                if meta.path.is_ident("type") {
+                    let value = meta.value()?;
+                    let s: syn::LitStr = value.parse()?;
+                    type_val = Some(s.value());
+                }
+                Ok(())
+            });
+            if type_val.is_some() {
+                return type_val;
+            }
+        }
+    }
+    None
 }
 
 /// Extract doc comment from attributes (`///` comments become `#[doc = "..."]`).

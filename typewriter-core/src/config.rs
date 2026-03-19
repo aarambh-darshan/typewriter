@@ -15,6 +15,10 @@ pub struct TypewriterConfig {
     pub python: Option<PythonConfig>,
     /// Go emitter configuration
     pub go: Option<GoConfig>,
+    /// Swift emitter configuration
+    pub swift: Option<SwiftConfig>,
+    /// Kotlin emitter configuration
+    pub kotlin: Option<KotlinConfig>,
 }
 
 /// TypeScript-specific configuration.
@@ -47,6 +51,26 @@ pub struct GoConfig {
     /// Output directory for generated `.go` files
     pub output_dir: Option<String>,
     /// File naming style: `snake_case` (default), `kebab-case`, `PascalCase`
+    pub file_style: Option<String>,
+    /// Package name for generated files (default: "types")
+    pub package_name: Option<String>,
+}
+
+/// Swift-specific configuration.
+#[derive(Debug, Clone, Deserialize)]
+pub struct SwiftConfig {
+    /// Output directory for generated `.swift` files
+    pub output_dir: Option<String>,
+    /// File naming style: `PascalCase` (default), `snake_case`, `kebab-case`
+    pub file_style: Option<String>,
+}
+
+/// Kotlin-specific configuration.
+#[derive(Debug, Clone, Deserialize)]
+pub struct KotlinConfig {
+    /// Output directory for generated `.kt` files
+    pub output_dir: Option<String>,
+    /// File naming style: `PascalCase` (default), `snake_case`, `kebab-case`
     pub file_style: Option<String>,
     /// Package name for generated files (default: "types")
     pub package_name: Option<String>,
@@ -142,6 +166,46 @@ impl TypewriterConfig {
             .and_then(|go| go.package_name.as_deref())
             .unwrap_or("types")
     }
+
+    /// Get the Swift output directory, with a default fallback.
+    pub fn swift_output_dir(&self) -> &str {
+        self.swift
+            .as_ref()
+            .and_then(|s| s.output_dir.as_deref())
+            .unwrap_or("./generated/swift")
+    }
+
+    /// Get the Swift file naming style.
+    pub fn swift_file_style(&self) -> Option<crate::naming::FileStyle> {
+        self.swift
+            .as_ref()
+            .and_then(|s| s.file_style.as_deref())
+            .and_then(crate::naming::FileStyle::from_str)
+    }
+
+    /// Get the Kotlin output directory, with a default fallback.
+    pub fn kotlin_output_dir(&self) -> &str {
+        self.kotlin
+            .as_ref()
+            .and_then(|k| k.output_dir.as_deref())
+            .unwrap_or("./generated/kotlin")
+    }
+
+    /// Get the Kotlin file naming style.
+    pub fn kotlin_file_style(&self) -> Option<crate::naming::FileStyle> {
+        self.kotlin
+            .as_ref()
+            .and_then(|k| k.file_style.as_deref())
+            .and_then(crate::naming::FileStyle::from_str)
+    }
+
+    /// Get the Kotlin package name.
+    pub fn kotlin_package_name(&self) -> &str {
+        self.kotlin
+            .as_ref()
+            .and_then(|k| k.package_name.as_deref())
+            .unwrap_or("types")
+    }
 }
 
 #[cfg(test)]
@@ -154,10 +218,15 @@ mod tests {
         assert!(config.typescript.is_none());
         assert!(config.python.is_none());
         assert!(config.go.is_none());
+        assert!(config.swift.is_none());
+        assert!(config.kotlin.is_none());
         assert_eq!(config.ts_output_dir(), "./generated/typescript");
         assert_eq!(config.py_output_dir(), "./generated/python");
         assert_eq!(config.go_output_dir(), "./generated/go");
         assert_eq!(config.go_package_name(), "types");
+        assert_eq!(config.swift_output_dir(), "./generated/swift");
+        assert_eq!(config.kotlin_output_dir(), "./generated/kotlin");
+        assert_eq!(config.kotlin_package_name(), "types");
         assert!(!config.ts_readonly());
     }
 

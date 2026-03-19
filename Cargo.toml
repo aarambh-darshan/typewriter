@@ -5,6 +5,8 @@ members = [
     "typewriter-typescript",
     "typewriter-python",
     "typewriter-go",
+    "typewriter-swift",
+    "typewriter-kotlin",
     "typewriter",
     "typewriter-test",
     "example",

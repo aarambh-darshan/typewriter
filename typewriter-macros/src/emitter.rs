@@ -42,6 +42,26 @@ pub fn emit_all(type_def: &TypeDef, targets: &[Language], config: &TypewriterCon
                 let output_dir = base_path.join(config.go_output_dir());
                 emit_single(&mapper, type_def, &output_dir);
             }
+            #[cfg(feature = "swift")]
+            Language::Swift => {
+                let mut mapper = typewriter_swift::SwiftMapper::new();
+                if let Some(style) = config.swift_file_style() {
+                    mapper = mapper.with_file_style(style);
+                }
+                let output_dir = base_path.join(config.swift_output_dir());
+                emit_single(&mapper, type_def, &output_dir);
+            }
+            #[cfg(feature = "kotlin")]
+            Language::Kotlin => {
+                let mut mapper = typewriter_kotlin::KotlinMapper::new()
+                    .with_package_name(config.kotlin_package_name());
+                if let Some(style) = config.kotlin_file_style() {
+                    mapper = mapper.with_file_style(style);
+                }
+                let output_dir = base_path.join(config.kotlin_output_dir());
+                emit_single(&mapper, type_def, &output_dir);
+            }
+            #[allow(unreachable_patterns)]
             _ => {
                 // Language not enabled via feature flags — silently skip
                 // In a future version, this could emit a compile warning

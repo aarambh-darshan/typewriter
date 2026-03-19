@@ -67,6 +67,8 @@ pub struct FieldDef {
     pub skip: bool,
     /// Whether this field is flattened (`#[serde(flatten)]`)
     pub flatten: bool,
+    /// Override the generated type string via `#[tw(type = "X")]`
+    pub type_override: Option<String>,
 }
 
 /// A complete struct definition in the IR.
@@ -305,6 +307,7 @@ mod tests {
             doc: Some("User email address".to_string()),
             skip: false,
             flatten: false,
+            type_override: None,
         };
         assert_eq!(field.name, "email");
         assert!(!field.optional);

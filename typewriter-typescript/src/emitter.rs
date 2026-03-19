@@ -36,9 +36,13 @@ pub fn render_interface(mapper: &TypeScriptMapper, def: &StructDef) -> String {
         }
 
         let field_name = field.rename.as_deref().unwrap_or(&field.name);
-        let type_str = mapper.map_type(&field.ty);
+        let type_str = field.type_override.clone().unwrap_or_else(|| mapper.map_type(&field.ty));
 
         let readonly_prefix = if mapper.readonly { "readonly " } else { "" };
+        
+        if field.flatten {
+            output.push_str("  // @flatten\n");
+        }
 
         if field.optional {
             output.push_str(&format!(
@@ -60,7 +64,7 @@ pub fn render_interface(mapper: &TypeScriptMapper, def: &StructDef) -> String {
 /// Render a Rust enum as TypeScript types.
 ///
 /// - Simple (all-unit) enums → string literal union: `type Role = "Admin" | "User" | "Guest"`
-/// - Data-carrying enums → discriminated union types
+/// - Data-carrying enums → discriminated union types based on `EnumRepr`
 pub fn render_enum(mapper: &TypeScriptMapper, def: &EnumDef) -> String {
     let all_unit = def
         .variants
@@ -106,13 +110,11 @@ fn render_string_enum(def: &EnumDef) -> String {
 
 /// Render a data-carrying enum as a discriminated union.
 ///
-/// For internally tagged enums (`#[serde(tag = "type")]`):
-/// ```typescript
-/// export type PaymentStatus =
-///   | { type: "pending" }
-///   | { type: "completed"; transaction_id: string }
-///   | { type: "failed"; reason: string; code: number };
-/// ```
+/// Dispatches based on `EnumRepr`:
+/// - **External**: `{ "VariantName": { ...data } }`
+/// - **Internal**: `{ type: "variant", ...data }`
+/// - **Adjacent**: `{ t: "variant", c: { ...data } }`
+/// - **Untagged**: `{ ...data }` — no discriminator
 fn render_discriminated_union(mapper: &TypeScriptMapper, def: &EnumDef) -> String {
     let mut output = String::new();
 
@@ -120,96 +122,10 @@ fn render_discriminated_union(mapper: &TypeScriptMapper, def: &EnumDef) -> Strin
         output.push_str(&format!("/**\n * {}\n */\n", doc.trim()));
     }
 
-    let tag_field = match &def.representation {
-        EnumRepr::Internal { tag } => tag.as_str(),
-        EnumRepr::Adjacent { tag, .. } => tag.as_str(),
-        _ => "type",
-    };
-
     let variants: Vec<String> = def
         .variants
         .iter()
-        .map(|v| {
-            let variant_name = v.rename.as_deref().unwrap_or(&v.name);
-
-            match &v.kind {
-                VariantKind::Unit => {
-                    format!("{{ {}: \"{}\" }}", tag_field, variant_name)
-                }
-                VariantKind::Struct(fields) => {
-                    let field_strs: Vec<String> = fields
-                        .iter()
-                        .filter(|f| !f.skip)
-                        .map(|f| {
-                            let fname = f.rename.as_deref().unwrap_or(&f.name);
-                            let ftype = mapper.map_type(&f.ty);
-                            if f.optional {
-                                format!("{}?: {}", fname, ftype)
-                            } else {
-                                format!("{}: {}", fname, ftype)
-                            }
-                        })
-                        .collect();
-
-                    match &def.representation {
-                        EnumRepr::Adjacent { tag, content } => {
-                            format!(
-                                "{{ {}: \"{}\"; {}: {{ {} }} }}",
-                                tag,
-                                variant_name,
-                                content,
-                                field_strs.join("; ")
-                            )
-                        }
-                        _ => {
-                            format!(
-                                "{{ {}: \"{}\"; {} }}",
-                                tag_field,
-                                variant_name,
-                                field_strs.join("; ")
-                            )
-                        }
-                    }
-                }
-                VariantKind::Tuple(types) => {
-                    let type_strs: Vec<String> = types.iter().map(|t| mapper.map_type(t)).collect();
-
-                    match &def.representation {
-                        EnumRepr::Adjacent { tag, content } => {
-                            if types.len() == 1 {
-                                format!(
-                                    "{{ {}: \"{}\"; {}: {} }}",
-                                    tag, variant_name, content, type_strs[0]
-                                )
-                            } else {
-                                format!(
-                                    "{{ {}: \"{}\"; {}: [{}] }}",
-                                    tag,
-                                    variant_name,
-                                    content,
-                                    type_strs.join(", ")
-                                )
-                            }
-                        }
-                        _ => {
-                            if types.len() == 1 {
-                                format!(
-                                    "{{ {}: \"{}\"; value: {} }}",
-                                    tag_field, variant_name, type_strs[0]
-                                )
-                            } else {
-                                format!(
-                                    "{{ {}: \"{}\"; value: [{}] }}",
-                                    tag_field,
-                                    variant_name,
-                                    type_strs.join(", ")
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        })
+        .map(|v| render_variant_type(mapper, def, v))
         .collect();
 
     output.push_str(&format!(
@@ -219,4 +135,166 @@ fn render_discriminated_union(mapper: &TypeScriptMapper, def: &EnumDef) -> Strin
     ));
 
     output
+}
+
+/// Render a single variant based on the enum representation.
+fn render_variant_type(mapper: &TypeScriptMapper, def: &EnumDef, v: &VariantDef) -> String {
+    let variant_name = v.rename.as_deref().unwrap_or(&v.name);
+
+    match &def.representation {
+        EnumRepr::External => render_variant_external(mapper, v, variant_name),
+        EnumRepr::Internal { tag } => render_variant_internal(mapper, v, variant_name, tag),
+        EnumRepr::Adjacent { tag, content } => {
+            render_variant_adjacent(mapper, v, variant_name, tag, content)
+        }
+        EnumRepr::Untagged => render_variant_untagged(mapper, v),
+    }
+}
+
+/// External: `{ "VariantName": { ...data } }` or `{ "VariantName": value }`
+fn render_variant_external(
+    mapper: &TypeScriptMapper,
+    v: &VariantDef,
+    variant_name: &str,
+) -> String {
+    match &v.kind {
+        VariantKind::Unit => {
+            format!("{{ \"{}\": {{}} }}", variant_name)
+        }
+        VariantKind::Struct(fields) => {
+            let field_strs = render_field_strs(mapper, fields);
+            format!("{{ \"{}\": {{ {} }} }}", variant_name, field_strs.join("; "))
+        }
+        VariantKind::Tuple(types) => {
+            let type_strs: Vec<String> = types.iter().map(|t| mapper.map_type(t)).collect();
+            if types.len() == 1 {
+                format!("{{ \"{}\": {} }}", variant_name, type_strs[0])
+            } else {
+                format!("{{ \"{}\": [{}] }}", variant_name, type_strs.join(", "))
+            }
+        }
+    }
+}
+
+/// Internal: `{ tag: "variant", ...data }` — data fields are inlined alongside tag
+fn render_variant_internal(
+    mapper: &TypeScriptMapper,
+    v: &VariantDef,
+    variant_name: &str,
+    tag: &str,
+) -> String {
+    match &v.kind {
+        VariantKind::Unit => {
+            format!("{{ {}: \"{}\" }}", tag, variant_name)
+        }
+        VariantKind::Struct(fields) => {
+            let field_strs = render_field_strs(mapper, fields);
+            format!(
+                "{{ {}: \"{}\"; {} }}",
+                tag,
+                variant_name,
+                field_strs.join("; ")
+            )
+        }
+        VariantKind::Tuple(types) => {
+            let type_strs: Vec<String> = types.iter().map(|t| mapper.map_type(t)).collect();
+            if types.len() == 1 {
+                format!(
+                    "{{ {}: \"{}\"; value: {} }}",
+                    tag, variant_name, type_strs[0]
+                )
+            } else {
+                format!(
+                    "{{ {}: \"{}\"; value: [{}] }}",
+                    tag,
+                    variant_name,
+                    type_strs.join(", ")
+                )
+            }
+        }
+    }
+}
+
+/// Adjacent: `{ tag: "variant", content: { ...data } }`
+fn render_variant_adjacent(
+    mapper: &TypeScriptMapper,
+    v: &VariantDef,
+    variant_name: &str,
+    tag: &str,
+    content: &str,
+) -> String {
+    match &v.kind {
+        VariantKind::Unit => {
+            format!("{{ {}: \"{}\" }}", tag, variant_name)
+        }
+        VariantKind::Struct(fields) => {
+            let field_strs = render_field_strs(mapper, fields);
+            format!(
+                "{{ {}: \"{}\"; {}: {{ {} }} }}",
+                tag,
+                variant_name,
+                content,
+                field_strs.join("; ")
+            )
+        }
+        VariantKind::Tuple(types) => {
+            let type_strs: Vec<String> = types.iter().map(|t| mapper.map_type(t)).collect();
+            if types.len() == 1 {
+                format!(
+                    "{{ {}: \"{}\"; {}: {} }}",
+                    tag, variant_name, content, type_strs[0]
+                )
+            } else {
+                format!(
+                    "{{ {}: \"{}\"; {}: [{}] }}",
+                    tag,
+                    variant_name,
+                    content,
+                    type_strs.join(", ")
+                )
+            }
+        }
+    }
+}
+
+/// Untagged: no discriminator — just the data shape
+fn render_variant_untagged(mapper: &TypeScriptMapper, v: &VariantDef) -> String {
+    match &v.kind {
+        VariantKind::Unit => "{}".to_string(),
+        VariantKind::Struct(fields) => {
+            let field_strs = render_field_strs(mapper, fields);
+            format!("{{ {} }}", field_strs.join("; "))
+        }
+        VariantKind::Tuple(types) => {
+            let type_strs: Vec<String> = types.iter().map(|t| mapper.map_type(t)).collect();
+            if types.len() == 1 {
+                type_strs[0].clone()
+            } else {
+                format!("[{}]", type_strs.join(", "))
+            }
+        }
+    }
+}
+
+/// Helper to render struct fields as `name: type` strings.
+fn render_field_strs(mapper: &TypeScriptMapper, fields: &[FieldDef]) -> Vec<String> {
+    fields
+        .iter()
+        .filter(|f| !f.skip)
+        .map(|f| {
+            let fname = f.rename.as_deref().unwrap_or(&f.name);
+            let ftype = f.type_override.clone().unwrap_or_else(|| mapper.map_type(&f.ty));
+            
+            let mut field_decl = String::new();
+            if f.flatten {
+                field_decl.push_str("  // @flatten\n  ");
+            }
+            if f.optional {
+                field_decl.push_str(&format!("{}?: {}", fname, ftype));
+            } else {
+                field_decl.push_str(&format!("{}: {}", fname, ftype));
+            }
+            field_decl
+        })
+        .collect()
 }
