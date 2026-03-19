@@ -1,6 +1,6 @@
 [package]
 name = "typewriter-test"
-version = "0.1.3"
+version = "0.2.0"
 edition = "2021"
 publish = false
 
@@ -9,4 +9,8 @@ typewriter-core = { path = "../typewriter-core" }
 typewriter-typescript = { path = "../typewriter-typescript" }
 typewriter-python = { path = "../typewriter-python" }
 typewriter-go = { path = "../typewriter-go" }
+typewriter-swift = { path = "../typewriter-swift" }
+typewriter-kotlin = { path = "../typewriter-kotlin" }
 insta = { workspace = true }
+trybuild = "1"
+typebridge = { path = "../typewriter", features = ["typescript", "python"] }

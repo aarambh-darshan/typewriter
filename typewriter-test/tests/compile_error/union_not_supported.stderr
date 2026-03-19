@@ -1,0 +1,5 @@
+error: typewriter: unions are not supported. Use structs or enums.
+ --> tests/compile_error/union_not_supported.rs:5:11
+  |
+5 | pub union MyUnion {
+  |           ^^^^^^^

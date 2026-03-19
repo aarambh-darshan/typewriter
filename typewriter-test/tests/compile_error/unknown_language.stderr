@@ -1,0 +1,5 @@
+error: typewriter: unknown language 'ruby'. Supported: typescript, python, go, swift, kotlin
+ --> tests/compile_error/unknown_language.rs:4:11
+  |
+4 | #[sync_to(ruby)]
+  |           ^^^^

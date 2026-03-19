@@ -25,16 +25,16 @@
 > **Goal:** All 5 language emitters. Full enum support. Generics. Feature-complete proc macro API.
 
 - [x] Go emitter: structs + interfaces (`*T` for `Option<T>`, tags)
-- [ ] Swift emitter: `Codable` structs + enums + `CodingKeys`
-- [ ] Kotlin emitter: data class + `kotlinx.serialization` + `@SerialName`
-- [ ] Enum support: all 4 serde representations (external, internal, adjacent, untagged)
+- [x] Swift emitter: `Codable` structs + enums + `CodingKeys`
+- [x] Kotlin emitter: data class + `kotlinx.serialization` + `@SerialName`
+- [x] Enum support: all 4 serde representations (external, internal, adjacent, untagged)
 - [x] Generic type support: `MyType<T>`, `Vec<MyType<T>>` — full nesting *(v0.1.2)*
 - [x] Cross-file import generation: auto `import type` (TS) / `from .x import X` (Python) *(v0.1.2)*
-- [ ] Per-field attributes: `#[tw(rename)]`, `#[tw(skip)]`, `#[tw(type)]`
-- [ ] `#[serde(flatten)]` support
-- [ ] Snapshot test suite via `insta` for all 5 languages
-- [ ] Compile error tests via `trybuild` with clear error messages
-- [ ] Publish `typewriter v0.2.0`
+- [x] Per-field attributes: `#[tw(rename)]`, `#[tw(skip)]`, `#[tw(type)]`
+- [x] `#[serde(flatten)]` support
+- [x] Snapshot test suite via `insta` for all 5 languages
+- [x] Compile error tests via `trybuild` with clear error messages
+- [x] Publish `typewriter v0.2.0`
 
 ---
 

@@ -44,10 +44,14 @@ pub fn render_model(mapper: &PythonMapper, def: &StructDef) -> String {
     } else {
         for field in visible_fields {
             let field_name = field.rename.as_deref().unwrap_or(&field.name);
-            let type_str = mapper.map_type(&field.ty);
+            let type_str = field.type_override.clone().unwrap_or_else(|| mapper.map_type(&field.ty));
 
             if let Some(doc) = &field.doc {
                 output.push_str(&format!("    # {}\n", doc.trim()));
+            }
+            
+            if field.flatten {
+                output.push_str("    # @flatten\n");
             }
 
             if field.optional {
@@ -115,44 +119,33 @@ fn render_string_enum(def: &EnumDef) -> String {
 
 /// Render a data-carrying enum as a Union of BaseModel subclasses.
 ///
-/// For internally tagged enums (`#[serde(tag = "type")]`):
-/// ```python
-/// class Pending(BaseModel):
-///     type: Literal["pending"]
-///
-/// class Completed(BaseModel):
-///     type: Literal["completed"]
-///     transaction_id: str
-///
-/// PaymentStatus = Union[Pending, Completed]
-/// ```
+/// Dispatches on `EnumRepr` to produce the correct discrimination strategy.
 fn render_union_enum(mapper: &PythonMapper, def: &EnumDef) -> String {
+    match &def.representation {
+        EnumRepr::Internal { tag } => render_union_internal(mapper, def, tag),
+        EnumRepr::External => render_union_external(mapper, def),
+        EnumRepr::Adjacent { tag, content } => render_union_adjacent(mapper, def, tag, content),
+        EnumRepr::Untagged => render_union_untagged(mapper, def),
+    }
+}
+
+/// Internal: `{ "type": "variant", ...data }` — tag field inlined in each subclass.
+fn render_union_internal(mapper: &PythonMapper, def: &EnumDef, tag: &str) -> String {
     let mut output = String::new();
 
-    // Imports
     let mut imports = BTreeSet::new();
     imports.insert("from __future__ import annotations".to_string());
     imports.insert("from pydantic import BaseModel".to_string());
     imports.insert("from typing import Literal, Union".to_string());
 
-    // Collect field-level imports
     for variant in &def.variants {
-        if let VariantKind::Struct(fields) = &variant.kind {
-            for field in fields {
-                collect_type_imports(&field.ty, &mut imports);
-            }
-        }
+        collect_variant_imports(&variant.kind, &mut imports);
     }
 
     for import in &imports {
         output.push_str(import);
         output.push('\n');
     }
-
-    let tag_field = match &def.representation {
-        EnumRepr::Internal { tag } => tag.as_str(),
-        _ => "type",
-    };
 
     let mut variant_names = Vec::new();
 
@@ -164,22 +157,232 @@ fn render_union_enum(mapper: &PythonMapper, def: &EnumDef) -> String {
         output.push_str(&format!("\n\nclass {}(BaseModel):\n", class_name));
         output.push_str(&format!(
             "    {}: Literal[\"{}\"] = \"{}\"\n",
-            tag_field, display_name, display_name
+            tag, display_name, display_name
         ));
 
+        render_variant_fields(&mut output, mapper, &variant.kind);
+    }
+
+    output.push_str(&format!(
+        "\n\n{} = Union[{}]\n",
+        def.name,
+        variant_names.join(", ")
+    ));
+
+    output
+}
+
+/// External: `{ "VariantName": { ...data } }` — variant name is the key.
+fn render_union_external(mapper: &PythonMapper, def: &EnumDef) -> String {
+    let mut output = String::new();
+
+    let mut imports = BTreeSet::new();
+    imports.insert("from __future__ import annotations".to_string());
+    imports.insert("from pydantic import BaseModel".to_string());
+    imports.insert("from typing import Union".to_string());
+
+    for variant in &def.variants {
+        collect_variant_imports(&variant.kind, &mut imports);
+    }
+
+    for import in &imports {
+        output.push_str(import);
+        output.push('\n');
+    }
+
+    // Each variant gets an inner data class + a wrapper with the variant name as key
+    let mut wrapper_names = Vec::new();
+
+    for variant in &def.variants {
+        let display_name = variant.rename.as_deref().unwrap_or(&variant.name);
+        let data_class = format!("{}Data", variant.name);
+        let wrapper_class = &variant.name;
+        wrapper_names.push(wrapper_class.clone());
+
+        // Inner data class
+        output.push_str(&format!("\n\nclass {}(BaseModel):\n", data_class));
         match &variant.kind {
-            VariantKind::Unit => {}
+            VariantKind::Unit => {
+                output.push_str("    pass\n");
+            }
             VariantKind::Struct(fields) => {
-                for field in fields {
-                    if field.skip {
-                        continue;
+                let visible: Vec<&FieldDef> = fields.iter().filter(|f| !f.skip).collect();
+                if visible.is_empty() {
+                    output.push_str("    pass\n");
+                } else {
+                    for field in visible {
+                        let fname = field.rename.as_deref().unwrap_or(&field.name);
+                        let ftype = field.type_override.clone().unwrap_or_else(|| mapper.map_type(&field.ty));
+                        if field.flatten {
+                            output.push_str("    # @flatten\n");
+                        }
+                        if field.optional {
+                            output.push_str(&format!("    {}: {} = None\n", fname, ftype));
+                        } else {
+                            output.push_str(&format!("    {}: {}\n", fname, ftype));
+                        }
                     }
-                    let fname = field.rename.as_deref().unwrap_or(&field.name);
-                    let ftype = mapper.map_type(&field.ty);
-                    if field.optional {
-                        output.push_str(&format!("    {}: {} = None\n", fname, ftype));
+                }
+            }
+            VariantKind::Tuple(types) => {
+                for (i, ty) in types.iter().enumerate() {
+                    let ftype = mapper.map_type(ty);
+                    output.push_str(&format!("    value_{}: {}\n", i, ftype));
+                }
+            }
+        }
+
+        // Wrapper class with variant name as field
+        output.push_str(&format!("\n\nclass {}(BaseModel):\n", wrapper_class));
+        output.push_str(&format!("    {}: {}\n", display_name, data_class));
+    }
+
+    output.push_str(&format!(
+        "\n\n{} = Union[{}]\n",
+        def.name,
+        wrapper_names.join(", ")
+    ));
+
+    output
+}
+
+/// Adjacent: `{ "t": "variant", "c": { ...data } }` — tag + content fields.
+fn render_union_adjacent(
+    mapper: &PythonMapper,
+    def: &EnumDef,
+    tag: &str,
+    content: &str,
+) -> String {
+    let mut output = String::new();
+
+    let mut imports = BTreeSet::new();
+    imports.insert("from __future__ import annotations".to_string());
+    imports.insert("from pydantic import BaseModel".to_string());
+    imports.insert("from typing import Literal, Union".to_string());
+
+    for variant in &def.variants {
+        collect_variant_imports(&variant.kind, &mut imports);
+    }
+
+    for import in &imports {
+        output.push_str(import);
+        output.push('\n');
+    }
+
+    let mut variant_names = Vec::new();
+
+    for variant in &def.variants {
+        let display_name = variant.rename.as_deref().unwrap_or(&variant.name);
+        let class_name = &variant.name;
+        variant_names.push(class_name.clone());
+
+        // Content data class for struct/tuple variants
+        let has_content = !matches!(&variant.kind, VariantKind::Unit);
+
+        if has_content {
+            let content_class = format!("{}Content", variant.name);
+            output.push_str(&format!("\n\nclass {}(BaseModel):\n", content_class));
+            match &variant.kind {
+                VariantKind::Struct(fields) => {
+                    let visible: Vec<&FieldDef> = fields.iter().filter(|f| !f.skip).collect();
+                    if visible.is_empty() {
+                        output.push_str("    pass\n");
                     } else {
-                        output.push_str(&format!("    {}: {}\n", fname, ftype));
+                        for field in visible {
+                            let fname = field.rename.as_deref().unwrap_or(&field.name);
+                            let ftype = field.type_override.clone().unwrap_or_else(|| mapper.map_type(&field.ty));
+                            if field.flatten {
+                                output.push_str("    # @flatten\n");
+                            }
+                            if field.optional {
+                                output.push_str(&format!("    {}: {} = None\n", fname, ftype));
+                            } else {
+                                output.push_str(&format!("    {}: {}\n", fname, ftype));
+                            }
+                        }
+                    }
+                }
+                VariantKind::Tuple(types) => {
+                    for (i, ty) in types.iter().enumerate() {
+                        let ftype = mapper.map_type(ty);
+                        output.push_str(&format!("    value_{}: {}\n", i, ftype));
+                    }
+                }
+                VariantKind::Unit => {} // already handled above
+            }
+
+            // Wrapper with tag + content
+            output.push_str(&format!("\n\nclass {}(BaseModel):\n", class_name));
+            output.push_str(&format!(
+                "    {}: Literal[\"{}\"] = \"{}\"\n",
+                tag, display_name, display_name
+            ));
+            output.push_str(&format!("    {}: {}\n", content, content_class));
+        } else {
+            // Unit variant — just tag, no content
+            output.push_str(&format!("\n\nclass {}(BaseModel):\n", class_name));
+            output.push_str(&format!(
+                "    {}: Literal[\"{}\"] = \"{}\"\n",
+                tag, display_name, display_name
+            ));
+        }
+    }
+
+    output.push_str(&format!(
+        "\n\n{} = Union[{}]\n",
+        def.name,
+        variant_names.join(", ")
+    ));
+
+    output
+}
+
+/// Untagged: no discriminator — just the data shapes combined into a Union.
+fn render_union_untagged(mapper: &PythonMapper, def: &EnumDef) -> String {
+    let mut output = String::new();
+
+    let mut imports = BTreeSet::new();
+    imports.insert("from __future__ import annotations".to_string());
+    imports.insert("from pydantic import BaseModel".to_string());
+    imports.insert("from typing import Union".to_string());
+
+    for variant in &def.variants {
+        collect_variant_imports(&variant.kind, &mut imports);
+    }
+
+    for import in &imports {
+        output.push_str(import);
+        output.push('\n');
+    }
+
+    let mut variant_names = Vec::new();
+
+    for variant in &def.variants {
+        let class_name = &variant.name;
+        variant_names.push(class_name.clone());
+
+        output.push_str(&format!("\n\nclass {}(BaseModel):\n", class_name));
+
+        match &variant.kind {
+            VariantKind::Unit => {
+                output.push_str("    pass\n");
+            }
+            VariantKind::Struct(fields) => {
+                let visible: Vec<&FieldDef> = fields.iter().filter(|f| !f.skip).collect();
+                if visible.is_empty() {
+                    output.push_str("    pass\n");
+                } else {
+                    for field in visible {
+                        let fname = field.rename.as_deref().unwrap_or(&field.name);
+                        let ftype = field.type_override.clone().unwrap_or_else(|| mapper.map_type(&field.ty));
+                        if field.flatten {
+                            output.push_str("    # @flatten\n");
+                        }
+                        if field.optional {
+                            output.push_str(&format!("    {}: {} = None\n", fname, ftype));
+                        } else {
+                            output.push_str(&format!("    {}: {}\n", fname, ftype));
+                        }
                     }
                 }
             }
@@ -192,7 +395,6 @@ fn render_union_enum(mapper: &PythonMapper, def: &EnumDef) -> String {
         }
     }
 
-    // Union type alias
     output.push_str(&format!(
         "\n\n{} = Union[{}]\n",
         def.name,
@@ -200,6 +402,53 @@ fn render_union_enum(mapper: &PythonMapper, def: &EnumDef) -> String {
     ));
 
     output
+}
+
+/// Helper: render variant fields into the output for struct/tuple variants.
+fn render_variant_fields(output: &mut String, mapper: &PythonMapper, kind: &VariantKind) {
+    match kind {
+        VariantKind::Unit => {}
+        VariantKind::Struct(fields) => {
+            for field in fields {
+                if field.skip {
+                    continue;
+                }
+                let fname = field.rename.as_deref().unwrap_or(&field.name);
+                let ftype = field.type_override.clone().unwrap_or_else(|| mapper.map_type(&field.ty));
+                if field.flatten {
+                    output.push_str("    # @flatten\n");
+                }
+                if field.optional {
+                    output.push_str(&format!("    {}: {} = None\n", fname, ftype));
+                } else {
+                    output.push_str(&format!("    {}: {}\n", fname, ftype));
+                }
+            }
+        }
+        VariantKind::Tuple(types) => {
+            for (i, ty) in types.iter().enumerate() {
+                let ftype = mapper.map_type(ty);
+                output.push_str(&format!("    value_{}: {}\n", i, ftype));
+            }
+        }
+    }
+}
+
+/// Helper: collect imports from a variant's kind.
+fn collect_variant_imports(kind: &VariantKind, imports: &mut BTreeSet<String>) {
+    match kind {
+        VariantKind::Struct(fields) => {
+            for field in fields {
+                collect_type_imports(&field.ty, imports);
+            }
+        }
+        VariantKind::Tuple(types) => {
+            for ty in types {
+                collect_type_imports(ty, imports);
+            }
+        }
+        VariantKind::Unit => {}
+    }
 }
 
 /// Collect Python import statements needed for a struct's field types.

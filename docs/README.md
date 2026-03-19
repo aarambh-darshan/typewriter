@@ -16,6 +16,8 @@
 | [TypeScript Emitter](typescript-emitter.md) | Interfaces, discriminated unions, readonly, file styles |
 | [Python Emitter](python-emitter.md) | Pydantic v2 BaseModel, Enum, Union with Literal |
 | [Go Emitter](go-emitter.md) | Structs, Interfaces, custom UnmarshalJSON |
+| [Swift Emitter](swift-emitter.md) | Codable structs and enums, CodingKeys |
+| [Kotlin Emitter](kotlin-emitter.md) | kotlinx.serialization data classes and sealed classes |
 
 ---
 

@@ -1,6 +1,6 @@
 [package]
 name = "typewriter-go"
-version = "0.1.3"
+version = "0.2.0"
 edition = "2021"
 description = "Go (Golang) emitter for the typewriter type sync SDK"
 license = "Apache-2.0"
@@ -11,4 +11,4 @@ categories = ["development-tools::build-utils"]
 authors = ["Darshan Vichhi <aarambhdarshan@gmail.com>"]
 
 [dependencies]
-typewriter-core = { path = "../typewriter-core", version = "0.1.3" }
+typewriter-core = { path = "../typewriter-core", version = "0.2.0" }

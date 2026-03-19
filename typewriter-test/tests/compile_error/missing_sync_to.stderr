@@ -1,0 +1,5 @@
+error: typewriter: #[sync_to(...)] attribute is required. Example: #[sync_to(typescript, python)]
+ --> tests/compile_error/missing_sync_to.rs:4:12
+  |
+4 | pub struct NoSyncTo {
+  |            ^^^^^^^^
