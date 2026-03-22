@@ -3,10 +3,8 @@
 //! Proc macro crate for the typewriter type sync SDK.
 //! Provides `#[derive(TypeWriter)]` with `#[sync_to(...)]` and `#[tw(...)]` attributes.
 
-mod emitter;
-mod parser;
-
 use proc_macro::TokenStream;
+use std::path::PathBuf;
 
 /// Derive macro for typewriter type synchronization.
 ///
@@ -37,11 +35,8 @@ pub fn derive_typewriter(input: TokenStream) -> TokenStream {
 }
 
 fn typewriter_impl(input: &syn::DeriveInput) -> syn::Result<()> {
-    // 1. Parse the derive input into our IR
-    let type_def = parser::parse_type_def(input)?;
-
-    // 2. Extract target languages from #[sync_to(...)]
-    let targets = parser::parse_sync_to_attr(input)?;
+    let type_def = typewriter_engine::parser::parse_type_def(input)?;
+    let targets = typewriter_engine::parser::parse_sync_to_attr(input)?;
 
     if targets.is_empty() {
         return Err(syn::Error::new_spanned(
@@ -51,28 +46,38 @@ fn typewriter_impl(input: &syn::DeriveInput) -> syn::Result<()> {
         ));
     }
 
-    // 3. Load config (typewriter.toml) - look upwards from CARGO_MANIFEST_DIR
-    let config = load_config();
+    let manifest_dir = std::env::var("CARGO_MANIFEST_DIR").unwrap_or_else(|_| ".".to_string());
+    let manifest_dir = PathBuf::from(manifest_dir);
+    let project_root = typewriter_engine::project::discover_macro_root(&manifest_dir);
+    let config = typewriter_engine::project::load_config_or_default(&project_root);
 
-    // 4. Emit to each target language
-    emitter::emit_all(&type_def, &targets, &config);
+    let spec = typewriter_engine::TypeSpec {
+        type_def,
+        targets,
+        source_path: manifest_dir.join("<proc-macro>"),
+    };
+
+    let files =
+        match typewriter_engine::emit::render_specs(&[spec], &project_root, &config, &[], true) {
+            Ok(files) => files,
+            Err(err) => {
+                eprintln!("typewriter: generation failed for {}: {}", input.ident, err);
+                return Ok(());
+            }
+        };
+
+    if let Err(err) = typewriter_engine::emit::write_generated_files(&files) {
+        eprintln!("typewriter: failed to write generated files: {}", err);
+        return Ok(());
+    }
+
+    for file in files {
+        eprintln!(
+            "  typewriter: {} → {}",
+            file.type_name,
+            file.output_path.display()
+        );
+    }
 
     Ok(())
-}
-
-/// Try to load typewriter.toml from the project root.
-fn load_config() -> typewriter_core::config::TypewriterConfig {
-    // In a proc macro context, CARGO_MANIFEST_DIR points to the crate being compiled
-    if let Ok(manifest_dir) = std::env::var("CARGO_MANIFEST_DIR") {
-        let path = std::path::Path::new(&manifest_dir);
-        // Try the manifest dir itself, then parent dirs
-        for ancestor in path.ancestors() {
-            if let Ok(config) = typewriter_core::config::TypewriterConfig::load(ancestor) {
-                if config.typescript.is_some() || config.python.is_some() {
-                    return config;
-                }
-            }
-        }
-    }
-    typewriter_core::config::TypewriterConfig::default()
 }

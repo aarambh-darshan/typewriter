@@ -4,7 +4,7 @@
 
 ---
 
-## Phase 1 — MVP `v0.1.1` ✅ *(Current)*
+## Phase 1 — MVP `v0.1.1` ✅
 
 > **Goal:** Working proc macro that generates TypeScript and Python from Rust structs/enums.
 
@@ -38,17 +38,17 @@
 
 ---
 
-## Phase 3 — CLI & Watch Mode `v0.3.0` *(Month 5–6)*
+## Phase 3 — CLI & Watch Mode `v0.3.0` ✅ *(Current)*
 
-> **Goal:** Standalone CLI with watch mode and CI integration.
+> **Goal:** Standalone CLI with watch mode and CI integration (implementation complete; publish step pending).
 
-- [ ] `typewriter-cli`: `generate`, `check`, `watch` subcommands via `clap`
-- [ ] Watch mode with `notify` crate — sub-20ms regeneration on file save
-- [ ] `typewriter check --ci` for pipeline drift gate
-- [ ] GitHub Actions example workflow
-- [ ] Drift detection report in structured JSON format
-- [ ] `cargo typewriter` subcommand (Cargo plugin registration)
-- [ ] Colored, human-friendly terminal output
+- [x] `typewriter-cli`: `generate`, `check`, `watch` subcommands via `clap`
+- [x] Watch mode with `notify` crate — sub-20ms regeneration on file save
+- [x] `typewriter check --ci` for pipeline drift gate
+- [x] GitHub Actions example workflow
+- [x] Drift detection report in structured JSON format
+- [x] `cargo typewriter` subcommand (Cargo plugin registration)
+- [x] Colored, human-friendly terminal output
 - [ ] Publish `typewriter-cli v0.1.0`
 
 ---
