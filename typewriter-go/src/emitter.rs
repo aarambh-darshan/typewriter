@@ -10,7 +10,7 @@ pub fn render_struct(mapper: &GoMapper, def: &StructDef) -> String {
     }
 
     out.push_str(&format!("type {}", def.name));
-    
+
     if !def.generics.is_empty() {
         out.push_str("[");
         for (i, param) in def.generics.iter().enumerate() {
@@ -22,7 +22,7 @@ pub fn render_struct(mapper: &GoMapper, def: &StructDef) -> String {
         }
         out.push_str("]");
     }
-    
+
     out.push_str(" struct {\n");
 
     for field in &def.fields {
@@ -37,18 +37,24 @@ pub fn render_struct(mapper: &GoMapper, def: &StructDef) -> String {
         if field.flatten {
             out.push_str("\t// @flatten\n");
         }
-        let go_type = field.type_override.clone().unwrap_or_else(|| mapper.map_type(&field.ty));
-        
+        let go_type = field
+            .type_override
+            .clone()
+            .unwrap_or_else(|| mapper.map_type(&field.ty));
+
         let json_name = field.rename.as_deref().unwrap_or(&field.name);
         // Struct field names in Go must be capitalized to be exported and parsed by encoding/json
         let go_name = capitalize_first_letter(&field.name);
-        
+
         let mut json_tag = String::from(json_name);
         if field.optional {
             json_tag.push_str(",omitempty");
         }
-        
-        out.push_str(&format!("\t{} {} `json:\"{}\"`\n", go_name, go_type, json_tag));
+
+        out.push_str(&format!(
+            "\t{} {} `json:\"{}\"`\n",
+            go_name, go_type, json_tag
+        ));
     }
 
     out.push_str("}\n\n");
@@ -63,7 +69,10 @@ pub fn render_enum(mapper: &GoMapper, def: &EnumDef) -> String {
     }
 
     // Check if it's a simple enum (only unit variants) or data carrying
-    let is_simple = def.variants.iter().all(|v| matches!(v.kind, VariantKind::Unit));
+    let is_simple = def
+        .variants
+        .iter()
+        .all(|v| matches!(v.kind, VariantKind::Unit));
 
     if is_simple {
         out.push_str(&format!("type {} string\n\n", def.name));
@@ -279,7 +288,10 @@ fn render_variant_struct_fields(mapper: &GoMapper, kind: &VariantKind, out: &mut
                 if field.flatten {
                     out.push_str("\t// @flatten\n");
                 }
-                let go_type = field.type_override.clone().unwrap_or_else(|| mapper.map_type(&field.ty));
+                let go_type = field
+                    .type_override
+                    .clone()
+                    .unwrap_or_else(|| mapper.map_type(&field.ty));
                 let json_name = field.rename.as_deref().unwrap_or(&field.name);
                 let go_name = capitalize_first_letter(&field.name);
 

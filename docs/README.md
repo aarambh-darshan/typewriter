@@ -9,6 +9,7 @@
 | Guide | Description |
 |---|---|
 | [Getting Started](getting-started.md) | Installation, first struct, build & output |
+| [CLI Guide](cli.md) | `typewriter` / `cargo typewriter` commands, watch mode, CI drift checks |
 | [Configuration](configuration.md) | `typewriter.toml` options — output dirs, file naming styles, readonly mode |
 | [Type Mappings](type-mappings.md) | Full Rust → TypeScript / Python type reference |
 | [Serde Compatibility](serde-compatibility.md) | How `#[serde(...)]` attributes are handled |
@@ -36,8 +37,9 @@
 If you're new to typebridge, we recommend reading in this order:
 
 1. **[Getting Started](getting-started.md)** — set up your first project
-2. **[Type Mappings](type-mappings.md)** — understand what Rust types become in each language
-3. **[Serde Compatibility](serde-compatibility.md)** — leverage your existing serde attributes
-4. **[Custom Attributes](custom-attributes.md)** — fine-tune output with `#[tw(...)]`
-5. **[Configuration](configuration.md)** — customize output directories and file naming
-6. **[TypeScript Emitter](typescript-emitter.md)** / **[Python Emitter](python-emitter.md)** — language-specific details
+2. **[CLI Guide](cli.md)** — run project-wide generation, drift checks, and watch mode
+3. **[Type Mappings](type-mappings.md)** — understand what Rust types become in each language
+4. **[Serde Compatibility](serde-compatibility.md)** — leverage your existing serde attributes
+5. **[Custom Attributes](custom-attributes.md)** — fine-tune output with `#[tw(...)]`
+6. **[Configuration](configuration.md)** — customize output directories and file naming
+7. **[TypeScript Emitter](typescript-emitter.md)** / **[Python Emitter](python-emitter.md)** — language-specific details

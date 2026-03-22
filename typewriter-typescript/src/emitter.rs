@@ -36,10 +36,13 @@ pub fn render_interface(mapper: &TypeScriptMapper, def: &StructDef) -> String {
         }
 
         let field_name = field.rename.as_deref().unwrap_or(&field.name);
-        let type_str = field.type_override.clone().unwrap_or_else(|| mapper.map_type(&field.ty));
+        let type_str = field
+            .type_override
+            .clone()
+            .unwrap_or_else(|| mapper.map_type(&field.ty));
 
         let readonly_prefix = if mapper.readonly { "readonly " } else { "" };
-        
+
         if field.flatten {
             output.push_str("  // @flatten\n");
         }
@@ -163,7 +166,11 @@ fn render_variant_external(
         }
         VariantKind::Struct(fields) => {
             let field_strs = render_field_strs(mapper, fields);
-            format!("{{ \"{}\": {{ {} }} }}", variant_name, field_strs.join("; "))
+            format!(
+                "{{ \"{}\": {{ {} }} }}",
+                variant_name,
+                field_strs.join("; ")
+            )
         }
         VariantKind::Tuple(types) => {
             let type_strs: Vec<String> = types.iter().map(|t| mapper.map_type(t)).collect();
@@ -283,8 +290,11 @@ fn render_field_strs(mapper: &TypeScriptMapper, fields: &[FieldDef]) -> Vec<Stri
         .filter(|f| !f.skip)
         .map(|f| {
             let fname = f.rename.as_deref().unwrap_or(&f.name);
-            let ftype = f.type_override.clone().unwrap_or_else(|| mapper.map_type(&f.ty));
-            
+            let ftype = f
+                .type_override
+                .clone()
+                .unwrap_or_else(|| mapper.map_type(&f.ty));
+
             let mut field_decl = String::new();
             if f.flatten {
                 field_decl.push_str("  // @flatten\n  ");

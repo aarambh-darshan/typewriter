@@ -42,7 +42,10 @@ pub fn render_struct(mapper: &KotlinMapper, def: &StructDef) -> String {
         if field.flatten {
             out.push_str("    // @flatten\n");
         }
-        let kotlin_type = field.type_override.clone().unwrap_or_else(|| mapper.map_type(&field.ty));
+        let kotlin_type = field
+            .type_override
+            .clone()
+            .unwrap_or_else(|| mapper.map_type(&field.ty));
 
         if field.optional {
             out.push_str(&format!("    val {}: {}? = null", kotlin_name, kotlin_type));
@@ -68,7 +71,10 @@ pub fn render_enum(mapper: &KotlinMapper, def: &EnumDef) -> String {
         out.push_str(&format!("/**\n * {}\n */\n", doc));
     }
 
-    let is_simple = def.variants.iter().all(|v| matches!(v.kind, VariantKind::Unit));
+    let is_simple = def
+        .variants
+        .iter()
+        .all(|v| matches!(v.kind, VariantKind::Unit));
 
     if is_simple {
         out.push_str("@Serializable\n");
@@ -180,10 +186,7 @@ fn render_kotlin_variant(
     match &variant.kind {
         VariantKind::Unit => {
             out.push_str("    @Serializable\n");
-            out.push_str(&format!(
-                "    object {} : {}()\n\n",
-                variant.name, def.name
-            ));
+            out.push_str(&format!("    object {} : {}()\n\n", variant.name, def.name));
         }
         VariantKind::Tuple(types) => {
             out.push_str("    @Serializable\n");
@@ -215,17 +218,17 @@ fn render_kotlin_variant(
                 if field.flatten {
                     out.push_str("        // @flatten\n");
                 }
-                let kotlin_type = field.type_override.clone().unwrap_or_else(|| mapper.map_type(&field.ty));
+                let kotlin_type = field
+                    .type_override
+                    .clone()
+                    .unwrap_or_else(|| mapper.map_type(&field.ty));
                 if field.optional {
                     out.push_str(&format!(
                         "        val {}: {}? = null,\n",
                         kotlin_name, kotlin_type
                     ));
                 } else {
-                    out.push_str(&format!(
-                        "        val {}: {},\n",
-                        kotlin_name, kotlin_type
-                    ));
+                    out.push_str(&format!("        val {}: {},\n", kotlin_name, kotlin_type));
                 }
             }
             out.push_str(&format!("    ) : {}()\n\n", def.name));

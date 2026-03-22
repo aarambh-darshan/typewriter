@@ -10,9 +10,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned
-- Swift emitter (`typewriter-swift`)
-- Kotlin emitter (`typewriter-kotlin`)
-- CLI tool with `generate`, `check`, `watch` commands
+- Publish `typewriter-cli v0.1.0`
+
+---
+
+## [0.3.0] - 2026-03-22
+
+### Added
+- New shared crate **`typewriter-engine`** for reusable AST parsing, source scanning, rendering, and drift detection.
+- New standalone **`typewriter-cli`** binary with `generate`, `check`, and `watch` subcommands.
+- New Cargo plugin binary **`cargo-typewriter`** for `cargo typewriter ...` command parity.
+- Structured JSON drift reporting with `typewriter check --json` and `--json-out <path>`.
+- GitHub Actions workflow example at `.github/workflows/typewriter-check.yml` using `typewriter check --ci`.
+
+### Changed
+- `typewriter-macros` now delegates parse + emit orchestration to `typewriter-engine`.
+- CLI `check --ci` now exits non-zero when drift is detected (`out_of_sync`, `missing`, `orphaned`).
+- Human-friendly colored terminal output added across CLI commands.
 
 ---
 
@@ -176,7 +190,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[unreleased]: https://github.com/aarambh-darshan/typewriter/compare/v0.2.0...HEAD
+[unreleased]: https://github.com/aarambh-darshan/typewriter/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/aarambh-darshan/typewriter/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/aarambh-darshan/typewriter/compare/v0.1.3...v0.2.0
 [0.1.3]: https://github.com/aarambh-darshan/typewriter/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/aarambh-darshan/typewriter/compare/v0.1.1...v0.1.2

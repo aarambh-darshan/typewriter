@@ -1,12 +1,14 @@
 [workspace]
 members = [
     "typewriter-core",
+    "typewriter-engine",
     "typewriter-macros",
     "typewriter-typescript",
     "typewriter-python",
     "typewriter-go",
     "typewriter-swift",
     "typewriter-kotlin",
+    "typewriter-cli",
     "typewriter",
     "typewriter-test",
     "example",

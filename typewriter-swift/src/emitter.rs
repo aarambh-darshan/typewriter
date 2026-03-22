@@ -34,7 +34,10 @@ pub fn render_struct(mapper: &SwiftMapper, def: &StructDef) -> String {
         if field.flatten {
             out.push_str("    // @flatten\n");
         }
-        let swift_type = field.type_override.clone().unwrap_or_else(|| mapper.map_type(&field.ty));
+        let swift_type = field
+            .type_override
+            .clone()
+            .unwrap_or_else(|| mapper.map_type(&field.ty));
         let field_name = to_camel_case(&field.name);
 
         if field.optional {
@@ -45,9 +48,9 @@ pub fn render_struct(mapper: &SwiftMapper, def: &StructDef) -> String {
     }
 
     // Generate CodingKeys if any field has a rename or needs snake_case → camelCase mapping
-    let needs_coding_keys = active_fields.iter().any(|f| {
-        f.rename.is_some() || to_camel_case(&f.name) != f.name
-    });
+    let needs_coding_keys = active_fields
+        .iter()
+        .any(|f| f.rename.is_some() || to_camel_case(&f.name) != f.name);
 
     if needs_coding_keys {
         out.push_str("\n    enum CodingKeys: String, CodingKey {\n");
@@ -58,7 +61,10 @@ pub fn render_struct(mapper: &SwiftMapper, def: &StructDef) -> String {
             if swift_name == json_name {
                 out.push_str(&format!("        case {}\n", swift_name));
             } else {
-                out.push_str(&format!("        case {} = \"{}\"\n", swift_name, json_name));
+                out.push_str(&format!(
+                    "        case {} = \"{}\"\n",
+                    swift_name, json_name
+                ));
             }
         }
         out.push_str("    }\n");
@@ -75,7 +81,10 @@ pub fn render_enum(mapper: &SwiftMapper, def: &EnumDef) -> String {
         out.push_str(&format!("/// {}\n", doc));
     }
 
-    let is_simple = def.variants.iter().all(|v| matches!(v.kind, VariantKind::Unit));
+    let is_simple = def
+        .variants
+        .iter()
+        .all(|v| matches!(v.kind, VariantKind::Unit));
 
     if is_simple {
         out.push_str(&format!("enum {}: String, Codable {{\n", def.name));
@@ -121,7 +130,11 @@ fn render_enum_internal(mapper: &SwiftMapper, def: &EnumDef, out: &mut String, t
 
     // CodingKeys with tag
     out.push_str(&format!("\n    enum CodingKeys: String, CodingKey {{\n"));
-    out.push_str(&format!("        case {} = \"{}\"\n", to_camel_case(tag), tag));
+    out.push_str(&format!(
+        "        case {} = \"{}\"\n",
+        to_camel_case(tag),
+        tag
+    ));
     out.push_str("    }\n");
 
     // Variant-specific CodingKeys
@@ -256,7 +269,10 @@ fn render_swift_case(mapper: &SwiftMapper, out: &mut String, case_name: &str, ki
                     if f.flatten {
                         out.push_str("    // @flatten\n"); // Just as a marker before fields in case, though Swift cases are on one line in our generation.
                     }
-                    let swift_type = f.type_override.clone().unwrap_or_else(|| mapper.map_type(&f.ty));
+                    let swift_type = f
+                        .type_override
+                        .clone()
+                        .unwrap_or_else(|| mapper.map_type(&f.ty));
                     let name = to_camel_case(&f.name);
                     if f.optional {
                         format!("{}: {}?", name, swift_type)

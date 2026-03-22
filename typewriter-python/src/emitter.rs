@@ -44,12 +44,15 @@ pub fn render_model(mapper: &PythonMapper, def: &StructDef) -> String {
     } else {
         for field in visible_fields {
             let field_name = field.rename.as_deref().unwrap_or(&field.name);
-            let type_str = field.type_override.clone().unwrap_or_else(|| mapper.map_type(&field.ty));
+            let type_str = field
+                .type_override
+                .clone()
+                .unwrap_or_else(|| mapper.map_type(&field.ty));
 
             if let Some(doc) = &field.doc {
                 output.push_str(&format!("    # {}\n", doc.trim()));
             }
-            
+
             if field.flatten {
                 output.push_str("    # @flatten\n");
             }
@@ -212,7 +215,10 @@ fn render_union_external(mapper: &PythonMapper, def: &EnumDef) -> String {
                 } else {
                     for field in visible {
                         let fname = field.rename.as_deref().unwrap_or(&field.name);
-                        let ftype = field.type_override.clone().unwrap_or_else(|| mapper.map_type(&field.ty));
+                        let ftype = field
+                            .type_override
+                            .clone()
+                            .unwrap_or_else(|| mapper.map_type(&field.ty));
                         if field.flatten {
                             output.push_str("    # @flatten\n");
                         }
@@ -247,12 +253,7 @@ fn render_union_external(mapper: &PythonMapper, def: &EnumDef) -> String {
 }
 
 /// Adjacent: `{ "t": "variant", "c": { ...data } }` — tag + content fields.
-fn render_union_adjacent(
-    mapper: &PythonMapper,
-    def: &EnumDef,
-    tag: &str,
-    content: &str,
-) -> String {
+fn render_union_adjacent(mapper: &PythonMapper, def: &EnumDef, tag: &str, content: &str) -> String {
     let mut output = String::new();
 
     let mut imports = BTreeSet::new();
@@ -290,7 +291,10 @@ fn render_union_adjacent(
                     } else {
                         for field in visible {
                             let fname = field.rename.as_deref().unwrap_or(&field.name);
-                            let ftype = field.type_override.clone().unwrap_or_else(|| mapper.map_type(&field.ty));
+                            let ftype = field
+                                .type_override
+                                .clone()
+                                .unwrap_or_else(|| mapper.map_type(&field.ty));
                             if field.flatten {
                                 output.push_str("    # @flatten\n");
                             }
@@ -374,7 +378,10 @@ fn render_union_untagged(mapper: &PythonMapper, def: &EnumDef) -> String {
                 } else {
                     for field in visible {
                         let fname = field.rename.as_deref().unwrap_or(&field.name);
-                        let ftype = field.type_override.clone().unwrap_or_else(|| mapper.map_type(&field.ty));
+                        let ftype = field
+                            .type_override
+                            .clone()
+                            .unwrap_or_else(|| mapper.map_type(&field.ty));
                         if field.flatten {
                             output.push_str("    # @flatten\n");
                         }
@@ -414,7 +421,10 @@ fn render_variant_fields(output: &mut String, mapper: &PythonMapper, kind: &Vari
                     continue;
                 }
                 let fname = field.rename.as_deref().unwrap_or(&field.name);
-                let ftype = field.type_override.clone().unwrap_or_else(|| mapper.map_type(&field.ty));
+                let ftype = field
+                    .type_override
+                    .clone()
+                    .unwrap_or_else(|| mapper.map_type(&field.ty));
                 if field.flatten {
                     output.push_str("    # @flatten\n");
                 }
