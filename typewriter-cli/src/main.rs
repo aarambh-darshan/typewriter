@@ -1,5 +1,5 @@
 fn main() {
-    std::process::exit(match typewriter_cli::run() {
+    std::process::exit(match typebridge_cli::run() {
         Ok(code) => code,
         Err(err) => {
             eprintln!("typewriter: {}", err);

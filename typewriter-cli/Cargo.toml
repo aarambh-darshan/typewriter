@@ -1,5 +1,5 @@
 [package]
-name = "typewriter-cli"
+name = "typebridge-cli"
 version = "0.1.0"
 edition = "2021"
 description = "Standalone CLI for typewriter generation, drift checks, and watch mode"

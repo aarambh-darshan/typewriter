@@ -7,7 +7,7 @@ Standalone CLI workflows for typewriter without relying on proc-macro build hook
 ## Installation
 
 ```bash
-cargo install typewriter-cli
+cargo install typebridge-cli
 ```
 
 You can run either:
@@ -115,7 +115,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
-      - run: cargo install typewriter-cli
+      - run: cargo install typebridge-cli
       - run: typewriter check --ci
 ```
 

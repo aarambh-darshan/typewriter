@@ -1,9 +1,9 @@
-# typewriter-cli
+# typebridge-cli
 
 > Standalone CLI for typewriter generation, drift checking, and watch mode.
 
-[![Crates.io](https://img.shields.io/crates/v/typewriter-cli.svg)](https://crates.io/crates/typewriter-cli)
-[![Docs.rs](https://docs.rs/typewriter-cli/badge.svg)](https://docs.rs/typewriter-cli)
+[![Crates.io](https://img.shields.io/crates/v/typebridge-cli.svg)](https://crates.io/crates/typebridge-cli)
+[![Docs.rs](https://docs.rs/typebridge-cli/badge.svg)](https://docs.rs/typebridge-cli)
 
 ## Commands
 
@@ -19,12 +19,12 @@
 ## Installation
 
 ```bash
-cargo install typewriter-cli
+cargo install typebridge-cli
 ```
 
 ## Cargo Plugin Usage
 
-`typewriter-cli` also ships `cargo-typewriter`, so you can run:
+`typebridge-cli` also ships `cargo-typewriter`, so you can run:
 
 ```bash
 cargo typewriter generate --all

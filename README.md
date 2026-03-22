@@ -190,7 +190,7 @@ type User struct {
 - `typewriter check --json` / `--json-out` structured report output
 - `typewriter watch [path]` auto-regeneration on Rust file save
 - `cargo typewriter ...` subcommand support via `cargo-typewriter`
-- `typewriter-cli` package version is `0.1.0` (publish step pending).
+- `typebridge-cli` package version is `0.1.0` (publish step pending).
 
 See [CLI Guide](docs/cli.md) for full command reference and JSON schema.
 
@@ -290,7 +290,7 @@ typewriter/
 ├── typewriter-go/          ← Go emitter
 ├── typewriter-swift/       ← Swift emitter
 ├── typewriter-kotlin/      ← Kotlin emitter
-├── typewriter-cli/         ← `typewriter` + `cargo-typewriter` binaries
+├── typewriter-cli/         ← `typebridge-cli` package (`typewriter` + `cargo-typewriter` binaries)
 ├── typewriter/             ← Main user-facing crate (re-exports)
 ├── typewriter-test/        ← Snapshot tests
 └── example/                ← Working usage examples
