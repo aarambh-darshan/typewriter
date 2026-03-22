@@ -1,6 +1,6 @@
 # typewriter-engine
 
-> Shared parser, scanner, emitter, and drift-detection engine used by both `typewriter-macros` and `typewriter-cli`.
+> Shared parser, scanner, emitter, and drift-detection engine used by both `typewriter-macros` and `typebridge-cli`.
 
 [![Crates.io](https://img.shields.io/crates/v/typewriter-engine.svg)](https://crates.io/crates/typewriter-engine)
 [![Docs.rs](https://docs.rs/typewriter-engine/badge.svg)](https://docs.rs/typewriter-engine)
@@ -16,14 +16,14 @@
 ## Primary Consumers
 
 - `typewriter-macros` (compile-time generation during `cargo build`)
-- `typewriter-cli` (`generate`, `check`, `watch` commands)
+- `typebridge-cli` (`generate`, `check`, `watch` commands)
 
 ## Usage
 
 This crate is primarily internal workspace infrastructure. Most users should use:
 
 - [`typebridge`](https://crates.io/crates/typebridge) for proc-macro-driven generation
-- [`typewriter-cli`](https://crates.io/crates/typewriter-cli) for standalone CLI workflows
+- [`typebridge-cli`](https://crates.io/crates/typebridge-cli) for standalone CLI workflows
 
 ## License
 

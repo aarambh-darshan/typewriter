@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned
-- Publish `typewriter-cli v0.1.0`
+- Publish `typebridge-cli v0.1.0`
 
 ---
 
@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - New shared crate **`typewriter-engine`** for reusable AST parsing, source scanning, rendering, and drift detection.
-- New standalone **`typewriter-cli`** binary with `generate`, `check`, and `watch` subcommands.
+- New standalone **`typebridge-cli`** binary with `generate`, `check`, and `watch` subcommands.
 - New Cargo plugin binary **`cargo-typewriter`** for `cargo typewriter ...` command parity.
 - Structured JSON drift reporting with `typewriter check --json` and `--json-out <path>`.
 - GitHub Actions workflow example at `.github/workflows/typewriter-check.yml` using `typewriter check --ci`.

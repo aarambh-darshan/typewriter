@@ -42,14 +42,14 @@
 
 > **Goal:** Standalone CLI with watch mode and CI integration (implementation complete; publish step pending).
 
-- [x] `typewriter-cli`: `generate`, `check`, `watch` subcommands via `clap`
+- [x] `typebridge-cli`: `generate`, `check`, `watch` subcommands via `clap`
 - [x] Watch mode with `notify` crate — sub-20ms regeneration on file save
 - [x] `typewriter check --ci` for pipeline drift gate
 - [x] GitHub Actions example workflow
 - [x] Drift detection report in structured JSON format
 - [x] `cargo typewriter` subcommand (Cargo plugin registration)
 - [x] Colored, human-friendly terminal output
-- [ ] Publish `typewriter-cli v0.1.0`
+- [ ] Publish `typebridge-cli v0.1.0`
 
 ---
 
