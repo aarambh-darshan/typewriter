@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Phase 4.1 complete: TypeScript generation now emits sibling Zod schema files (`<type>.schema.ts`) alongside interface/union files (`<type>.ts`) by default.
+- Zod schema generation supports structs, generic schema factories, and all serde enum representations (`External`, `Internal`, `Adjacent`, `Untagged`).
+- `typewriter-engine`, CLI commands (`generate`, `check`, `watch`), and proc-macro generation now include schema artifacts in render and drift flows.
+- Added Zod schema controls: global `[typescript].zod = false` to disable schema output, plus per-type `#[tw(zod)]`/`#[tw(zod = false)]` overrides for selective generation.
+
 ### Planned
 - Publish `typebridge-cli v0.1.0`
 

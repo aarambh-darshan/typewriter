@@ -95,6 +95,8 @@ fn maybe_collect_from_derive_input(
         .map_err(|err| anyhow::anyhow!("{} ({})", err, source_path.display()))?;
     let targets = parser::parse_sync_to_attr(&input)
         .map_err(|err| anyhow::anyhow!("{} ({})", err, source_path.display()))?;
+    let zod_schema = parser::parse_tw_zod_attr(&input)
+        .map_err(|err| anyhow::anyhow!("{} ({})", err, source_path.display()))?;
 
     if targets.is_empty() {
         return Err(anyhow::anyhow!(
@@ -107,6 +109,7 @@ fn maybe_collect_from_derive_input(
         type_def,
         targets,
         source_path: source_path.to_path_buf(),
+        zod_schema,
     });
 
     Ok(())
@@ -176,5 +179,29 @@ mod tests {
         let specs = scan_file(&file).unwrap();
         assert_eq!(specs.len(), 1);
         assert_eq!(specs[0].type_def.name(), "User");
+        assert_eq!(specs[0].zod_schema, None);
+    }
+
+    #[test]
+    fn scans_type_level_zod_override() {
+        let temp = tempfile::tempdir().unwrap();
+        let file = temp.path().join("mod.rs");
+        std::fs::write(
+            &file,
+            r#"
+            #[derive(TypeWriter)]
+            #[sync_to(typescript)]
+            #[tw(zod = false)]
+            struct Address {
+                id: String,
+            }
+            "#,
+        )
+        .unwrap();
+
+        let specs = scan_file(&file).unwrap();
+        assert_eq!(specs.len(), 1);
+        assert_eq!(specs[0].type_def.name(), "Address");
+        assert_eq!(specs[0].zod_schema, Some(false));
     }
 }

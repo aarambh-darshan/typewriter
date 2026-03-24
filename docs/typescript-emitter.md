@@ -6,7 +6,24 @@ Detailed guide for the TypeScript code generation emitter.
 
 ## Overview
 
-The TypeScript emitter generates `.ts` files containing typed `export interface` declarations for structs and `export type` declarations for enums.
+The TypeScript emitter always generates the typed `name.ts` artifact and, when Zod is enabled, also generates a sibling `name.schema.ts` artifact:
+
+- `name.ts` — typed `export interface` / `export type` declarations
+- `name.schema.ts` — runtime Zod schemas (`export const NameSchema = ...`) when Zod generation is enabled
+
+Install `zod` in your TypeScript project to use generated schemas at runtime.
+
+Disable schemas globally with `typewriter.toml`:
+
+```toml
+[typescript]
+zod = false
+```
+
+Override per type:
+
+- `#[tw(zod)]` or `#[tw(zod = true)]` forces schema generation for that type.
+- `#[tw(zod = false)]` skips schema generation for that type.
 
 ---
 
@@ -46,6 +63,39 @@ export interface Order {
 
 ---
 
+## Zod Schema Output
+
+When Zod output is enabled, each generated interface/type has a sibling schema file:
+
+- `user-profile.ts`
+- `user-profile.schema.ts`
+
+Example schema output:
+
+```typescript
+import { z } from 'zod';
+import { UserRoleSchema } from './user-role.schema';
+
+export const UserProfileSchema = z.object({
+  "id": z.string(),
+  "email": z.string(),
+  "age": z.number().optional(),
+  "role": z.lazy(() => UserRoleSchema),
+});
+```
+
+### Zod behaviors:
+
+- Primitive mapping: `string`/`boolean`/`number`/`bigint`/`unknown` → `z.string()`/`z.boolean()`/`z.number()`/`z.bigint()`/`z.unknown()`
+- `Vec<T>` → `z.array(...)`
+- `Tuple` → `z.tuple([...])`
+- `HashMap<K, V>` → `z.record(kSchema, vSchema)`
+- Named type refs → `z.lazy(() => RefSchema)`
+- Generic refs → `z.lazy(() => RefSchema(...))`
+- `#[tw(type = "...")]` fields use a broad fallback schema (`z.any()`) because free-form TS strings are not safely parseable to Zod.
+
+---
+
 ## Simple Enum → String Literal Union
 
 Enums where all variants are unit variants become string literal unions:
@@ -65,6 +115,12 @@ export type Status =
   | "Active"
   | "Inactive"
   | "Suspended";
+```
+
+For the same enum, the schema file emits:
+
+```typescript
+export const StatusSchema = z.enum(["Active", "Inactive", "Suspended"]);
 ```
 
 ---
@@ -103,6 +159,11 @@ function area(shape: Shape): number {
 }
 ```
 
+Schema behavior by enum representation:
+
+- `Internal` / `Adjacent` → `z.discriminatedUnion(...)`
+- `External` / `Untagged` → `z.union([...])`
+
 ---
 
 ## Generic Structs
@@ -127,36 +188,40 @@ export interface Pagination<T> {
 }
 ```
 
-Nested generics work too — `Vec<Pagination<User>>` becomes `Pagination<User>[]`.
+The schema file emits a generic schema factory:
+
+```typescript
+export const PaginationSchema = <TSchema extends z.ZodTypeAny>(tSchema: TSchema) =>
+  z.object({
+    "items": z.array(tSchema),
+    "total": z.bigint(),
+    "page": z.number(),
+  });
+```
+
+Nested generics still work: `Vec<Pagination<User>>` becomes `Pagination<User>[]` and `PaginationSchema(UserSchema)` wiring in schema output.
 
 ---
 
 ## Cross-File Imports
 
-When a struct references another custom type, typebridge auto-generates the import:
+When a struct references another custom type, typebridge auto-generates imports.
 
-```rust
-#[derive(TypeWriter)]
-#[sync_to(typescript)]
-pub struct UserData {
-    pub user: FilterUserDto,
-    pub roles: Vec<UserRole>,
-}
-```
+Type file (`.ts`):
 
 ```typescript
 import type { FilterUserDto } from './filter-user-dto';
 import type { UserRole } from './user-role';
-
-export interface UserData {
-  user: FilterUserDto;
-  roles: UserRole[];
-}
 ```
 
-- Uses `import type` for type-only imports (best practice)
-- File paths follow your configured `file_style` (kebab-case by default)
-- Works with `Vec<X>`, `Option<X>`, `HashMap<K, X>`, and nested generics
+Schema file (`.schema.ts`):
+
+```typescript
+import { FilterUserDtoSchema } from './filter-user-dto.schema';
+import { UserRoleSchema } from './user-role.schema';
+```
+
+Self-references are generated as `z.lazy(() => SelfSchema)` without self-imports.
 
 ---
 
@@ -177,17 +242,19 @@ export interface Config {
 
 Default: **kebab-case**
 
-| Rust Type | Output File |
-|---|---|
-| `UserProfile` | `user-profile.ts` |
-| `APIResponse` | `api-response.ts` |
-| `OrderItem` | `order-item.ts` |
+When Zod output is enabled, schema files follow the same base naming as type files.
+
+| Rust Type | Type File | Schema File |
+|---|---|---|
+| `UserProfile` | `user-profile.ts` | `user-profile.schema.ts` |
+| `APIResponse` | `api-response.ts` | `api-response.schema.ts` |
+| `OrderItem` | `order-item.ts` | `order-item.schema.ts` |
 
 Configurable in `typewriter.toml`:
 
 ```toml
 [typescript]
-file_style = "PascalCase"  # → UserProfile.ts
+file_style = "PascalCase"  # → UserProfile.ts + UserProfile.schema.ts
 ```
 
 ---

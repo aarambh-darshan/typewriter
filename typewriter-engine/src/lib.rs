@@ -16,6 +16,7 @@ pub struct TypeSpec {
     pub type_def: TypeDef,
     pub targets: Vec<Language>,
     pub source_path: PathBuf,
+    pub zod_schema: Option<bool>,
 }
 
 /// Parse a CSV/list of language names (case-insensitive) into Language values.

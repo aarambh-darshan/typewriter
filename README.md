@@ -45,7 +45,7 @@ OpenAPI codegen? Only works for HTTP APIs. Protobuf? Heavy toolchain. Manual syn
 
 **`typewriter`** makes your Rust structs and enums the **single, permanent source of truth** for all your type definitions.
 
-Annotate once → generate everywhere. When the Rust type changes, every generated file updates automatically. No schema file. No intermediary format. No drift. Ever.
+Annotate once → generate everywhere. When the Rust type changes, every generated file updates automatically. No hand-maintained schema file. No intermediary format. No drift. Ever.
 
 ```rust
 use typebridge::TypeWriter;
@@ -63,6 +63,7 @@ pub struct UserProfile {
 
 // On cargo build, auto-generates:
 // ✅ ./generated/typescript/user-profile.ts
+// ✅ ./generated/typescript/user-profile.schema.ts
 // ✅ ./generated/python/user_profile.py
 // ✅ ./generated/go/user_profile.go
 ```
@@ -128,6 +129,27 @@ export interface User {
 }
 ```
 
+### TypeScript Zod Schema → `user.schema.ts`
+
+```typescript
+import { z } from 'zod';
+
+export const UserSchema = z.object({
+  "id": z.string(),
+  "email": z.string(),
+  "name": z.string(),
+  "age": z.number().optional(),
+  "is_active": z.boolean(),
+  "tags": z.array(z.string()),
+});
+```
+
+To consume generated schemas at runtime, install `zod` in your TS app. Set `[typescript].zod = false` to disable global schema output, and use `#[tw(zod)]`/`#[tw(zod = false)]` for per-type overrides:
+
+```bash
+npm install zod
+```
+
 ### Python → `user.py`
 
 ```python
@@ -172,12 +194,13 @@ type User struct {
 ### ✅ Core Generation Platform (v0.3.0)
 
 - **TypeScript emitter** — `export interface`, `export type` unions, optional fields
+- **TypeScript Zod schemas** — sibling `<type>.schema.ts` files with `export const <Type>Schema = ...` (enabled by default, configurable via `[typescript].zod` and `#[tw(zod)]`; runtime `zod` dependency)
 - **Python emitter** — Pydantic v2 `BaseModel`, `Enum`, `Union` with `Literal` discriminators
 - **Go emitter** — native `struct` parsing, `interface` data-carrying enums, and `omitempty` optional pointers
 - **Generic types** — `Pagination<T>` → `export interface Pagination<T>` (TS) / `class Pagination(BaseModel, Generic[T])` (Python)
 - **Cross-file imports** — auto `import type { X } from './file'` (TS) / `from .file import X` (Python)
 - **Serde compatibility** — auto-reads `#[serde(rename, skip, tag, flatten)]`
-- **Custom attributes** — `#[tw(skip)]`, `#[tw(rename)]`, `#[tw(optional)]`
+- **Custom attributes** — `#[tw(skip)]`, `#[tw(rename)]`, `#[tw(optional)]`, `#[tw(zod)]`
 - **Doc comments** — Rust `///` flows to JSDoc in TS and docstrings in Python
 - **Smart type unwrapping** — `Box<T>`, `Arc<T>`, `Rc<T>` transparently unwrapped
 - **Feature-gated emitters** — compile only what you need
@@ -196,7 +219,7 @@ See [CLI Guide](docs/cli.md) for full command reference and JSON schema.
 
 ### 🔮 Coming Soon
 
-- Zod schema generation
+- GraphQL SDL generation
 - VSCode / Neovim extensions
 - Plugin API for custom language backends
 
@@ -213,6 +236,7 @@ Create a `typewriter.toml` at your project root (optional — sensible defaults 
 output_dir = "../frontend/src/types"
 file_style = "kebab-case"
 readonly = false
+zod = true
 
 [python]
 output_dir = "../api/schemas"

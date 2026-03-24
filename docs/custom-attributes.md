@@ -75,6 +75,25 @@ export interface Config {
 
 ---
 
+### `#[tw(zod)]` and `#[tw(zod = false)]` — Per-Type Zod Schema Control
+
+Overrides TypeScript schema generation for this specific type.
+
+```rust
+#[derive(TypeWriter)]
+#[sync_to(typescript)]
+#[tw(zod)]
+pub struct Address {
+    pub city: String,
+}
+```
+
+- `#[tw(zod)]` or `#[tw(zod = true)]` forces `<type>.schema.ts` generation for that type.
+- `#[tw(zod = false)]` skips schema generation for that type.
+- This override applies only to TypeScript schema files and combines with `[typescript].zod` from `typewriter.toml`.
+
+---
+
 ### `#[tw(output_dir = "...")]` — Custom Output Directory
 
 Overrides the `typewriter.toml` output directory for this type only.

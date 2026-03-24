@@ -73,6 +73,32 @@ pub fn parse_sync_to_attr(input: &DeriveInput) -> syn::Result<Vec<Language>> {
     Ok(targets)
 }
 
+/// Parse optional type-level Zod override from tw(zod) or tw(zod = false).
+pub fn parse_tw_zod_attr(input: &DeriveInput) -> syn::Result<Option<bool>> {
+    let mut zod = None;
+
+    for attr in &input.attrs {
+        if !attr.path().is_ident("tw") {
+            continue;
+        }
+
+        attr.parse_nested_meta(|meta| {
+            if meta.path.is_ident("zod") {
+                if meta.input.is_empty() {
+                    zod = Some(true);
+                } else {
+                    let value = meta.value()?;
+                    let enabled: syn::LitBool = value.parse()?;
+                    zod = Some(enabled.value());
+                }
+            }
+            Ok(())
+        })?;
+    }
+
+    Ok(zod)
+}
+
 /// Detect if item attributes include `#[derive(... TypeWriter ...)]`.
 pub fn has_typewriter_derive(attrs: &[Attribute]) -> bool {
     for attr in attrs {
@@ -506,5 +532,52 @@ mod tests {
 
         let targets = parse_sync_to_attr(&input).unwrap();
         assert_eq!(targets, vec![Language::TypeScript, Language::Python]);
+    }
+
+    #[test]
+    fn parses_tw_zod_attr_absent() {
+        let input: syn::DeriveInput = syn::parse_quote! {
+            #[derive(TypeWriter)]
+            #[sync_to(typescript)]
+            struct User { id: String }
+        };
+
+        assert_eq!(parse_tw_zod_attr(&input).unwrap(), None);
+    }
+
+    #[test]
+    fn parses_tw_zod_attr_flag() {
+        let input: syn::DeriveInput = syn::parse_quote! {
+            #[derive(TypeWriter)]
+            #[sync_to(typescript)]
+            #[tw(zod)]
+            struct User { id: String }
+        };
+
+        assert_eq!(parse_tw_zod_attr(&input).unwrap(), Some(true));
+    }
+
+    #[test]
+    fn parses_tw_zod_attr_explicit_false() {
+        let input: syn::DeriveInput = syn::parse_quote! {
+            #[derive(TypeWriter)]
+            #[sync_to(typescript)]
+            #[tw(zod = false)]
+            struct User { id: String }
+        };
+
+        assert_eq!(parse_tw_zod_attr(&input).unwrap(), Some(false));
+    }
+
+    #[test]
+    fn rejects_invalid_tw_zod_attr() {
+        let input: syn::DeriveInput = syn::parse_quote! {
+            #[derive(TypeWriter)]
+            #[sync_to(typescript)]
+            #[tw(zod = "no")]
+            struct User { id: String }
+        };
+
+        assert!(parse_tw_zod_attr(&input).is_err());
     }
 }

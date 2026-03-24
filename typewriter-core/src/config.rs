@@ -30,6 +30,8 @@ pub struct TypeScriptConfig {
     pub file_style: Option<String>,
     /// If true, all fields become `readonly`
     pub readonly: Option<bool>,
+    /// If false, skip generating sibling `.schema.ts` Zod files for TypeScript
+    pub zod: Option<bool>,
 }
 
 /// Python-specific configuration.
@@ -119,6 +121,14 @@ impl TypewriterConfig {
             .as_ref()
             .and_then(|ts| ts.readonly)
             .unwrap_or(false)
+    }
+
+    /// Check if TypeScript Zod schema generation is enabled.
+    pub fn ts_zod_enabled(&self) -> bool {
+        self.typescript
+            .as_ref()
+            .and_then(|ts| ts.zod)
+            .unwrap_or(true)
     }
 
     /// Get the TypeScript file naming style.
@@ -228,6 +238,7 @@ mod tests {
         assert_eq!(config.kotlin_output_dir(), "./generated/kotlin");
         assert_eq!(config.kotlin_package_name(), "types");
         assert!(!config.ts_readonly());
+        assert!(config.ts_zod_enabled());
     }
 
     #[test]
@@ -237,6 +248,7 @@ mod tests {
 output_dir = "../frontend/src/types"
 file_style = "kebab-case"
 readonly = true
+zod = false
 
 [python]
 output_dir = "../api/schemas"
@@ -257,6 +269,8 @@ package_name = "api_types"
             Some("kebab-case")
         );
         assert_eq!(config.typescript.as_ref().unwrap().readonly, Some(true));
+        assert_eq!(config.typescript.as_ref().unwrap().zod, Some(false));
+        assert!(!config.ts_zod_enabled());
         assert_eq!(
             config.python.as_ref().unwrap().output_dir.as_deref(),
             Some("../api/schemas")
@@ -283,6 +297,7 @@ output_dir = "../frontend/types"
         assert_eq!(config.ts_output_dir(), "../frontend/types");
         assert_eq!(config.py_output_dir(), "./generated/python");
         assert!(!config.ts_readonly());
+        assert!(config.ts_zod_enabled());
     }
 
     #[test]
@@ -291,6 +306,7 @@ output_dir = "../frontend/types"
         let config: TypewriterConfig = toml::from_str(toml_str).unwrap();
         assert!(config.typescript.is_none());
         assert!(config.python.is_none());
+        assert!(config.ts_zod_enabled());
     }
 
     #[test]

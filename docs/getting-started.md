@@ -82,6 +82,7 @@ typewriter generates files during compilation. You'll see output like:
 
 ```
   typewriter: Product → ./generated/typescript/product.ts
+  typewriter: Product → ./generated/typescript/product.schema.ts
   typewriter: Product → ./generated/python/product.py
   typewriter: Product → ./generated/go/product.go
   typewriter: Product → ./generated/swift/Product.swift
@@ -108,6 +109,21 @@ export interface Product {
   description?: string | undefined;
   tags: string[];
 }
+```
+
+### `./generated/typescript/product.schema.ts`
+
+```typescript
+import { z } from 'zod';
+
+export const ProductSchema = z.object({
+  "id": z.string(),
+  "name": z.string(),
+  "price": z.number(),
+  "in_stock": z.boolean(),
+  "description": z.string().optional(),
+  "tags": z.array(z.string()),
+});
 ```
 
 ### `./generated/python/product.py`

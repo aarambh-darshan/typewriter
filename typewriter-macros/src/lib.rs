@@ -37,6 +37,7 @@ pub fn derive_typewriter(input: TokenStream) -> TokenStream {
 fn typewriter_impl(input: &syn::DeriveInput) -> syn::Result<()> {
     let type_def = typewriter_engine::parser::parse_type_def(input)?;
     let targets = typewriter_engine::parser::parse_sync_to_attr(input)?;
+    let zod_schema = typewriter_engine::parser::parse_tw_zod_attr(input)?;
 
     if targets.is_empty() {
         return Err(syn::Error::new_spanned(
@@ -55,6 +56,7 @@ fn typewriter_impl(input: &syn::DeriveInput) -> syn::Result<()> {
         type_def,
         targets,
         source_path: manifest_dir.join("<proc-macro>"),
+        zod_schema,
     };
 
     let files =
