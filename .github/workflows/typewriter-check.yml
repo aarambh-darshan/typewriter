@@ -10,6 +10,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
-      - run: cargo install typebridge-cli
-      - run: typewriter check --ci
+      - name: Install typebridge-cli
+        run: cargo install typebridge-cli
+      - name: Run typewriter check
+        run: typewriter check --ci
         working-directory: example
