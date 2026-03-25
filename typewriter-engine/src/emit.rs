@@ -25,22 +25,22 @@ pub fn render_specs(
     project_root: &Path,
     config: &TypewriterConfig,
     lang_filter: &[Language],
-    _skip_unavailable: bool,
+    skip_unavailable: bool,
 ) -> Result<Vec<GeneratedFile>> {
     let mut files = Vec::new();
 
     for spec in specs {
         for target in effective_targets(&spec.targets, lang_filter) {
-            if let Some(file) = render_single(
+            let mut rendered = render_single(
                 &spec.type_def,
                 spec.source_path.clone(),
+                spec.zod_schema,
                 target,
                 project_root,
                 config,
-                _skip_unavailable,
-            )? {
-                files.push(file);
-            }
+                skip_unavailable,
+            )?;
+            files.append(&mut rendered);
         }
     }
 
@@ -53,9 +53,9 @@ pub fn render_specs_deduped(
     project_root: &Path,
     config: &TypewriterConfig,
     lang_filter: &[Language],
-    _skip_unavailable: bool,
+    skip_unavailable: bool,
 ) -> Result<Vec<GeneratedFile>> {
-    let files = render_specs(specs, project_root, config, lang_filter, _skip_unavailable)?;
+    let files = render_specs(specs, project_root, config, lang_filter, skip_unavailable)?;
     let mut by_path = BTreeMap::new();
     for file in files {
         by_path.insert(file.output_path.clone(), file);
@@ -118,11 +118,12 @@ fn effective_targets(spec_targets: &[Language], lang_filter: &[Language]) -> Vec
 fn render_single(
     type_def: &TypeDef,
     source_path: PathBuf,
+    zod_override: Option<bool>,
     language: Language,
     project_root: &Path,
     config: &TypewriterConfig,
     _skip_unavailable: bool,
-) -> Result<Option<GeneratedFile>> {
+) -> Result<Vec<GeneratedFile>> {
     match language {
         Language::TypeScript => {
             #[cfg(feature = "typescript")]
@@ -132,19 +133,35 @@ fn render_single(
                 if let Some(style) = config.ts_file_style() {
                     mapper = mapper.with_file_style(style);
                 }
+
                 let output_dir = project_root.join(config.ts_output_dir());
-                return Ok(Some(render_with_mapper(
+
+                let type_file = render_with_mapper(
                     &mapper,
                     type_def,
-                    source_path,
+                    source_path.clone(),
                     language,
-                    output_dir,
-                )));
+                    output_dir.clone(),
+                );
+
+                let mut files = vec![type_file];
+
+                if zod_override.unwrap_or(config.ts_zod_enabled()) {
+                    files.push(GeneratedFile {
+                        type_name: type_def.name().to_string(),
+                        language,
+                        output_path: output_dir.join(mapper.zod_output_filename(type_def.name())),
+                        content: mapper.emit_zod_type_def(type_def),
+                        source_path,
+                    });
+                }
+
+                return Ok(files);
             }
             #[cfg(not(feature = "typescript"))]
             {
                 if _skip_unavailable {
-                    return Ok(None);
+                    return Ok(vec![]);
                 }
                 anyhow::bail!("language 'typescript' is not enabled in this build")
             }
@@ -157,18 +174,18 @@ fn render_single(
                     mapper = mapper.with_file_style(style);
                 }
                 let output_dir = project_root.join(config.py_output_dir());
-                return Ok(Some(render_with_mapper(
+                return Ok(vec![render_with_mapper(
                     &mapper,
                     type_def,
                     source_path,
                     language,
                     output_dir,
-                )));
+                )]);
             }
             #[cfg(not(feature = "python"))]
             {
                 if _skip_unavailable {
-                    return Ok(None);
+                    return Ok(vec![]);
                 }
                 anyhow::bail!("language 'python' is not enabled in this build")
             }
@@ -182,18 +199,18 @@ fn render_single(
                     mapper = mapper.with_file_style(style);
                 }
                 let output_dir = project_root.join(config.go_output_dir());
-                return Ok(Some(render_with_mapper(
+                return Ok(vec![render_with_mapper(
                     &mapper,
                     type_def,
                     source_path,
                     language,
                     output_dir,
-                )));
+                )]);
             }
             #[cfg(not(feature = "go"))]
             {
                 if _skip_unavailable {
-                    return Ok(None);
+                    return Ok(vec![]);
                 }
                 anyhow::bail!("language 'go' is not enabled in this build")
             }
@@ -206,18 +223,18 @@ fn render_single(
                     mapper = mapper.with_file_style(style);
                 }
                 let output_dir = project_root.join(config.swift_output_dir());
-                return Ok(Some(render_with_mapper(
+                return Ok(vec![render_with_mapper(
                     &mapper,
                     type_def,
                     source_path,
                     language,
                     output_dir,
-                )));
+                )]);
             }
             #[cfg(not(feature = "swift"))]
             {
                 if _skip_unavailable {
-                    return Ok(None);
+                    return Ok(vec![]);
                 }
                 anyhow::bail!("language 'swift' is not enabled in this build")
             }
@@ -231,18 +248,18 @@ fn render_single(
                     mapper = mapper.with_file_style(style);
                 }
                 let output_dir = project_root.join(config.kotlin_output_dir());
-                return Ok(Some(render_with_mapper(
+                return Ok(vec![render_with_mapper(
                     &mapper,
                     type_def,
                     source_path,
                     language,
                     output_dir,
-                )));
+                )]);
             }
             #[cfg(not(feature = "kotlin"))]
             {
                 if _skip_unavailable {
-                    return Ok(None);
+                    return Ok(vec![]);
                 }
                 anyhow::bail!("language 'kotlin' is not enabled in this build")
             }

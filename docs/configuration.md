@@ -13,6 +13,7 @@ Create a `typewriter.toml` file in your project root:
 output_dir = "../frontend/src/types"
 file_style = "kebab-case"
 readonly = false
+zod = true
 
 [python]
 output_dir = "../api/schemas"
@@ -29,7 +30,9 @@ package_name = "api_types"
 
 ```toml
 [typescript]
-# Where generated .ts files are written
+# Where generated TypeScript artifacts are written
+# - <type>.ts (interfaces/types)
+# - <type>.schema.ts (Zod schemas)
 # Default: "./generated/typescript"
 output_dir = "../frontend/src/types"
 
@@ -43,6 +46,11 @@ file_style = "kebab-case"
 # If true, all interface fields become readonly
 # Default: false
 readonly = false
+
+# Toggle sibling Zod schema generation for TypeScript outputs
+# Default: true
+# Runtime dependency when enabled: npm install zod
+zod = true
 ```
 
 ### File Style Examples
@@ -52,6 +60,8 @@ readonly = false
 | `kebab-case` | `user-profile.ts` | `api-response.ts` | `order-item.ts` |
 | `snake_case` | `user_profile.ts` | `api_response.ts` | `order_item.ts` |
 | `PascalCase` | `UserProfile.ts` | `APIResponse.ts` | `OrderItem.ts` |
+
+When `zod = true` (default), typewriter also generates a sibling schema file for each type (for example `UserProfile.schema.ts`).
 
 ---
 
@@ -102,6 +112,7 @@ If no `typewriter.toml` exists, typewriter uses these defaults:
 | TypeScript output dir | `./generated/typescript` |
 | TypeScript file style | `kebab-case` |
 | TypeScript readonly | `false` |
+| TypeScript Zod schemas | enabled (`<type>.schema.ts`) unless `[typescript].zod = false` |
 | Python output dir | `./generated/python` |
 | Python pydantic_v2 | `true` |
 | Go output dir | `./generated/go` |
@@ -117,6 +128,39 @@ typewriter looks for `typewriter.toml` in this order:
 2. Parent directories, walking upward (for workspace setups)
 
 This means you can place one `typewriter.toml` at your workspace root and it applies to all crates.
+
+---
+
+## Type-Level Zod Overrides
+
+Use `#[tw(zod)]` and `#[tw(zod = false)]` on structs/enums to override the global `[typescript].zod` setting for a specific type.
+
+- With global `zod = false`, add `#[tw(zod)]` to generate only selected schema files.
+- With global `zod = true`, add `#[tw(zod = false)]` to skip schema generation for a type.
+
+```rust
+#[derive(TypeWriter)]
+#[sync_to(typescript)]
+pub struct UserProfile {
+    pub id: String,
+}
+
+#[derive(TypeWriter)]
+#[sync_to(typescript)]
+#[tw(zod)]
+pub struct Address {
+    pub city: String,
+}
+
+#[derive(TypeWriter)]
+#[sync_to(typescript)]
+#[tw(zod = false)]
+pub struct Order {
+    pub id: String,
+}
+```
+
+If `[typescript].zod = false`, only `Address.schema.ts` is generated in this example.
 
 ---
 

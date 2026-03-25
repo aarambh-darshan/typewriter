@@ -1,7 +1,7 @@
 [package]
 name = "typewriter-swift"
-version = "0.3.0"
-edition = "2021"
+version = "0.3.1"
+edition = "2024"
 description = "Swift emitter for the typewriter type sync SDK"
 license = "Apache-2.0"
 repository = "https://github.com/aarambh-darshan/typewriter"
@@ -11,4 +11,4 @@ categories = ["development-tools::build-utils"]
 authors = ["Darshan Vichhi <aarambhdarshan@gmail.com>"]
 
 [dependencies]
-typewriter-core = { path = "../typewriter-core", version = "0.3.0" }
+typewriter-core = { path = "../typewriter-core", version = "0.3.1" }

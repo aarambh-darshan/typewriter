@@ -278,3 +278,250 @@ fn test_untagged_enum_snapshot() {
     let output = mapper.emit_type_def(&def);
     insta::assert_snapshot!(output);
 }
+
+#[test]
+fn test_simple_struct_zod_snapshot() {
+    let mapper = TypeScriptMapper::new();
+    let def = TypeDef::Struct(StructDef {
+        name: "UserProfile".to_string(),
+        fields: vec![
+            FieldDef {
+                name: "id".to_string(),
+                ty: TypeKind::Primitive(PrimitiveType::Uuid),
+                optional: false,
+                rename: None,
+                doc: Some("Unique identifier".to_string()),
+                skip: false,
+                flatten: false,
+                type_override: None,
+            },
+            FieldDef {
+                name: "email".to_string(),
+                ty: TypeKind::Primitive(PrimitiveType::String),
+                optional: false,
+                rename: None,
+                doc: None,
+                skip: false,
+                flatten: false,
+                type_override: None,
+            },
+            FieldDef {
+                name: "age".to_string(),
+                ty: TypeKind::Option(Box::new(TypeKind::Primitive(PrimitiveType::U32))),
+                optional: true,
+                rename: None,
+                doc: None,
+                skip: false,
+                flatten: false,
+                type_override: None,
+            },
+            FieldDef {
+                name: "role".to_string(),
+                ty: TypeKind::Named("UserRole".to_string()),
+                optional: false,
+                rename: None,
+                doc: None,
+                skip: false,
+                flatten: false,
+                type_override: None,
+            },
+            FieldDef {
+                name: "created_at".to_string(),
+                ty: TypeKind::Primitive(PrimitiveType::DateTime),
+                optional: false,
+                rename: Some("createdAt".to_string()),
+                doc: None,
+                skip: false,
+                flatten: false,
+                type_override: None,
+            },
+        ],
+        doc: Some("User profile information".to_string()),
+        generics: vec![],
+    });
+
+    let output = mapper.emit_zod_type_def(&def);
+    insta::assert_snapshot!(output);
+}
+
+#[test]
+fn test_tagged_enum_zod_snapshot() {
+    let mapper = TypeScriptMapper::new();
+    let def = TypeDef::Enum(EnumDef {
+        name: "PaymentStatus".to_string(),
+        variants: vec![
+            VariantDef {
+                name: "Pending".to_string(),
+                rename: Some("pending".to_string()),
+                kind: VariantKind::Unit,
+                doc: None,
+            },
+            VariantDef {
+                name: "Completed".to_string(),
+                rename: Some("completed".to_string()),
+                kind: VariantKind::Struct(vec![FieldDef {
+                    name: "transaction_id".to_string(),
+                    ty: TypeKind::Primitive(PrimitiveType::String),
+                    optional: false,
+                    rename: None,
+                    doc: None,
+                    skip: false,
+                    flatten: false,
+                    type_override: None,
+                }]),
+                doc: None,
+            },
+            VariantDef {
+                name: "Failed".to_string(),
+                rename: Some("failed".to_string()),
+                kind: VariantKind::Struct(vec![
+                    FieldDef {
+                        name: "reason".to_string(),
+                        ty: TypeKind::Primitive(PrimitiveType::String),
+                        optional: false,
+                        rename: None,
+                        doc: None,
+                        skip: false,
+                        flatten: false,
+                        type_override: None,
+                    },
+                    FieldDef {
+                        name: "code".to_string(),
+                        ty: TypeKind::Primitive(PrimitiveType::U32),
+                        optional: false,
+                        rename: None,
+                        doc: None,
+                        skip: false,
+                        flatten: false,
+                        type_override: None,
+                    },
+                ]),
+                doc: None,
+            },
+        ],
+        representation: EnumRepr::Internal {
+            tag: "type".to_string(),
+        },
+        doc: Some("Payment processing status".to_string()),
+    });
+
+    let output = mapper.emit_zod_type_def(&def);
+    insta::assert_snapshot!(output);
+}
+
+#[test]
+fn test_external_enum_zod_snapshot() {
+    let mapper = TypeScriptMapper::new();
+    let def = common::external_enum_def();
+    let output = mapper.emit_zod_type_def(&def);
+    insta::assert_snapshot!(output);
+}
+
+#[test]
+fn test_adjacent_enum_zod_snapshot() {
+    let mapper = TypeScriptMapper::new();
+    let def = common::adjacent_enum_def();
+    let output = mapper.emit_zod_type_def(&def);
+    insta::assert_snapshot!(output);
+}
+
+#[test]
+fn test_untagged_enum_zod_snapshot() {
+    let mapper = TypeScriptMapper::new();
+    let def = common::untagged_enum_def();
+    let output = mapper.emit_zod_type_def(&def);
+    insta::assert_snapshot!(output);
+}
+
+#[test]
+fn test_generic_struct_zod_snapshot() {
+    let mapper = TypeScriptMapper::new();
+    let def = TypeDef::Struct(StructDef {
+        name: "Pagination".to_string(),
+        fields: vec![
+            FieldDef {
+                name: "items".to_string(),
+                ty: TypeKind::Vec(Box::new(TypeKind::Named("T".to_string()))),
+                optional: false,
+                rename: None,
+                doc: None,
+                skip: false,
+                flatten: false,
+                type_override: None,
+            },
+            FieldDef {
+                name: "total".to_string(),
+                ty: TypeKind::Primitive(PrimitiveType::U64),
+                optional: false,
+                rename: None,
+                doc: None,
+                skip: false,
+                flatten: false,
+                type_override: None,
+            },
+        ],
+        doc: Some("Paginated response".to_string()),
+        generics: vec!["T".to_string()],
+    });
+
+    let output = mapper.emit_zod_type_def(&def);
+    insta::assert_snapshot!(output);
+}
+
+#[test]
+fn test_self_reference_and_cross_imports_zod_snapshot() {
+    let mapper = TypeScriptMapper::new();
+    let def = TypeDef::Struct(StructDef {
+        name: "Node".to_string(),
+        fields: vec![
+            FieldDef {
+                name: "id".to_string(),
+                ty: TypeKind::Primitive(PrimitiveType::String),
+                optional: false,
+                rename: None,
+                doc: None,
+                skip: false,
+                flatten: false,
+                type_override: None,
+            },
+            FieldDef {
+                name: "next".to_string(),
+                ty: TypeKind::Option(Box::new(TypeKind::Named("Node".to_string()))),
+                optional: true,
+                rename: None,
+                doc: None,
+                skip: false,
+                flatten: false,
+                type_override: None,
+            },
+            FieldDef {
+                name: "user".to_string(),
+                ty: TypeKind::Named("UserProfile".to_string()),
+                optional: false,
+                rename: None,
+                doc: None,
+                skip: false,
+                flatten: false,
+                type_override: None,
+            },
+            FieldDef {
+                name: "page".to_string(),
+                ty: TypeKind::Generic(
+                    "Pagination".to_string(),
+                    vec![TypeKind::Named("UserProfile".to_string())],
+                ),
+                optional: false,
+                rename: None,
+                doc: None,
+                skip: false,
+                flatten: false,
+                type_override: None,
+            },
+        ],
+        doc: None,
+        generics: vec![],
+    });
+
+    let output = mapper.emit_zod_type_def(&def);
+    insta::assert_snapshot!(output);
+}

@@ -38,9 +38,9 @@
 
 ---
 
-## Phase 3 — CLI & Watch Mode `v0.3.0` ✅ *(Current)*
+## Phase 3 — CLI & Watch Mode `v0.3.0` ✅
 
-> **Goal:** Standalone CLI with watch mode and CI integration (implementation complete; publish step pending).
+> **Goal:** Standalone CLI with watch mode and CI integration.
 
 - [x] `typebridge-cli`: `generate`, `check`, `watch` subcommands via `clap`
 - [x] Watch mode with `notify` crate — sub-20ms regeneration on file save
@@ -49,15 +49,15 @@
 - [x] Drift detection report in structured JSON format
 - [x] `cargo typewriter` subcommand (Cargo plugin registration)
 - [x] Colored, human-friendly terminal output
-- [ ] Publish `typebridge-cli v0.1.0`
+- [x] Publish `typebridge-cli v0.1.0`
 
 ---
 
-## Phase 4 — Ecosystem & Polish `v1.0.0` *(Month 7–9)*
+## Phase 4 — Ecosystem & Polish `v1.0.0` *(Current)*
 
 > **Goal:** Stable API. Extended output formats. Great documentation. Community ready.
 
-- [ ] Zod schema generation alongside TypeScript interfaces
+- [x] Zod schema generation alongside TypeScript interfaces
 - [ ] GraphQL SDL type generation
 - [ ] JSON Schema output
 - [ ] VSCode extension: hover over struct → see generated output

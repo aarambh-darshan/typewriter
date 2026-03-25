@@ -124,4 +124,5 @@ jobs:
 ## Notes
 
 - `--lang` filters are intersected with each type's `#[sync_to(...)]` targets.
+- For `typescript` targets, generation and drift checks always include `<type>.ts`, and include `<type>.schema.ts` when Zod generation is enabled for that type (global `[typescript].zod` and `#[tw(zod)]`/`#[tw(zod = false)]` overrides).
 - `generate --all` recursively scans Rust files while skipping `.git` and `target`.

@@ -16,8 +16,11 @@ cargo insta test --accept -p typewriter-test
 
 | Language | Tests | What's Covered |
 |---|---|---|
-| TypeScript | 5 snapshots | Simple struct, collections, simple enum, tagged enum, readonly |
-| Python | 4 snapshots | Simple struct, collections, simple enum, tagged enum |
+| TypeScript | 15 snapshots | Interfaces, enum representations, readonly mode, Zod schema output, generics, self-references/imports |
+| Python | 7 snapshots | Simple struct, collections, and all enum representations |
+| Go | 7 snapshots | Structs, collections, and all enum representations |
+| Swift | 7 snapshots | Structs, collections, and all enum representations |
+| Kotlin | 7 snapshots | Structs, collections, and all enum representations |
 
 Snapshots are stored in `tests/snapshots/` and committed to git.
 

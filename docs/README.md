@@ -10,11 +10,11 @@
 |---|---|
 | [Getting Started](getting-started.md) | Installation, first struct, build & output |
 | [CLI Guide](cli.md) | `typewriter` / `cargo typewriter` commands, watch mode, CI drift checks |
-| [Configuration](configuration.md) | `typewriter.toml` options — output dirs, file naming styles, readonly mode |
+| [Configuration](configuration.md) | `typewriter.toml` options — output dirs, file naming styles, readonly mode, Zod toggles |
 | [Type Mappings](type-mappings.md) | Full Rust → TypeScript / Python type reference |
 | [Serde Compatibility](serde-compatibility.md) | How `#[serde(...)]` attributes are handled |
-| [Custom Attributes](custom-attributes.md) | `#[tw(skip)]`, `#[tw(rename)]`, `#[tw(optional)]` reference |
-| [TypeScript Emitter](typescript-emitter.md) | Interfaces, discriminated unions, readonly, file styles |
+| [Custom Attributes](custom-attributes.md) | `#[tw(skip)]`, `#[tw(rename)]`, `#[tw(optional)]`, `#[tw(zod)]` reference |
+| [TypeScript Emitter](typescript-emitter.md) | Interfaces, discriminated unions, Zod schemas, readonly, file styles |
 | [Python Emitter](python-emitter.md) | Pydantic v2 BaseModel, Enum, Union with Literal |
 | [Go Emitter](go-emitter.md) | Structs, Interfaces, custom UnmarshalJSON |
 | [Swift Emitter](swift-emitter.md) | Codable structs and enums, CodingKeys |

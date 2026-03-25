@@ -7,24 +7,48 @@
 
 ## What It Generates
 
+For each Rust type targeting TypeScript, this crate generates:
+
+- `<type>.ts` with static TypeScript interfaces/types
+- `<type>.schema.ts` with runtime Zod schemas
+
 | Rust | TypeScript |
 |---|---|
-| `struct` | `export interface` |
-| Simple `enum` | String literal union (`"A" \| "B"`) |
-| Tagged `enum` | Discriminated union (`{ type: "A"; ... }`) |
-| `Option<T>` | `field?: T \| undefined` |
-| `Vec<T>` | `T[]` |
-| `HashMap<K,V>` | `Record<K, V>` |
+| `struct` | `export interface` + `export const NameSchema = z.object(...)` |
+| Simple `enum` | String literal union + `z.enum([...])` |
+| Tagged `enum` | Discriminated union + `z.discriminatedUnion(...)` |
+| `Option<T>` | `field?: T \| undefined` + `.optional()` |
+| `Vec<T>` | `T[]` + `z.array(...)` |
+| `HashMap<K,V>` | `Record<K, V>` + `z.record(...)` |
 
 ## Example Output
 
 ```typescript
+// user-profile.ts
 export interface UserProfile {
   id: string;
   email: string;
   age?: number | undefined;
   tags: string[];
 }
+
+// user-profile.schema.ts
+import { z } from 'zod';
+
+export const UserProfileSchema = z.object({
+  "id": z.string(),
+  "email": z.string(),
+  "age": z.number().optional(),
+  "tags": z.array(z.string()),
+});
+```
+
+## Runtime Dependency
+
+Generated schema files import from `zod`:
+
+```bash
+npm install zod
 ```
 
 ## Usage
