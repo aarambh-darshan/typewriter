@@ -12,9 +12,15 @@ typewriter is a **Cargo workspace** split into focused, independently publishabl
 typewriter/
 │
 ├── typewriter-core/            ← 🧱 Shared IR types, traits, config (zero proc-macro deps)
+├── typewriter-engine/          ← ⚙️ Shared scan/parse/emit + drift orchestration
 ├── typewriter-macros/          ← 🔧 Proc macro crate (#[derive(TypeWriter)])
 ├── typewriter-typescript/      ← 🟦 TypeScript emitter
 ├── typewriter-python/          ← 🐍 Python Pydantic emitter
+├── typewriter-go/              ← 🐹 Go emitter
+├── typewriter-swift/           ← 🦅 Swift emitter
+├── typewriter-kotlin/          ← 🚀 Kotlin emitter
+├── typewriter-graphql/         ← 🔷 GraphQL SDL emitter
+├── typewriter-cli/             ← 💻 CLI (typewriter + cargo-typewriter binaries)
 ├── typewriter/                 ← 📦 Main user-facing crate (re-exports)
 ├── typewriter-test/            ← 🧪 Integration + snapshot tests
 └── example/                    ← 📝 Working examples
@@ -65,14 +71,14 @@ This is how your Rust struct becomes a TypeScript interface or Python model:
   │  }                                          │
   └──────────────────────┬──────────────────────┘
                          │  dispatched to each requested emitter
-          ┌──────────────┼──────────────┐
-          ▼              ▼              ▼
-    TypeScript       Python         (Future)
-    emitter          emitter        Go, Swift, Kotlin
-          │              │
-          ▼              ▼
-  user-profile.ts  user_profile.py
-  (written to configured output directories)
+           ┌──────────────┼──────────────┐
+           ▼              ▼              ▼
+     TypeScript       Python         Go, Swift,
+     emitter          emitter        Kotlin, GraphQL
+           │              │
+           ▼              ▼
+   user-profile.ts  user_profile.py
+   (written to configured output directories)
 ```
 
 ---
@@ -160,10 +166,18 @@ typewriter-core (no proc-macro deps)
     ↑
     ├── typewriter-typescript (depends on core)
     ├── typewriter-python (depends on core)
+    ├── typewriter-go (depends on core)
+    ├── typewriter-swift (depends on core)
+    ├── typewriter-kotlin (depends on core)
+    ├── typewriter-graphql (depends on core)
     │
-    └── typewriter-macros (depends on core + emitters via features)
+    └── typewriter-engine (depends on core + all emitters via features)
             ↑
-            └── typewriter (re-exports macros + core)
+            ├── typewriter-macros (depends on core + engine)
+            │       ↑
+            │       └── typewriter (re-exports macros + core)
+            │
+            └── typewriter-cli (depends on core + engine)
 ```
 
 ---
@@ -176,6 +190,12 @@ Order matters. Each crate must be published before any crate that depends on it:
 1. typewriter-core
 2. typewriter-typescript
 3. typewriter-python
-4. typewriter-macros
-5. typewriter
+4. typewriter-go
+5. typewriter-swift
+6. typewriter-kotlin
+7. typewriter-graphql
+8. typewriter-engine
+9. typewriter-macros
+10. typewriter (typebridge)
+11. typewriter-cli (typebridge-cli)
 ```

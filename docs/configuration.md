@@ -22,6 +22,10 @@ pydantic_v2 = true
 [go]
 output_dir = "../backend/types"
 package_name = "api_types"
+
+[graphql]
+output_dir = "../schema/types"
+file_style = "snake_case"
 ```
 
 ---
@@ -103,6 +107,24 @@ package_name = "api_types"
 
 ---
 
+## GraphQL Configuration
+
+```toml
+[graphql]
+# Where generated .graphql files are written
+# Default: "./generated/graphql"
+output_dir = "../schema/types"
+
+# File naming convention for output files
+# Options: "snake_case" (default), "kebab-case", "PascalCase"
+# snake_case: UserProfile → user_profile.graphql
+# kebab-case: UserProfile → user-profile.graphql
+# PascalCase: UserProfile → UserProfile.graphql
+file_style = "snake_case"
+```
+
+---
+
 ## Default Behavior (No Config File)
 
 If no `typewriter.toml` exists, typewriter uses these defaults:
@@ -117,6 +139,12 @@ If no `typewriter.toml` exists, typewriter uses these defaults:
 | Python pydantic_v2 | `true` |
 | Go output dir | `./generated/go` |
 | Go package name | `types` |
+| Swift output dir | `./generated/swift` |
+| Swift file style | `PascalCase` |
+| Kotlin output dir | `./generated/kotlin` |
+| Kotlin file style | `PascalCase` |
+| GraphQL output dir | `./generated/graphql` |
+| GraphQL file style | `snake_case` |
 
 ---
 

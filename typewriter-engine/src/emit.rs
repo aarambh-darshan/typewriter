@@ -80,6 +80,7 @@ pub fn language_label(language: Language) -> &'static str {
         Language::Go => "go",
         Language::Swift => "swift",
         Language::Kotlin => "kotlin",
+        Language::GraphQL => "graphql",
     }
 }
 
@@ -90,6 +91,7 @@ pub fn file_extension(language: Language) -> &'static str {
         Language::Go => "go",
         Language::Swift => "swift",
         Language::Kotlin => "kt",
+        Language::GraphQL => "graphql",
     }
 }
 
@@ -100,6 +102,7 @@ pub fn output_dir_for_language(config: &TypewriterConfig, language: Language) ->
         Language::Go => config.go_output_dir(),
         Language::Swift => config.swift_output_dir(),
         Language::Kotlin => config.kotlin_output_dir(),
+        Language::GraphQL => config.graphql_output_dir(),
     }
 }
 
@@ -262,6 +265,30 @@ fn render_single(
                     return Ok(vec![]);
                 }
                 anyhow::bail!("language 'kotlin' is not enabled in this build")
+            }
+        }
+        Language::GraphQL => {
+            #[cfg(feature = "graphql")]
+            {
+                let mut mapper = typewriter_graphql::GraphQLMapper::new();
+                if let Some(style) = config.graphql_file_style() {
+                    mapper = mapper.with_file_style(style);
+                }
+                let output_dir = project_root.join(config.graphql_output_dir());
+                return Ok(vec![render_with_mapper(
+                    &mapper,
+                    type_def,
+                    source_path,
+                    language,
+                    output_dir,
+                )]);
+            }
+            #[cfg(not(feature = "graphql"))]
+            {
+                if _skip_unavailable {
+                    return Ok(vec![]);
+                }
+                anyhow::bail!("language 'graphql' is not enabled in this build")
             }
         }
     }

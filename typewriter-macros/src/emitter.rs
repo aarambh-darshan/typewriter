@@ -61,6 +61,15 @@ pub fn emit_all(type_def: &TypeDef, targets: &[Language], config: &TypewriterCon
                 let output_dir = base_path.join(config.kotlin_output_dir());
                 emit_single(&mapper, type_def, &output_dir);
             }
+            #[cfg(feature = "graphql")]
+            Language::GraphQL => {
+                let mut mapper = typewriter_graphql::GraphQLMapper::new();
+                if let Some(style) = config.graphql_file_style() {
+                    mapper = mapper.with_file_style(style);
+                }
+                let output_dir = base_path.join(config.graphql_output_dir());
+                emit_single(&mapper, type_def, &output_dir);
+            }
             #[allow(unreachable_patterns)]
             _ => {
                 // Language not enabled via feature flags — silently skip

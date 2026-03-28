@@ -8,6 +8,7 @@ members = [
     "typewriter-go",
     "typewriter-swift",
     "typewriter-kotlin",
+    "typewriter-graphql",
     "typewriter-cli",
     "typewriter",
     "typewriter-test",

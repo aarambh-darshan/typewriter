@@ -11,7 +11,7 @@
 | [Getting Started](getting-started.md) | Installation, first struct, build & output |
 | [CLI Guide](cli.md) | `typewriter` / `cargo typewriter` commands, watch mode, CI drift checks |
 | [Configuration](configuration.md) | `typewriter.toml` options — output dirs, file naming styles, readonly mode, Zod toggles |
-| [Type Mappings](type-mappings.md) | Full Rust → TypeScript / Python type reference |
+| [Type Mappings](type-mappings.md) | Full Rust → TypeScript / Python / Go / Swift / Kotlin / GraphQL type reference |
 | [Serde Compatibility](serde-compatibility.md) | How `#[serde(...)]` attributes are handled |
 | [Custom Attributes](custom-attributes.md) | `#[tw(skip)]`, `#[tw(rename)]`, `#[tw(optional)]`, `#[tw(zod)]` reference |
 | [TypeScript Emitter](typescript-emitter.md) | Interfaces, discriminated unions, Zod schemas, readonly, file styles |
@@ -19,6 +19,7 @@
 | [Go Emitter](go-emitter.md) | Structs, Interfaces, custom UnmarshalJSON |
 | [Swift Emitter](swift-emitter.md) | Codable structs and enums, CodingKeys |
 | [Kotlin Emitter](kotlin-emitter.md) | kotlinx.serialization data classes and sealed classes |
+| [GraphQL Emitter](graphql-emitter.md) | SDL types, enums, unions, custom scalars |
 
 ---
 
@@ -42,4 +43,4 @@ If you're new to typebridge, we recommend reading in this order:
 4. **[Serde Compatibility](serde-compatibility.md)** — leverage your existing serde attributes
 5. **[Custom Attributes](custom-attributes.md)** — fine-tune output with `#[tw(...)]`
 6. **[Configuration](configuration.md)** — customize output directories and file naming
-7. **[TypeScript Emitter](typescript-emitter.md)** / **[Python Emitter](python-emitter.md)** — language-specific details
+7. **[TypeScript Emitter](typescript-emitter.md)** / **[Python Emitter](python-emitter.md)** / **[GraphQL Emitter](graphql-emitter.md)** — language-specific details
