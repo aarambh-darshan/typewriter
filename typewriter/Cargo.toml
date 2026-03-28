@@ -1,6 +1,6 @@
 [package]
 name = "typebridge"
-version = "0.3.1"
+version = "0.4.0"
 edition = "2024"
 description = "Cross-language type synchronization SDK for Rust — define once, generate everywhere"
 license = "Apache-2.0"
@@ -12,13 +12,14 @@ categories = ["development-tools::build-utils"]
 authors = ["Darshan Vichhi <aarambhdarshan@gmail.com>"]
 
 [dependencies]
-typewriter-macros = { path = "../typewriter-macros", version = "0.3.1" }
-typewriter-core = { path = "../typewriter-core", version = "0.3.1" }
+typewriter-macros = { path = "../typewriter-macros", version = "0.4.0" }
+typewriter-core = { path = "../typewriter-core", version = "0.4.0" }
 
 [features]
-default = ["typescript", "python", "go", "swift", "kotlin"]
+default = ["typescript", "python", "go", "swift", "kotlin", "graphql"]
 typescript = ["typewriter-macros/typescript"]
 python = ["typewriter-macros/python"]
 go = ["typewriter-macros/go"]
 swift = ["typewriter-macros/swift"]
 kotlin = ["typewriter-macros/kotlin"]
+graphql = ["typewriter-macros/graphql"]

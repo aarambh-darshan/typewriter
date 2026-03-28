@@ -246,6 +246,7 @@ pub enum Language {
     Go,
     Swift,
     Kotlin,
+    GraphQL,
 }
 
 impl Language {
@@ -257,6 +258,7 @@ impl Language {
             "go" | "golang" => Some(Language::Go),
             "swift" => Some(Language::Swift),
             "kotlin" | "kt" => Some(Language::Kotlin),
+            "graphql" | "gql" => Some(Language::GraphQL),
             _ => None,
         }
     }
@@ -294,6 +296,8 @@ mod tests {
         assert_eq!(Language::from_str("swift"), Some(Language::Swift));
         assert_eq!(Language::from_str("kotlin"), Some(Language::Kotlin));
         assert_eq!(Language::from_str("kt"), Some(Language::Kotlin));
+        assert_eq!(Language::from_str("graphql"), Some(Language::GraphQL));
+        assert_eq!(Language::from_str("gql"), Some(Language::GraphQL));
         assert_eq!(Language::from_str("ruby"), None);
     }
 

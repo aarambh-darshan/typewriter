@@ -58,7 +58,7 @@
 > **Goal:** Stable API. Extended output formats. Great documentation. Community ready.
 
 - [x] Zod schema generation alongside TypeScript interfaces
-- [ ] GraphQL SDL type generation
+- [x] GraphQL SDL type generation
 - [ ] JSON Schema output
 - [ ] VSCode extension: hover over struct → see generated output
 - [ ] Neovim plugin via LSP

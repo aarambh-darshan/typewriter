@@ -24,8 +24,8 @@ colored = "2"
 notify = "6"
 serde_json = "1"
 similar = "2"
-typewriter-core = { path = "../typewriter-core", version = "0.3.1" }
-typewriter-engine = { path = "../typewriter-engine", version = "0.3.1" }
+typewriter-core = { path = "../typewriter-core", version = "0.4.0" }
+typewriter-engine = { path = "../typewriter-engine", version = "0.4.0" }
 
 [dev-dependencies]
 assert_cmd = "2"

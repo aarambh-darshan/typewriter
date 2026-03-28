@@ -30,7 +30,7 @@ pub fn parse_languages(values: &[String]) -> anyhow::Result<Vec<Language>> {
             }
             let lang = Language::from_str(name).ok_or_else(|| {
                 anyhow::anyhow!(
-                    "unknown language '{}'. Supported: typescript, python, go, swift, kotlin",
+                    "unknown language '{}'. Supported: typescript, python, go, swift, kotlin, graphql",
                     name
                 )
             })?;
@@ -49,5 +49,6 @@ pub fn all_languages() -> Vec<Language> {
         Language::Go,
         Language::Swift,
         Language::Kotlin,
+        Language::GraphQL,
     ]
 }

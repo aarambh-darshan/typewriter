@@ -13,6 +13,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.4.0] - 2026-03-28
+
+### Added
+
+#### GraphQL SDL Emitter (`typewriter-graphql`)
+- **New `typewriter-graphql` crate** — generates `.graphql` Schema Definition Language files from Rust types.
+- **Struct → `type`** — Rust structs map to GraphQL `type` declarations with `!` for non-null fields and nullable for `Option<T>`.
+- **Simple enum → `enum`** — all-unit Rust enums map to GraphQL `enum` declarations.
+- **Data-carrying enum → `union` + types** — each variant becomes its own `type`, tied together with a `union` declaration.
+- **Custom scalars** — `DateTime` and `JSON` custom scalar declarations are auto-emitted when needed.
+- **Doc comments** — Rust `///` doc comments render as GraphQL `"""` description blocks.
+- **All serde enum representations** — supports `External`, `Internal`, `Adjacent`, and `Untagged` representations with appropriate discriminator fields.
+- **Type mapping** — `String`→`String`, `bool`→`Boolean`, `u32`→`Int`, `f64`→`Float`, `Uuid`→`ID`, `HashMap`→`JSON`, `Vec<T>`→`[T!]`.
+- **Feature-gated** — `graphql` feature flag in `typewriter-engine`, `typewriter-macros`, and `typebridge` crates (enabled by default).
+- **Configuration** — `[graphql]` section in `typewriter.toml` with `output_dir` and `file_style` settings.
+- Added `Language::GraphQL` variant to core IR with `"graphql"` / `"gql"` string parsing.
+- 9 unit tests in `typewriter-graphql` and 11 snapshot tests in `typewriter-test`.
+
+---
+
 ## [0.3.1] - 2026-03-25
 
 ### Added
@@ -203,7 +223,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[unreleased]: https://github.com/aarambh-darshan/typewriter/compare/v0.3.1...HEAD
+[unreleased]: https://github.com/aarambh-darshan/typewriter/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/aarambh-darshan/typewriter/compare/v0.3.1...v0.4.0
 [0.3.1]: https://github.com/aarambh-darshan/typewriter/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/aarambh-darshan/typewriter/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/aarambh-darshan/typewriter/compare/v0.1.3...v0.2.0

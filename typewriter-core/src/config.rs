@@ -19,6 +19,8 @@ pub struct TypewriterConfig {
     pub swift: Option<SwiftConfig>,
     /// Kotlin emitter configuration
     pub kotlin: Option<KotlinConfig>,
+    /// GraphQL emitter configuration
+    pub graphql: Option<GraphQLConfig>,
 }
 
 /// TypeScript-specific configuration.
@@ -76,6 +78,15 @@ pub struct KotlinConfig {
     pub file_style: Option<String>,
     /// Package name for generated files (default: "types")
     pub package_name: Option<String>,
+}
+
+/// GraphQL-specific configuration.
+#[derive(Debug, Clone, Deserialize)]
+pub struct GraphQLConfig {
+    /// Output directory for generated `.graphql` files
+    pub output_dir: Option<String>,
+    /// File naming style: `snake_case` (default), `kebab-case`, `PascalCase`
+    pub file_style: Option<String>,
 }
 
 impl TypewriterConfig {
@@ -216,6 +227,22 @@ impl TypewriterConfig {
             .and_then(|k| k.package_name.as_deref())
             .unwrap_or("types")
     }
+
+    /// Get the GraphQL output directory, with a default fallback.
+    pub fn graphql_output_dir(&self) -> &str {
+        self.graphql
+            .as_ref()
+            .and_then(|g| g.output_dir.as_deref())
+            .unwrap_or("./generated/graphql")
+    }
+
+    /// Get the GraphQL file naming style.
+    pub fn graphql_file_style(&self) -> Option<crate::naming::FileStyle> {
+        self.graphql
+            .as_ref()
+            .and_then(|g| g.file_style.as_deref())
+            .and_then(crate::naming::FileStyle::from_str)
+    }
 }
 
 #[cfg(test)]
@@ -230,6 +257,7 @@ mod tests {
         assert!(config.go.is_none());
         assert!(config.swift.is_none());
         assert!(config.kotlin.is_none());
+        assert!(config.graphql.is_none());
         assert_eq!(config.ts_output_dir(), "./generated/typescript");
         assert_eq!(config.py_output_dir(), "./generated/python");
         assert_eq!(config.go_output_dir(), "./generated/go");
@@ -237,6 +265,7 @@ mod tests {
         assert_eq!(config.swift_output_dir(), "./generated/swift");
         assert_eq!(config.kotlin_output_dir(), "./generated/kotlin");
         assert_eq!(config.kotlin_package_name(), "types");
+        assert_eq!(config.graphql_output_dir(), "./generated/graphql");
         assert!(!config.ts_readonly());
         assert!(config.ts_zod_enabled());
     }
