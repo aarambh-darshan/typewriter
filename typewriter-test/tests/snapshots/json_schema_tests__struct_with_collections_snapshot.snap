@@ -1,0 +1,41 @@
+---
+source: typewriter-test/tests/json_schema_tests.rs
+expression: output
+---
+{
+  "$id": "ApiResponse",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "coordinates": {
+      "maxItems": 2,
+      "minItems": 2,
+      "prefixItems": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        }
+      ],
+      "type": "array"
+    },
+    "items": {
+      "items": {
+        "$ref": "item.schema.json"
+      },
+      "type": "array"
+    },
+    "metadata": {
+      "additionalProperties": {},
+      "type": "object"
+    }
+  },
+  "required": [
+    "items",
+    "metadata",
+    "coordinates"
+  ],
+  "title": "ApiResponse",
+  "type": "object"
+}

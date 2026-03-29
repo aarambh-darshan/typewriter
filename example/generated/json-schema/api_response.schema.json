@@ -1,0 +1,31 @@
+{
+  "$id": "ApiResponse",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "An API response wrapper.",
+  "properties": {
+    "message": {
+      "description": "Response message",
+      "type": "string"
+    },
+    "status_code": {
+      "description": "HTTP status code",
+      "type": "integer"
+    },
+    "success": {
+      "description": "Whether the request was successful",
+      "type": "boolean"
+    },
+    "total_count": {
+      "description": "Number of items returned",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "status_code",
+    "message",
+    "success"
+  ],
+  "title": "ApiResponse",
+  "type": "object"
+}

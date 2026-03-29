@@ -1,0 +1,24 @@
+{
+  "$id": "UserRecord",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Internal user record (password_hash excluded from generated types).",
+  "properties": {
+    "email": {
+      "type": "string"
+    },
+    "id": {
+      "type": "string"
+    },
+    "username": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "username",
+    "email"
+  ],
+  "title": "UserRecord",
+  "type": "object"
+}

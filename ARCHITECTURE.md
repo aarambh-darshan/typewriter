@@ -20,6 +20,7 @@ typewriter/
 ├── typewriter-swift/           ← 🦅 Swift emitter
 ├── typewriter-kotlin/          ← 🚀 Kotlin emitter
 ├── typewriter-graphql/         ← 🔷 GraphQL SDL emitter
+├── typewriter-json-schema/     ← 📋 JSON Schema emitter
 ├── typewriter-cli/             ← 💻 CLI (typewriter + cargo-typewriter binaries)
 ├── typewriter/                 ← 📦 Main user-facing crate (re-exports)
 ├── typewriter-test/            ← 🧪 Integration + snapshot tests
@@ -170,6 +171,7 @@ typewriter-core (no proc-macro deps)
     ├── typewriter-swift (depends on core)
     ├── typewriter-kotlin (depends on core)
     ├── typewriter-graphql (depends on core)
+    ├── typewriter-json-schema (depends on core)
     │
     └── typewriter-engine (depends on core + all emitters via features)
             ↑
@@ -194,8 +196,9 @@ Order matters. Each crate must be published before any crate that depends on it:
 5. typewriter-swift
 6. typewriter-kotlin
 7. typewriter-graphql
-8. typewriter-engine
-9. typewriter-macros
-10. typewriter (typebridge)
-11. typewriter-cli (typebridge-cli)
+8. typewriter-json-schema
+9. typewriter-engine
+10. typewriter-macros
+11. typewriter (typebridge)
+12. typewriter-cli (typebridge-cli)
 ```

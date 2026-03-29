@@ -1,0 +1,31 @@
+---
+source: typewriter-test/tests/json_schema_tests.rs
+expression: output
+---
+{
+  "$id": "Pagination",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Paginated response wrapper",
+  "properties": {
+    "items": {
+      "items": {
+        "$ref": "t.schema.json"
+      },
+      "type": "array"
+    },
+    "page": {
+      "type": "integer"
+    },
+    "total": {
+      "type": "integer"
+    }
+  },
+  "required": [
+    "items",
+    "total",
+    "page"
+  ],
+  "title": "Pagination",
+  "type": "object"
+}

@@ -1,0 +1,19 @@
+---
+source: typewriter-test/tests/json_schema_tests.rs
+expression: output
+---
+{
+  "$id": "User",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "email": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "email"
+  ],
+  "title": "User",
+  "type": "object"
+}

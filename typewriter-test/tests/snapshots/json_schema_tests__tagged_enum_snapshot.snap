@@ -1,0 +1,63 @@
+---
+source: typewriter-test/tests/json_schema_tests.rs
+expression: output
+---
+{
+  "$id": "PaymentStatus",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Payment processing status",
+  "oneOf": [
+    {
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "pending",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "transaction_id": {
+          "type": "string"
+        },
+        "type": {
+          "const": "completed",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "transaction_id"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "type": "integer"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "type": {
+          "const": "failed",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "reason",
+        "code"
+      ],
+      "type": "object"
+    }
+  ],
+  "title": "PaymentStatus"
+}

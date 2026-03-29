@@ -1,0 +1,60 @@
+---
+source: typewriter-test/tests/json_schema_tests.rs
+expression: output
+---
+{
+  "$id": "Shape",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Geometric shape",
+  "oneOf": [
+    {
+      "additionalProperties": false,
+      "properties": {
+        "Circle": {
+          "properties": {
+            "radius": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "radius"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "Circle"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "Rectangle": {
+          "properties": {
+            "height": {
+              "type": "number"
+            },
+            "width": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "width",
+            "height"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "Rectangle"
+      ],
+      "type": "object"
+    },
+    {
+      "const": "Point",
+      "type": "string"
+    }
+  ],
+  "title": "Shape"
+}

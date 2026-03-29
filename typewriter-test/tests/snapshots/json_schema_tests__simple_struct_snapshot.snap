@@ -1,0 +1,38 @@
+---
+source: typewriter-test/tests/json_schema_tests.rs
+expression: output
+---
+{
+  "$id": "UserProfile",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "User profile information",
+  "properties": {
+    "age": {
+      "type": "integer"
+    },
+    "createdAt": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "id": {
+      "description": "Unique identifier",
+      "format": "uuid",
+      "type": "string"
+    },
+    "role": {
+      "$ref": "user_role.schema.json"
+    }
+  },
+  "required": [
+    "id",
+    "email",
+    "role",
+    "createdAt"
+  ],
+  "title": "UserProfile",
+  "type": "object"
+}
