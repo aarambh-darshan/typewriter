@@ -60,8 +60,6 @@
 - [x] Zod schema generation alongside TypeScript interfaces
 - [x] GraphQL SDL type generation
 - [x] JSON Schema output
-- [ ] VSCode extension: hover over struct → see generated output
-- [ ] Neovim plugin via LSP
 - [ ] Comprehensive `docs.rs` documentation
 - [ ] `mdBook`-based guide site
 - [ ] Publish `typewriter v1.0.0` — stable public API guarantee
