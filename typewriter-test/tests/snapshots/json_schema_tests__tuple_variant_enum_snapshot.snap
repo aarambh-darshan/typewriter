@@ -1,0 +1,44 @@
+---
+source: typewriter-test/tests/json_schema_tests.rs
+expression: output
+---
+{
+  "$id": "Message",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "WebSocket message types",
+  "oneOf": [
+    {
+      "additionalProperties": false,
+      "description": "A text message",
+      "properties": {
+        "Text": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "Text"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "Binary": {
+          "items": {
+            "type": "integer"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "Binary"
+      ],
+      "type": "object"
+    },
+    {
+      "const": "Ping",
+      "type": "string"
+    }
+  ],
+  "title": "Message"
+}

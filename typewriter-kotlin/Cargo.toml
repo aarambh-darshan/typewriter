@@ -1,6 +1,6 @@
 [package]
 name = "typewriter-kotlin"
-version = "0.4.0"
+version = "0.4.1"
 edition = "2024"
 description = "Kotlin emitter for the typewriter type sync SDK"
 license = "Apache-2.0"
@@ -11,4 +11,4 @@ categories = ["development-tools::build-utils"]
 authors = ["Darshan Vichhi <aarambhdarshan@gmail.com>"]
 
 [dependencies]
-typewriter-core = { path = "../typewriter-core", version = "0.4.0" }
+typewriter-core = { path = "../typewriter-core", version = "0.4.1" }

@@ -1,0 +1,44 @@
+{
+  "$id": "UserProfile",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "A user profile in the system.",
+  "properties": {
+    "age": {
+      "description": "User's age (optional)",
+      "type": "integer"
+    },
+    "display_name": {
+      "description": "User's display name",
+      "type": "string"
+    },
+    "email": {
+      "description": "User's email address",
+      "type": "string"
+    },
+    "id": {
+      "description": "Unique user identifier",
+      "type": "string"
+    },
+    "is_verified": {
+      "description": "Whether the user's email is verified",
+      "type": "boolean"
+    },
+    "tags": {
+      "description": "List of tags associated with the user",
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "id",
+    "email",
+    "display_name",
+    "is_verified",
+    "tags"
+  ],
+  "title": "UserProfile",
+  "type": "object"
+}

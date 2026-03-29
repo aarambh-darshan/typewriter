@@ -1,0 +1,15 @@
+---
+source: typewriter-test/tests/json_schema_tests.rs
+expression: output
+---
+{
+  "$id": "Role",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "enum": [
+    "Admin",
+    "User",
+    "Guest"
+  ],
+  "title": "Role",
+  "type": "string"
+}

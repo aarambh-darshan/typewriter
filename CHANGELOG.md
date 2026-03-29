@@ -13,6 +13,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.4.1] - 2026-03-29
+
+### Added
+
+#### JSON Schema Emitter (`typewriter-json-schema`)
+- **New `typewriter-json-schema` crate** — generates `.schema.json` files conforming to JSON Schema Draft 2020-12 from Rust structs and enums.
+- **Struct → `object`** — Rust structs map to `{ "type": "object", "properties": {...}, "required": [...] }` with `additionalProperties: false`.
+- **Simple enum → `string` enum** — all-unit Rust enums map to `{ "type": "string", "enum": [...] }`.
+- **Data-carrying enum → `oneOf`** — each variant becomes a sub-schema, tied together with `oneOf` composition.
+- **All serde enum representations** — supports `External`, `Internal`, `Adjacent`, and `Untagged` representations with appropriate discriminator `const` fields.
+- **Format annotations** — `Uuid` → `"format": "uuid"`, `DateTime` → `"format": "date-time"`, `NaiveDate` → `"format": "date"`.
+- **Type mapping** — `String`→`string`, `bool`→`boolean`, integer types→`integer`, float types→`number`, `Vec<T>`→`array`, `HashMap<K,V>`→`object` with `additionalProperties`, tuples→`prefixItems`.
+- **Feature-gated** — `json_schema` feature flag in `typewriter-engine`, `typewriter-macros`, and `typebridge` crates (enabled by default).
+- **Configuration** — `[json_schema]` section in `typewriter.toml` with `output_dir` and `file_style` settings.
+- Added `Language::JsonSchema` variant to core IR with `"json_schema"` / `"jsonschema"` string parsing.
+- 15 unit tests in `typewriter-json-schema` and 11 snapshot tests in `typewriter-test`.
+
+### Changed
+- Bumped CLI version to `0.2.1`.
+
 ## [0.4.0] - 2026-03-28
 
 ### Added
@@ -223,7 +243,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[unreleased]: https://github.com/aarambh-darshan/typewriter/compare/v0.4.0...HEAD
+[unreleased]: https://github.com/aarambh-darshan/typewriter/compare/v0.4.1...HEAD
+[0.4.1]: https://github.com/aarambh-darshan/typewriter/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/aarambh-darshan/typewriter/compare/v0.3.1...v0.4.0
 [0.3.1]: https://github.com/aarambh-darshan/typewriter/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/aarambh-darshan/typewriter/compare/v0.2.0...v0.3.0

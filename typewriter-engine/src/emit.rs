@@ -81,6 +81,7 @@ pub fn language_label(language: Language) -> &'static str {
         Language::Swift => "swift",
         Language::Kotlin => "kotlin",
         Language::GraphQL => "graphql",
+        Language::JsonSchema => "json_schema",
     }
 }
 
@@ -92,6 +93,7 @@ pub fn file_extension(language: Language) -> &'static str {
         Language::Swift => "swift",
         Language::Kotlin => "kt",
         Language::GraphQL => "graphql",
+        Language::JsonSchema => "schema.json",
     }
 }
 
@@ -103,6 +105,7 @@ pub fn output_dir_for_language(config: &TypewriterConfig, language: Language) ->
         Language::Swift => config.swift_output_dir(),
         Language::Kotlin => config.kotlin_output_dir(),
         Language::GraphQL => config.graphql_output_dir(),
+        Language::JsonSchema => config.json_schema_output_dir(),
     }
 }
 
@@ -289,6 +292,30 @@ fn render_single(
                     return Ok(vec![]);
                 }
                 anyhow::bail!("language 'graphql' is not enabled in this build")
+            }
+        }
+        Language::JsonSchema => {
+            #[cfg(feature = "json_schema")]
+            {
+                let mut mapper = typewriter_json_schema::JsonSchemaMapper::new();
+                if let Some(style) = config.json_schema_file_style() {
+                    mapper = mapper.with_file_style(style);
+                }
+                let output_dir = project_root.join(config.json_schema_output_dir());
+                return Ok(vec![render_with_mapper(
+                    &mapper,
+                    type_def,
+                    source_path,
+                    language,
+                    output_dir,
+                )]);
+            }
+            #[cfg(not(feature = "json_schema"))]
+            {
+                if _skip_unavailable {
+                    return Ok(vec![]);
+                }
+                anyhow::bail!("language 'json_schema' is not enabled in this build")
             }
         }
     }

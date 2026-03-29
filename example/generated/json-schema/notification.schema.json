@@ -1,0 +1,74 @@
+{
+  "$id": "Notification",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Notification types sent to users.",
+  "oneOf": [
+    {
+      "additionalProperties": false,
+      "description": "A simple text message",
+      "properties": {
+        "body": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "type": {
+          "const": "Message",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "title",
+        "body"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "description": "A friend request",
+      "properties": {
+        "from_user": {
+          "type": "string"
+        },
+        "type": {
+          "const": "FriendRequest",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "from_user"
+      ],
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "description": "A system alert",
+      "properties": {
+        "code": {
+          "type": "integer"
+        },
+        "message": {
+          "type": "string"
+        },
+        "severity": {
+          "type": "string"
+        },
+        "type": {
+          "const": "SystemAlert",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "severity",
+        "message",
+        "code"
+      ],
+      "type": "object"
+    }
+  ],
+  "title": "Notification"
+}

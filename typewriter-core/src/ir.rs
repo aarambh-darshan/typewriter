@@ -247,6 +247,7 @@ pub enum Language {
     Swift,
     Kotlin,
     GraphQL,
+    JsonSchema,
 }
 
 impl Language {
@@ -259,6 +260,7 @@ impl Language {
             "swift" => Some(Language::Swift),
             "kotlin" | "kt" => Some(Language::Kotlin),
             "graphql" | "gql" => Some(Language::GraphQL),
+            "json_schema" | "jsonschema" => Some(Language::JsonSchema),
             _ => None,
         }
     }
@@ -298,6 +300,8 @@ mod tests {
         assert_eq!(Language::from_str("kt"), Some(Language::Kotlin));
         assert_eq!(Language::from_str("graphql"), Some(Language::GraphQL));
         assert_eq!(Language::from_str("gql"), Some(Language::GraphQL));
+        assert_eq!(Language::from_str("json_schema"), Some(Language::JsonSchema));
+        assert_eq!(Language::from_str("jsonschema"), Some(Language::JsonSchema));
         assert_eq!(Language::from_str("ruby"), None);
     }
 

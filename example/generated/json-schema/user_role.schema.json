@@ -1,0 +1,13 @@
+{
+  "$id": "UserRole",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "User roles in the application.",
+  "enum": [
+    "Admin",
+    "Moderator",
+    "Member",
+    "Guest"
+  ],
+  "title": "UserRole",
+  "type": "string"
+}

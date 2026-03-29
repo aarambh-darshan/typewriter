@@ -125,6 +125,24 @@ file_style = "snake_case"
 
 ---
 
+## JSON Schema Configuration
+
+```toml
+[json_schema]
+# Where generated .schema.json files are written
+# Default: "./generated/json-schema"
+output_dir = "../schemas"
+
+# File naming convention for output files
+# Options: "snake_case" (default), "kebab-case", "PascalCase"
+# snake_case: UserProfile → user_profile.schema.json
+# kebab-case: UserProfile → user-profile.schema.json
+# PascalCase: UserProfile → UserProfile.schema.json
+file_style = "snake_case"
+```
+
+---
+
 ## Default Behavior (No Config File)
 
 If no `typewriter.toml` exists, typewriter uses these defaults:
@@ -145,6 +163,8 @@ If no `typewriter.toml` exists, typewriter uses these defaults:
 | Kotlin file style | `PascalCase` |
 | GraphQL output dir | `./generated/graphql` |
 | GraphQL file style | `snake_case` |
+| JSON Schema output dir | `./generated/json-schema` |
+| JSON Schema file style | `snake_case` |
 
 ---
 

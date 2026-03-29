@@ -1,0 +1,33 @@
+---
+source: typewriter-test/tests/json_schema_tests.rs
+expression: output
+---
+{
+  "$id": "StringOrNumber",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "oneOf": [
+    {
+      "properties": {
+        "value": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ],
+      "type": "object"
+    },
+    {
+      "properties": {
+        "value": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "value"
+      ],
+      "type": "object"
+    }
+  ],
+  "title": "StringOrNumber"
+}

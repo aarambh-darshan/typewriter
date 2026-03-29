@@ -1,0 +1,35 @@
+{
+  "$id": "Pagination",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "A paginated response wrapper.",
+  "properties": {
+    "items": {
+      "description": "The items on this page",
+      "items": {
+        "$ref": "t.schema.json"
+      },
+      "type": "array"
+    },
+    "page": {
+      "description": "Current page number (1-indexed)",
+      "type": "integer"
+    },
+    "per_page": {
+      "description": "Number of items per page",
+      "type": "integer"
+    },
+    "total": {
+      "description": "Total number of items across all pages",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "items",
+    "total",
+    "page",
+    "per_page"
+  ],
+  "title": "Pagination",
+  "type": "object"
+}

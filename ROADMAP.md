@@ -59,7 +59,7 @@
 
 - [x] Zod schema generation alongside TypeScript interfaces
 - [x] GraphQL SDL type generation
-- [ ] JSON Schema output
+- [x] JSON Schema output
 - [ ] VSCode extension: hover over struct → see generated output
 - [ ] Neovim plugin via LSP
 - [ ] Comprehensive `docs.rs` documentation
