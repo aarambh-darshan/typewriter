@@ -18,7 +18,7 @@ data class UserProfile(
     /** Unique identifier */
     val id: String,
     val email: String,
-    val age: UInt?? = null,
+    val age: UInt? = null,
     val role: UserRole,
     val createdAt: String,
 )

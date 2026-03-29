@@ -48,7 +48,8 @@ pub fn render_struct(mapper: &KotlinMapper, def: &StructDef) -> String {
             .unwrap_or_else(|| mapper.map_type(&field.ty));
 
         if field.optional {
-            out.push_str(&format!("    val {}: {}? = null", kotlin_name, kotlin_type));
+            let suffix = if kotlin_type.ends_with('?') { "" } else { "?" };
+            out.push_str(&format!("    val {}: {}{} = null", kotlin_name, kotlin_type, suffix));
         } else {
             out.push_str(&format!("    val {}: {}", kotlin_name, kotlin_type));
         }
@@ -223,9 +224,10 @@ fn render_kotlin_variant(
                     .clone()
                     .unwrap_or_else(|| mapper.map_type(&field.ty));
                 if field.optional {
+                    let suffix = if kotlin_type.ends_with('?') { "" } else { "?" };
                     out.push_str(&format!(
-                        "        val {}: {}? = null,\n",
-                        kotlin_name, kotlin_type
+                        "        val {}: {}{} = null,\n",
+                        kotlin_name, kotlin_type, suffix
                     ));
                 } else {
                     out.push_str(&format!("        val {}: {},\n", kotlin_name, kotlin_type));

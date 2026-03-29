@@ -41,7 +41,8 @@ pub fn render_struct(mapper: &SwiftMapper, def: &StructDef) -> String {
         let field_name = to_camel_case(&field.name);
 
         if field.optional {
-            out.push_str(&format!("    let {}: {}?\n", field_name, swift_type));
+            let suffix = if swift_type.ends_with('?') { "" } else { "?" };
+            out.push_str(&format!("    let {}: {}{}\n", field_name, swift_type, suffix));
         } else {
             out.push_str(&format!("    let {}: {}\n", field_name, swift_type));
         }
@@ -275,7 +276,8 @@ fn render_swift_case(mapper: &SwiftMapper, out: &mut String, case_name: &str, ki
                         .unwrap_or_else(|| mapper.map_type(&f.ty));
                     let name = to_camel_case(&f.name);
                     if f.optional {
-                        format!("{}: {}?", name, swift_type)
+                        let suffix = if swift_type.ends_with('?') { "" } else { "?" };
+                        format!("{}: {}{}", name, swift_type, suffix)
                     } else {
                         format!("{}: {}", name, swift_type)
                     }

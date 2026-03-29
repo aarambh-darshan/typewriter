@@ -35,4 +35,4 @@ Used internally by `typewriter-macros`. Most users should depend on the main [`t
 
 ## License
 
-Apache-2.0 — [Darshan Vichhi](https://github.com/aarambh-darshan)
+Apache-2.0 — [Aarambh Dev Hub](https://github.com/aarambh-darshan)

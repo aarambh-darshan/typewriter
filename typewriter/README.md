@@ -11,7 +11,7 @@
 
 ```toml
 [dependencies]
-typebridge = "0.1.2"
+typebridge = "0.4.2"
 serde = { version = "1", features = ["derive"] }
 ```
 
@@ -43,4 +43,4 @@ See the full [documentation](https://github.com/aarambh-darshan/typewriter) for 
 
 ## License
 
-Apache-2.0 — [Darshan Vichhi](https://github.com/aarambh-darshan)
+Apache-2.0 — [Aarambh Dev Hub](https://github.com/aarambh-darshan)
