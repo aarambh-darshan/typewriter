@@ -15,12 +15,12 @@
 - [x] Python emitter: Pydantic v2 `BaseModel`, `Enum`, `Union` with `Literal` discriminators
 - [x] Basic `#[serde(rename)]` and `#[serde(skip)]` compatibility
 - [x] `typewriter.toml` config file parsing
-- [x] Unit tests + snapshot tests (41 tests passing)
+- [x] Unit tests + snapshot tests
 - [x] Publish to crates.io as [`typebridge`](https://crates.io/crates/typebridge) v0.1.1
 
 ---
 
-## Phase 2 — Core Completion `v0.2.0` *(Month 3–4)*
+## Phase 2 — Core Completion `v0.2.0` ✅
 
 > **Goal:** All 5 language emitters. Full enum support. Generics. Feature-complete proc macro API.
 

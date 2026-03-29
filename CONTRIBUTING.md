@@ -285,4 +285,4 @@ By contributing to typewriter, you agree that your contributions will be license
 
 **Thank you for making typewriter better! 🦀**
 
-*Maintained by [Darshan Vichhi](https://github.com/aarambh-darshan)*</div>
+*Maintained by [Aarambh Dev Hub](https://github.com/aarambh-darshan)*</div>

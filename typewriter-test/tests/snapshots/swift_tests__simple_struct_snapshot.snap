@@ -12,7 +12,7 @@ struct UserProfile: Codable {
     /// Unique identifier
     let id: UUID
     let email: String
-    let age: UInt32??
+    let age: UInt32?
     let role: UserRole
     let createdAt: Date
 

@@ -13,6 +13,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.4.2] - 2026-03-29
+
+### Fixed
+- Fixed Kotlin emitter writing `??` for optional types resulting in compilation errors (`val field: Type?? = null`).
+- Fixed Swift emitter writing `??` for optional types.
+- Updated all codebase documentation to attribute copyright to Aarambh Dev Hub correctly.
+- Cleaned up metrics and task counts in the `ROADMAP.md` doc.
+- `typebridge-cli` version bumped to `0.2.2`.
+
+---
+
 ## [0.4.1] - 2026-03-29
 
 ### Added
@@ -243,7 +254,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[unreleased]: https://github.com/aarambh-darshan/typewriter/compare/v0.4.1...HEAD
+[unreleased]: https://github.com/aarambh-darshan/typewriter/compare/v0.4.2...HEAD
+[0.4.2]: https://github.com/aarambh-darshan/typewriter/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/aarambh-darshan/typewriter/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/aarambh-darshan/typewriter/compare/v0.3.1...v0.4.0
 [0.3.1]: https://github.com/aarambh-darshan/typewriter/compare/v0.3.0...v0.3.1

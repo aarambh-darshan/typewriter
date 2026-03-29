@@ -1,6 +1,6 @@
 [package]
 name = "typewriter-core"
-version = "0.4.1"
+version = "0.4.2"
 edition = "2024"
 description = "Core IR types, traits, and config for the typewriter type sync SDK"
 license = "Apache-2.0"
