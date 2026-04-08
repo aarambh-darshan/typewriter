@@ -2,7 +2,7 @@
 
 use typewriter_core::ir::*;
 use typewriter_core::mapper::TypeMapper;
-use typewriter_core::naming::{to_file_style, FileStyle};
+use typewriter_core::naming::{FileStyle, to_file_style};
 
 use crate::emitter;
 
@@ -119,12 +119,9 @@ impl TypeMapper for GoMapper {
 
         fn collect_std_imports(ty: &TypeKind, imports: &mut std::collections::BTreeSet<String>) {
             match ty {
-                TypeKind::Primitive(p) => match p {
-                    PrimitiveType::DateTime | PrimitiveType::NaiveDate => {
-                        imports.insert("time".to_string());
-                    }
-                    _ => {}
-                },
+                TypeKind::Primitive(PrimitiveType::DateTime | PrimitiveType::NaiveDate) => {
+                    imports.insert("time".to_string());
+                }
                 TypeKind::Option(inner) => collect_std_imports(inner, imports),
                 TypeKind::Vec(inner) => collect_std_imports(inner, imports),
                 TypeKind::HashMap(k, v) => {

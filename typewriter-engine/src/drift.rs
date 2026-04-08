@@ -7,8 +7,8 @@ use std::path::Path;
 use std::time::{SystemTime, UNIX_EPOCH};
 use walkdir::WalkDir;
 
-use crate::emit::{file_extension, language_label, output_dir_for_language, GeneratedFile};
-use crate::{all_languages, Language, TypewriterConfig};
+use crate::emit::{GeneratedFile, file_extension, language_label, output_dir_for_language};
+use crate::{Language, TypewriterConfig, all_languages};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "snake_case")]

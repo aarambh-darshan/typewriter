@@ -362,9 +362,9 @@ fn test_tuple_variant_enum_snapshot() {
             VariantDef {
                 name: "Binary".to_string(),
                 rename: None,
-                kind: VariantKind::Tuple(vec![
-                    TypeKind::Vec(Box::new(TypeKind::Primitive(PrimitiveType::U8))),
-                ]),
+                kind: VariantKind::Tuple(vec![TypeKind::Vec(Box::new(TypeKind::Primitive(
+                    PrimitiveType::U8,
+                )))]),
                 doc: None,
             },
             VariantDef {

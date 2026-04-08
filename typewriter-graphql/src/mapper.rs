@@ -2,7 +2,7 @@
 
 use typewriter_core::ir::*;
 use typewriter_core::mapper::TypeMapper;
-use typewriter_core::naming::{to_file_style, FileStyle};
+use typewriter_core::naming::{FileStyle, to_file_style};
 
 use crate::emitter;
 
@@ -288,10 +288,7 @@ mod tests {
     fn test_generic_mapped_as_base_name() {
         let m = mapper();
         assert_eq!(
-            m.map_generic(
-                "Pagination",
-                &[TypeKind::Named("User".to_string())]
-            ),
+            m.map_generic("Pagination", &[TypeKind::Named("User".to_string())]),
             "Pagination"
         );
     }

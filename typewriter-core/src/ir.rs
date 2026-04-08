@@ -252,6 +252,7 @@ pub enum Language {
 
 impl Language {
     /// Parse a language name from a string (case-insensitive).
+    #[allow(clippy::should_implement_trait)]
     pub fn from_str(s: &str) -> Option<Language> {
         match s.to_lowercase().as_str() {
             "typescript" | "ts" => Some(Language::TypeScript),
@@ -300,7 +301,10 @@ mod tests {
         assert_eq!(Language::from_str("kt"), Some(Language::Kotlin));
         assert_eq!(Language::from_str("graphql"), Some(Language::GraphQL));
         assert_eq!(Language::from_str("gql"), Some(Language::GraphQL));
-        assert_eq!(Language::from_str("json_schema"), Some(Language::JsonSchema));
+        assert_eq!(
+            Language::from_str("json_schema"),
+            Some(Language::JsonSchema)
+        );
         assert_eq!(Language::from_str("jsonschema"), Some(Language::JsonSchema));
         assert_eq!(Language::from_str("ruby"), None);
     }

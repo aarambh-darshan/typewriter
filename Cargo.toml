@@ -13,6 +13,7 @@ members = [
     "typewriter-cli",
     "typewriter",
     "typewriter-test",
+    "typewriter-book",
     "example",
 ]
 resolver = "2"

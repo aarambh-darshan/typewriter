@@ -1,5 +1,11 @@
+#![allow(
+    clippy::useless_format,
+    clippy::single_char_add_str,
+    clippy::if_same_then_else
+)]
+
 use crate::mapper::GoMapper;
-use typewriter_core::ir::{EnumDef, EnumRepr, FieldDef, StructDef, VariantKind};
+use typewriter_core::ir::{EnumDef, EnumRepr, StructDef, VariantKind};
 use typewriter_core::mapper::TypeMapper;
 
 pub fn render_struct(mapper: &GoMapper, def: &StructDef) -> String {

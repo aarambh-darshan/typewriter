@@ -20,6 +20,7 @@ impl FileStyle {
     /// Parse a file style string from config.
     ///
     /// Returns `None` for unrecognized values.
+    #[allow(clippy::should_implement_trait)]
     pub fn from_str(s: &str) -> Option<Self> {
         match s {
             "kebab-case" => Some(FileStyle::KebabCase),
@@ -72,8 +73,8 @@ fn convert_case(name: &str, separator: char) -> String {
     for (i, c) in name.chars().enumerate() {
         if c.is_uppercase() {
             if i > 0 {
-                let prev_lower = name.chars().nth(i - 1).map_or(false, |p| p.is_lowercase());
-                let next_lower = name.chars().nth(i + 1).map_or(false, |n| n.is_lowercase());
+                let prev_lower = name.chars().nth(i - 1).is_some_and(|p| p.is_lowercase());
+                let next_lower = name.chars().nth(i + 1).is_some_and(|n| n.is_lowercase());
                 if prev_lower || next_lower {
                     result.push(separator);
                 }

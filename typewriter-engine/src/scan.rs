@@ -5,7 +5,7 @@ use std::path::{Path, PathBuf};
 use syn::{Data, DeriveInput, Item, ItemEnum, ItemStruct, ItemUnion};
 use walkdir::WalkDir;
 
-use crate::{parser, TypeSpec};
+use crate::{TypeSpec, parser};
 
 pub fn scan_project(project_root: &Path) -> Result<Vec<TypeSpec>> {
     let mut specs = Vec::new();

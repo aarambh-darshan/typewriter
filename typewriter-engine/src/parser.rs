@@ -262,10 +262,10 @@ fn map_primitive_name(name: &str) -> Option<PrimitiveType> {
 }
 
 fn extract_single_generic_arg(segment: &syn::PathSegment) -> Option<Type> {
-    if let syn::PathArguments::AngleBracketed(args) = &segment.arguments {
-        if let Some(syn::GenericArgument::Type(ty)) = args.args.first() {
-            return Some(ty.clone());
-        }
+    if let syn::PathArguments::AngleBracketed(args) = &segment.arguments
+        && let Some(syn::GenericArgument::Type(ty)) = args.args.first()
+    {
+        return Some(ty.clone());
     }
     None
 }
@@ -486,15 +486,13 @@ fn extract_doc_comment(attrs: &[Attribute]) -> Option<String> {
     let docs: Vec<String> = attrs
         .iter()
         .filter_map(|attr| {
-            if attr.path().is_ident("doc") {
-                if let Meta::NameValue(nv) = &attr.meta {
-                    if let Expr::Lit(ExprLit {
-                        lit: Lit::Str(s), ..
-                    }) = &nv.value
-                    {
-                        return Some(s.value().trim().to_string());
-                    }
-                }
+            if attr.path().is_ident("doc")
+                && let Meta::NameValue(nv) = &attr.meta
+                && let Expr::Lit(ExprLit {
+                    lit: Lit::Str(s), ..
+                }) = &nv.value
+            {
+                return Some(s.value().trim().to_string());
             }
             None
         })

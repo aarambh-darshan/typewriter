@@ -2,7 +2,7 @@
 
 use typewriter_core::ir::*;
 use typewriter_core::mapper::TypeMapper;
-use typewriter_core::naming::{to_file_style, FileStyle};
+use typewriter_core::naming::{FileStyle, to_file_style};
 
 use crate::emitter;
 

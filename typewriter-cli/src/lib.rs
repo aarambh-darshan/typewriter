@@ -1,3 +1,99 @@
+//! # typebridge-cli
+//!
+//! Standalone CLI for typewriter type synchronization.
+//!
+//! This crate provides the `typewriter` and `cargo-typewriter` command-line tools
+//! for generating, checking, and watching cross-language type definitions.
+//!
+//! ## Installation
+//!
+//! ### Pre-built Binary
+//!
+//! ```bash
+//! cargo install typebridge-cli
+//! ```
+//!
+//! ### As Cargo Plugin
+//!
+//! After installing, run via cargo:
+//!
+//! ```bash
+//! cargo install typebridge-cli
+//! cargo typewriter --help
+//! ```
+//!
+//! ## Commands
+//!
+//! ### `typewriter generate`
+//!
+//! Generate type files from Rust source definitions.
+//!
+//! ```bash
+//! # Generate from a single file
+//! typewriter generate src/models.rs
+//!
+//! # Generate from all Rust files in the project
+//! typewriter generate --all
+//!
+//! # Generate only TypeScript and Python
+//! typewriter generate --all --lang typescript,python
+//!
+//! # Show unified diffs for changed files
+//! typewriter generate --all --diff
+//! ```
+//!
+//! ### `typewriter check`
+//!
+//! Check if generated files are in sync with Rust source.
+//!
+//! ```bash
+//! # Check all types
+//! typewriter check
+//!
+//! # Check with CI exit code (non-zero on drift)
+//! typewriter check --ci
+//!
+//! # Output as JSON
+//! typewriter check --json
+//!
+//! # Write JSON report to file
+//! typewriter check --json-out drift-report.json
+//!
+//! # Check specific languages
+//! typewriter check --lang typescript,python
+//! ```
+//!
+//! ### `typewriter watch`
+//!
+//! Watch Rust files and regenerate types on save.
+//!
+//! ```bash
+//! # Watch src directory (default)
+//! typewriter watch
+//!
+//! # Watch custom directory
+//! typewriter watch src/models/
+//!
+//! # Watch with specific languages
+//! typewriter watch --lang typescript,python
+//!
+//! # Set debounce interval (milliseconds)
+//! typewriter watch --debounce-ms 100
+//! ```
+//!
+//! ## Exit Codes
+//!
+//! | Code | Meaning |
+//! |------|---------|
+//! | 0 | Success (no drift for `check --ci`) |
+//! | 1 | Error or drift detected (for `check --ci`) |
+//!
+//! ## Configuration
+//!
+//! The CLI respects `typewriter.toml` in the project root for output directories,
+//! file naming styles, and other configuration options. See the main typewriter
+//! documentation for configuration details.
+
 use anyhow::{Context, Result};
 use clap::{Parser, Subcommand};
 use colored::Colorize;
