@@ -53,7 +53,7 @@
 
 ---
 
-## Phase 4 — Ecosystem & Polish `v1.0.0` *(Current)*
+## Phase 4 — Ecosystem & Polish `v0.5.0` *(Current)*
 
 > **Goal:** Stable API. Extended output formats. Great documentation. Community ready.
 
@@ -62,7 +62,7 @@
 - [x] JSON Schema output
 - [ ] Comprehensive `docs.rs` documentation
 - [ ] `mdBook`-based guide site
-- [ ] Publish `typewriter v1.0.0` — stable public API guarantee
+- [ ] Publish `typewriter v0.5.0` — stable public API guarantee
 
 ---
 
