@@ -10,6 +10,3 @@ build-dir = "book"
 [output.html]
 default-theme = "ayu"
 no-section-label = true
-
-[[preprocessor]]
-name = "linkcheck"
