@@ -28,36 +28,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup mdBook
-        uses: peaceiris/actions-mdbook@v4
-        with:
-          mdbook-version: '0.4'
-          # mdbook-linkcheck to broken links in book
-          mdbook-version-pre: ''
-
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Cache mdbook
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/bin/mdbook
-            ~/.cargo/registry/index
-            ~/.cargo/registry/cache
-            ~/.cargo/git/db
-            target/
-          key: ${{ runner.os }}-mdbook-${{ hashFiles('**/book.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-mdbook-
+      - name: Install mdBook
+        run: |
+          cargo install mdbook
 
       - name: Build mdBook
         run: |
           cd typewriter-book
           mdbook build
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
