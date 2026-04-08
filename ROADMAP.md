@@ -53,16 +53,16 @@
 
 ---
 
-## Phase 4 — Ecosystem & Polish `v0.5.0` *(Current)*
+## Phase 4 — Ecosystem & Polish `v0.5.0` ✅
 
 > **Goal:** Stable API. Extended output formats. Great documentation. Community ready.
 
 - [x] Zod schema generation alongside TypeScript interfaces
 - [x] GraphQL SDL type generation
 - [x] JSON Schema output
-- [ ] Comprehensive `docs.rs` documentation
-- [ ] `mdBook`-based guide site
-- [ ] Publish `typewriter v0.5.0` — stable public API guarantee
+- [x] Comprehensive `docs.rs` documentation
+- [x] `mdBook`-based guide site
+- [x] Publish `typewriter v0.5.0` — stable public API guarantee
 
 ---
 
