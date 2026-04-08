@@ -1,3 +1,5 @@
+#![allow(clippy::useless_format)]
+
 use crate::mapper::SwiftMapper;
 use typewriter_core::ir::{EnumDef, EnumRepr, FieldDef, StructDef, VariantKind};
 use typewriter_core::mapper::TypeMapper;
@@ -42,7 +44,10 @@ pub fn render_struct(mapper: &SwiftMapper, def: &StructDef) -> String {
 
         if field.optional {
             let suffix = if swift_type.ends_with('?') { "" } else { "?" };
-            out.push_str(&format!("    let {}: {}{}\n", field_name, swift_type, suffix));
+            out.push_str(&format!(
+                "    let {}: {}{}\n",
+                field_name, swift_type, suffix
+            ));
         } else {
             out.push_str(&format!("    let {}: {}\n", field_name, swift_type));
         }

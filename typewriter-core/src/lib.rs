@@ -13,4 +13,4 @@ pub mod naming;
 pub use config::TypewriterConfig;
 pub use ir::*;
 pub use mapper::TypeMapper;
-pub use naming::{to_file_style, FileStyle};
+pub use naming::{FileStyle, to_file_style};

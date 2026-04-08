@@ -1,5 +1,7 @@
 //! Render and write generated output files for target languages.
 
+#![allow(clippy::needless_return)]
+
 use anyhow::Result;
 use std::collections::BTreeMap;
 use std::fs;

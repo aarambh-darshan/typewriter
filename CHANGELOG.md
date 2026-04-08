@@ -13,6 +13,52 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.5.0] - 2026-04-08
+
+### Added
+
+#### Comprehensive docs.rs Documentation
+- Added detailed module-level documentation to all crates:
+  - `typewriter-engine` - Architecture overview, usage examples, API documentation
+  - `typewriter-macros` - Complete attribute reference with examples
+  - `typewriter-cli` - Command documentation, installation guide, exit codes
+  - All 7 emitter crates (typescript, python, go, swift, kotlin, graphql, json-schema) - Type mappings, configuration options, code examples
+  - `typebridge` main crate - Feature flags, CLI reference
+
+#### mdBook Guide Site
+- New `typewriter-book/` crate with complete user documentation
+- Getting Started section (installation, first steps, configuration)
+- Language-specific guides for all 7 target languages
+- Reference section (attributes, type mappings, serde compatibility, CLI)
+- Advanced topics (generics, enums, cross-file imports)
+- Contributing guide
+
+#### Phase 4 Completion
+- All Phase 4 roadmap items completed
+
+### Changed
+
+#### Version Updates
+- All crates bumped from v0.4.2 to v0.5.0
+- typebridge-cli bumped from v0.2.2 to v0.3.0
+
+#### Workspace
+- Added `typewriter-book` to workspace members
+
+### Deprecated
+- None
+
+### Removed
+- None
+
+### Fixed
+- None
+
+### Security
+- None
+
+---
+
 ## [0.4.2] - 2026-03-29
 
 ### Fixed
@@ -254,7 +300,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[unreleased]: https://github.com/aarambh-darshan/typewriter/compare/v0.4.2...HEAD
+[unreleased]: https://github.com/aarambh-darshan/typewriter/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/aarambh-darshan/typewriter/compare/v0.4.2...v0.5.0
 [0.4.2]: https://github.com/aarambh-darshan/typewriter/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/aarambh-darshan/typewriter/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/aarambh-darshan/typewriter/compare/v0.3.1...v0.4.0

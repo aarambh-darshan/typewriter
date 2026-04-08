@@ -52,10 +52,11 @@ fn generate_all_writes_expected_files() {
     run_typewriter(temp.path(), &["generate", "--all"]).success();
 
     assert!(temp.path().join("generated/typescript/user.ts").exists());
-    assert!(temp
-        .path()
-        .join("generated/typescript/user.schema.ts")
-        .exists());
+    assert!(
+        temp.path()
+            .join("generated/typescript/user.schema.ts")
+            .exists()
+    );
     assert!(temp.path().join("generated/python/user.py").exists());
 }
 
@@ -70,10 +71,11 @@ fn generate_single_file_lang_filter() {
     .success();
 
     assert!(temp.path().join("generated/typescript/user.ts").exists());
-    assert!(temp
-        .path()
-        .join("generated/typescript/user.schema.ts")
-        .exists());
+    assert!(
+        temp.path()
+            .join("generated/typescript/user.schema.ts")
+            .exists()
+    );
     assert!(!temp.path().join("generated/python/user.py").exists());
 }
 
@@ -93,10 +95,12 @@ zod = false
     run_typewriter(temp.path(), &["generate", "--all"]).success();
 
     assert!(temp.path().join("generated/typescript/user.ts").exists());
-    assert!(!temp
-        .path()
-        .join("generated/typescript/user.schema.ts")
-        .exists());
+    assert!(
+        !temp
+            .path()
+            .join("generated/typescript/user.schema.ts")
+            .exists()
+    );
     assert!(temp.path().join("generated/python/user.py").exists());
 }
 
@@ -140,25 +144,31 @@ pub struct Order {
 
     run_typewriter(temp.path(), &["generate", "--all"]).success();
 
-    assert!(temp
-        .path()
-        .join("generated/typescript/user-profile.ts")
-        .exists());
+    assert!(
+        temp.path()
+            .join("generated/typescript/user-profile.ts")
+            .exists()
+    );
     assert!(temp.path().join("generated/typescript/address.ts").exists());
     assert!(temp.path().join("generated/typescript/order.ts").exists());
 
-    assert!(!temp
-        .path()
-        .join("generated/typescript/user-profile.schema.ts")
-        .exists());
-    assert!(temp
-        .path()
-        .join("generated/typescript/address.schema.ts")
-        .exists());
-    assert!(!temp
-        .path()
-        .join("generated/typescript/order.schema.ts")
-        .exists());
+    assert!(
+        !temp
+            .path()
+            .join("generated/typescript/user-profile.schema.ts")
+            .exists()
+    );
+    assert!(
+        temp.path()
+            .join("generated/typescript/address.schema.ts")
+            .exists()
+    );
+    assert!(
+        !temp
+            .path()
+            .join("generated/typescript/order.schema.ts")
+            .exists()
+    );
 
     run_typewriter(temp.path(), &["check", "--ci"]).success();
 }
@@ -272,9 +282,10 @@ fn cargo_typewriter_matches_generate_command() {
     run_cargo_typewriter(temp.path(), &["generate", "--all"]).success();
 
     assert!(temp.path().join("generated/typescript/user.ts").exists());
-    assert!(temp
-        .path()
-        .join("generated/typescript/user.schema.ts")
-        .exists());
+    assert!(
+        temp.path()
+            .join("generated/typescript/user.schema.ts")
+            .exists()
+    );
     assert!(temp.path().join("generated/python/user.py").exists());
 }

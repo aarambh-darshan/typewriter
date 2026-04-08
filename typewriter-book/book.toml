@@ -1,0 +1,15 @@
+[book]
+title = "typewriter"
+description = "Cross-Language Type Synchronization SDK for Rust"
+authors = ["Darshan Vichhi"]
+language = "en"
+
+[build]
+build-dir = "book"
+
+[output.html]
+default-theme = "ayu"
+no-section-label = true
+
+[[preprocessor]]
+name = "linkcheck"

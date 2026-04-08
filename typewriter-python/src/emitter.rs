@@ -540,8 +540,8 @@ fn to_upper_snake(name: &str) -> String {
     let mut result = String::new();
     for (i, c) in name.chars().enumerate() {
         if c.is_uppercase() && i > 0 {
-            let prev_lower = name.chars().nth(i - 1).map_or(false, |p| p.is_lowercase());
-            let next_lower = name.chars().nth(i + 1).map_or(false, |n| n.is_lowercase());
+            let prev_lower = name.chars().nth(i - 1).is_some_and(|p| p.is_lowercase());
+            let next_lower = name.chars().nth(i + 1).is_some_and(|n| n.is_lowercase());
             if prev_lower || next_lower {
                 result.push('_');
             }

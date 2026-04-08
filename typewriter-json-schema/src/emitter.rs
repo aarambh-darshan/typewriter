@@ -113,7 +113,8 @@ fn render_data_enum_schema(mapper: &JsonSchemaMapper, def: &EnumDef) -> Value {
 
     for variant in &def.variants {
         let serial_name = variant.rename.as_deref().unwrap_or(&variant.name);
-        let variant_schema = render_variant_schema(mapper, &def.representation, serial_name, variant);
+        let variant_schema =
+            render_variant_schema(mapper, &def.representation, serial_name, variant);
         one_of.push(variant_schema);
     }
 
@@ -169,10 +170,7 @@ fn render_external_variant(
     }
 
     obj.insert("properties".to_string(), Value::Object(properties));
-    obj.insert(
-        "required".to_string(),
-        json!([serial_name]),
-    );
+    obj.insert("required".to_string(), json!([serial_name]));
     obj.insert("additionalProperties".to_string(), json!(false));
 
     if let Some(doc) = &variant.doc {
@@ -220,7 +218,8 @@ fn render_internal_variant(
         VariantKind::Tuple(types) => {
             for (i, ty) in types.iter().enumerate() {
                 let field_name = format!("item{}", i);
-                let ty_json: Value = serde_json::from_str(&mapper.map_type(ty)).unwrap_or(json!({}));
+                let ty_json: Value =
+                    serde_json::from_str(&mapper.map_type(ty)).unwrap_or(json!({}));
                 properties.insert(field_name.clone(), ty_json);
                 required.push(json!(field_name));
             }
@@ -328,14 +327,10 @@ fn build_struct_schema(mapper: &JsonSchemaMapper, fields: &[FieldDef]) -> Value 
 }
 
 /// Build an inline schema for tuple variant data.
-fn build_tuple_schema(
-    mapper: &JsonSchemaMapper,
-    types: &[typewriter_core::ir::TypeKind],
-) -> Value {
+fn build_tuple_schema(mapper: &JsonSchemaMapper, types: &[typewriter_core::ir::TypeKind]) -> Value {
     if types.len() == 1 {
         // Single-element tuple — unwrap
-        let ty_json: Value =
-            serde_json::from_str(&mapper.map_type(&types[0])).unwrap_or(json!({}));
+        let ty_json: Value = serde_json::from_str(&mapper.map_type(&types[0])).unwrap_or(json!({}));
         return ty_json;
     }
 
@@ -381,10 +376,10 @@ fn render_field_schema(mapper: &JsonSchemaMapper, field: &FieldDef) -> Value {
     let mut schema: Value = serde_json::from_str(&type_str).unwrap_or(json!({}));
 
     // Add description from doc comment
-    if let Some(doc) = &field.doc {
-        if let Value::Object(ref mut map) = schema {
-            map.insert("description".to_string(), json!(doc.trim()));
-        }
+    if let Some(doc) = &field.doc
+        && let Value::Object(ref mut map) = schema
+    {
+        map.insert("description".to_string(), json!(doc.trim()));
     }
 
     schema

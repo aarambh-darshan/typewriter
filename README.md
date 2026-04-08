@@ -78,7 +78,7 @@ pub struct UserProfile {
 
 ```toml
 [dependencies]
-typebridge = "0.4.2"
+typebridge = "0.5.0"
 serde = { version = "1", features = ["derive"] }
 ```
 

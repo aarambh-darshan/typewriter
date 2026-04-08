@@ -1,6 +1,6 @@
 //! Project root and configuration discovery utilities.
 
-use anyhow::{bail, Result};
+use anyhow::{Result, bail};
 use std::path::{Path, PathBuf};
 use typewriter_core::config::TypewriterConfig;
 

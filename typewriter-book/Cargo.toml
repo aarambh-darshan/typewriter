@@ -1,0 +1,9 @@
+[package]
+name = "typewriter-book"
+version = "0.5.0"
+description = "The typewriter user guide (mdBook project)"
+edition = "2021"
+publish = false
+
+[lib]
+doctest = false

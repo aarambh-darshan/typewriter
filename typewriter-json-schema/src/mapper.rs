@@ -3,7 +3,7 @@
 use serde_json::json;
 use typewriter_core::ir::*;
 use typewriter_core::mapper::TypeMapper;
-use typewriter_core::naming::{to_file_style, FileStyle};
+use typewriter_core::naming::{FileStyle, to_file_style};
 
 use crate::emitter;
 
@@ -74,9 +74,7 @@ impl TypeMapper for JsonSchemaMapper {
             }
             PrimitiveType::F32 | PrimitiveType::F64 => json!({"type": "number"}).to_string(),
             PrimitiveType::Uuid => json!({"type": "string", "format": "uuid"}).to_string(),
-            PrimitiveType::DateTime => {
-                json!({"type": "string", "format": "date-time"}).to_string()
-            }
+            PrimitiveType::DateTime => json!({"type": "string", "format": "date-time"}).to_string(),
             PrimitiveType::NaiveDate => json!({"type": "string", "format": "date"}).to_string(),
             PrimitiveType::JsonValue => json!({}).to_string(),
         }
@@ -90,8 +88,7 @@ impl TypeMapper for JsonSchemaMapper {
 
     fn map_vec(&self, inner: &TypeKind) -> String {
         let inner_str = self.map_type(inner);
-        let inner_val: serde_json::Value =
-            serde_json::from_str(&inner_str).unwrap_or(json!({}));
+        let inner_val: serde_json::Value = serde_json::from_str(&inner_str).unwrap_or(json!({}));
         json!({"type": "array", "items": inner_val}).to_string()
     }
 
@@ -120,8 +117,7 @@ impl TypeMapper for JsonSchemaMapper {
     }
 
     fn map_named(&self, name: &str) -> String {
-        json!({"$ref": format!("{}.schema.json", to_file_style(name, self.file_style))})
-            .to_string()
+        json!({"$ref": format!("{}.schema.json", to_file_style(name, self.file_style))}).to_string()
     }
 
     fn emit_struct(&self, def: &StructDef) -> String {
@@ -156,8 +152,7 @@ impl TypeMapper for JsonSchemaMapper {
 
     fn map_generic(&self, name: &str, _params: &[TypeKind]) -> String {
         // JSON Schema has no generics — reference the base type
-        json!({"$ref": format!("{}.schema.json", to_file_style(name, self.file_style))})
-            .to_string()
+        json!({"$ref": format!("{}.schema.json", to_file_style(name, self.file_style))}).to_string()
     }
 
     /// Override emit_type_def to produce a complete JSON Schema document
@@ -172,8 +167,7 @@ impl TypeMapper for JsonSchemaMapper {
         };
 
         // Parse the body and inject metadata
-        let mut body: serde_json::Value =
-            serde_json::from_str(&body_str).unwrap_or(json!({}));
+        let mut body: serde_json::Value = serde_json::from_str(&body_str).unwrap_or(json!({}));
 
         if let serde_json::Value::Object(ref mut map) = body {
             // Insert metadata at the top — serde_json::Map is ordered by insertion,
@@ -291,20 +285,14 @@ mod tests {
     #[test]
     fn test_output_filename() {
         let m = mapper();
-        assert_eq!(
-            m.output_filename("UserProfile"),
-            "user_profile.schema.json"
-        );
+        assert_eq!(m.output_filename("UserProfile"), "user_profile.schema.json");
     }
 
     #[test]
     fn test_file_naming_kebab() {
         let m = JsonSchemaMapper::new().with_file_style(FileStyle::KebabCase);
         assert_eq!(m.file_naming("UserProfile"), "user-profile");
-        assert_eq!(
-            m.output_filename("UserProfile"),
-            "user-profile.schema.json"
-        );
+        assert_eq!(m.output_filename("UserProfile"), "user-profile.schema.json");
     }
 
     #[test]
@@ -341,10 +329,7 @@ mod tests {
     #[test]
     fn test_generic_mapped_as_ref() {
         let m = mapper();
-        let result = m.map_generic(
-            "Pagination",
-            &[TypeKind::Named("User".to_string())],
-        );
+        let result = m.map_generic("Pagination", &[TypeKind::Named("User".to_string())]);
         let v: serde_json::Value = serde_json::from_str(&result).unwrap();
         assert_eq!(v["$ref"], "pagination.schema.json");
     }

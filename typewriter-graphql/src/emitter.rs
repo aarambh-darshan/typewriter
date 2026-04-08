@@ -156,7 +156,12 @@ fn render_data_enum(mapper: &GraphQLMapper, def: &EnumDef) -> String {
                             }
                             let fname = field.rename.as_deref().unwrap_or(&field.name);
                             let ftype = render_field_type(mapper, field);
-                            out.push_str(&format!("  {}{}: {}\n", content, capitalize(&fname), ftype));
+                            out.push_str(&format!(
+                                "  {}{}: {}\n",
+                                content,
+                                capitalize(fname),
+                                ftype
+                            ));
                         }
                     }
                     _ => {

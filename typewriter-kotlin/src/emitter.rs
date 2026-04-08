@@ -1,5 +1,7 @@
+#![allow(clippy::useless_format)]
+
 use crate::mapper::KotlinMapper;
-use typewriter_core::ir::{EnumDef, EnumRepr, FieldDef, StructDef, VariantKind};
+use typewriter_core::ir::{EnumDef, EnumRepr, StructDef, VariantKind};
 use typewriter_core::mapper::TypeMapper;
 
 pub fn render_struct(mapper: &KotlinMapper, def: &StructDef) -> String {
@@ -49,7 +51,10 @@ pub fn render_struct(mapper: &KotlinMapper, def: &StructDef) -> String {
 
         if field.optional {
             let suffix = if kotlin_type.ends_with('?') { "" } else { "?" };
-            out.push_str(&format!("    val {}: {}{} = null", kotlin_name, kotlin_type, suffix));
+            out.push_str(&format!(
+                "    val {}: {}{} = null",
+                kotlin_name, kotlin_type, suffix
+            ));
         } else {
             out.push_str(&format!("    val {}: {}", kotlin_name, kotlin_type));
         }
