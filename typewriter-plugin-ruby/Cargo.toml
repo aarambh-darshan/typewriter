@@ -2,6 +2,7 @@
 name = "typewriter-plugin-ruby"
 version = "0.1.0"
 edition = "2024"
+readme = "../README.md"
 description = "Ruby (Sorbet) emitter plugin for typewriter"
 license = "Apache-2.0"
 repository = "https://github.com/aarambh-darshan/typewriter"

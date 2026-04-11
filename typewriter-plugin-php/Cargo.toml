@@ -3,6 +3,7 @@ name = "typewriter-plugin-php"
 version = "0.1.0"
 edition = "2024"
 description = "PHP emitter plugin for typewriter"
+readme = "../README.md"
 license = "Apache-2.0"
 repository = "https://github.com/aarambh-darshan/typewriter"
 authors = ["Darshan Vichhi <aarambhdarshan@gmail.com>"]
