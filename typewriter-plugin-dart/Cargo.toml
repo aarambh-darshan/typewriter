@@ -1,0 +1,15 @@
+[package]
+name = "typewriter-plugin-dart"
+version = "0.1.0"
+edition = "2024"
+description = "Dart/Flutter emitter plugin for typewriter"
+license = "Apache-2.0"
+repository = "https://github.com/aarambh-darshan/typewriter"
+authors = ["Darshan Vichhi <aarambhdarshan@gmail.com>"]
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+typewriter-plugin = { path = "../typewriter-plugin", version = "0.1.0" }
+typewriter-core = { path = "../typewriter-core", version = "0.5.2" }

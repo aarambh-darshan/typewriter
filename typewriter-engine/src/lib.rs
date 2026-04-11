@@ -70,12 +70,45 @@
 pub mod drift;
 pub mod emit;
 pub mod parser;
+pub mod plugin_registry;
 pub mod project;
 pub mod scan;
 
 use std::path::PathBuf;
 
 pub use typewriter_core::{config::TypewriterConfig, ir::Language, ir::TypeDef};
+pub use plugin_registry::PluginRegistry;
+
+/// A target language — either a built-in language or a plugin-provided one.
+///
+/// Built-in languages are statically linked (TypeScript, Python, Go, etc.).
+/// Plugin languages are loaded dynamically at runtime.
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum LanguageTarget {
+    /// A built-in, statically linked language emitter.
+    BuiltIn(Language),
+    /// A plugin-provided language emitter, identified by its language_id string.
+    Plugin(String),
+}
+
+impl std::fmt::Display for LanguageTarget {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            LanguageTarget::BuiltIn(lang) => write!(f, "{:?}", lang),
+            LanguageTarget::Plugin(id) => write!(f, "{}", id),
+        }
+    }
+}
+
+impl LanguageTarget {
+    /// Get the string label for this language target.
+    pub fn label(&self) -> String {
+        match self {
+            LanguageTarget::BuiltIn(lang) => format!("{:?}", lang).to_lowercase(),
+            LanguageTarget::Plugin(id) => id.clone(),
+        }
+    }
+}
 
 /// Parsed TypeWriter definition discovered in a Rust source file.
 ///
@@ -86,7 +119,7 @@ pub struct TypeSpec {
     /// The parsed IR type definition (struct or enum)
     pub type_def: TypeDef,
     /// Target languages to generate types for (from `#[sync_to(...)]`)
-    pub targets: Vec<Language>,
+    pub targets: Vec<LanguageTarget>,
     /// Path to the source file containing this type
     pub source_path: PathBuf,
     /// Optional Zod schema generation override (None = use config default)
@@ -107,20 +140,22 @@ pub struct TypeSpec {
 /// | `"graphql"`, `"gql"` | GraphQL SDL |
 /// | `"json_schema"`, `"jsonschema"` | JSON Schema |
 ///
-/// # Errors
-///
-/// Returns an error if any language name is not recognized.
+/// Unknown language names are treated as plugin language targets rather than errors.
 ///
 /// # Examples
 ///
 /// ```
-/// use typewriter_engine::parse_languages;
+/// use typewriter_engine::{parse_languages, LanguageTarget, Language};
 ///
 /// let langs = parse_languages(&["typescript,python".to_string()]).unwrap();
-/// assert!(langs.contains(&typewriter_engine::Language::TypeScript));
-/// assert!(langs.contains(&typewriter_engine::Language::Python));
+/// assert!(langs.contains(&LanguageTarget::BuiltIn(Language::TypeScript)));
+/// assert!(langs.contains(&LanguageTarget::BuiltIn(Language::Python)));
+///
+/// // Unknown names become plugin targets
+/// let plugins = parse_languages(&["ruby".to_string()]).unwrap();
+/// assert!(plugins.contains(&LanguageTarget::Plugin("ruby".to_string())));
 /// ```
-pub fn parse_languages(values: &[String]) -> anyhow::Result<Vec<Language>> {
+pub fn parse_languages(values: &[String]) -> anyhow::Result<Vec<LanguageTarget>> {
     let mut langs = Vec::new();
     for value in values {
         for raw in value.split(',') {
@@ -128,14 +163,12 @@ pub fn parse_languages(values: &[String]) -> anyhow::Result<Vec<Language>> {
             if name.is_empty() {
                 continue;
             }
-            let lang = Language::from_str(name).ok_or_else(|| {
-                anyhow::anyhow!(
-                    "unknown language '{}'. Supported: typescript, python, go, swift, kotlin, graphql, json_schema",
-                    name
-                )
-            })?;
-            if !langs.contains(&lang) {
-                langs.push(lang);
+            let target = match Language::from_str(name) {
+                Some(lang) => LanguageTarget::BuiltIn(lang),
+                None => LanguageTarget::Plugin(name.to_string()),
+            };
+            if !langs.contains(&target) {
+                langs.push(target);
             }
         }
     }

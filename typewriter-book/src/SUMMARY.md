@@ -15,12 +15,21 @@
 - [Kotlin](./02-guides/kotlin.md)
 - [GraphQL](./02-guides/graphql.md)
 - [JSON Schema](./02-guides/json-schema.md)
+- [Ruby (Plugin)](./02-guides/ruby.md)
+- [PHP (Plugin)](./02-guides/php.md)
+- [Dart/Flutter (Plugin)](./02-guides/dart.md)
 
 ## Reference
 - [Attributes Reference](./03-reference/attributes.md)
 - [Type Mappings](./03-reference/type-mappings.md)
 - [Serde Compatibility](./03-reference/serde-compatibility.md)
 - [CLI Commands](./03-reference/cli.md)
+
+## Plugin System
+- [Overview](./06-plugins/overview.md)
+- [Writing a Plugin](./06-plugins/writing-a-plugin.md)
+- [Plugin Configuration](./06-plugins/configuration.md)
+- [Plugin CLI](./06-plugins/cli.md)
 
 ## Advanced Topics
 - [Generics](./04-advanced/generics.md)

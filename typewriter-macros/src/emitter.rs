@@ -8,12 +8,26 @@ use typewriter_core::ir::*;
 use typewriter_core::mapper::TypeMapper;
 
 /// Emit type definitions to all requested target languages.
-pub fn emit_all(type_def: &TypeDef, targets: &[Language], config: &TypewriterConfig) {
+///
+/// Plugin-based language targets are silently skipped in the proc-macro context.
+/// They are only supported through the CLI flow which has access to the plugin registry.
+pub fn emit_all(type_def: &TypeDef, targets: &[typewriter_engine::LanguageTarget], config: &TypewriterConfig) {
     let manifest_dir = std::env::var("CARGO_MANIFEST_DIR").unwrap_or_else(|_| ".".to_string());
     let base_path = PathBuf::from(&manifest_dir);
 
     for target in targets {
-        match target {
+        let lang = match target {
+            typewriter_engine::LanguageTarget::BuiltIn(lang) => lang,
+            typewriter_engine::LanguageTarget::Plugin(id) => {
+                eprintln!(
+                    "  typewriter: skipping plugin language '{}' (only supported via CLI)",
+                    id
+                );
+                continue;
+            }
+        };
+
+        match lang {
             #[cfg(feature = "typescript")]
             Language::TypeScript => {
                 let mut mapper = typewriter_typescript::TypeScriptMapper::new()

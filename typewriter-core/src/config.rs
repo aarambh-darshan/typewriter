@@ -1,5 +1,7 @@
 //! Configuration parsing for `typewriter.toml`.
 //!
+//! Supports both built-in language sections and plugin configuration.
+//!
 //! All fields are optional — sensible defaults are used when not specified.
 
 use anyhow::{Context, Result};
@@ -23,6 +25,22 @@ pub struct TypewriterConfig {
     pub graphql: Option<GraphQLConfig>,
     /// JSON Schema emitter configuration
     pub json_schema: Option<JsonSchemaConfig>,
+    /// Plugin system configuration
+    pub plugins: Option<PluginsConfig>,
+    /// Catch-all for plugin-specific sections (e.g. `[ruby]`, `[php]`, `[dart]`)
+    #[serde(flatten)]
+    pub extra: Option<toml::Table>,
+}
+
+/// Plugin system configuration.
+#[derive(Debug, Clone, Deserialize, Default)]
+pub struct PluginsConfig {
+    /// Directory to scan for plugin shared libraries.
+    ///
+    /// Default: `~/.typewriter/plugins/`
+    pub dir: Option<String>,
+    /// Explicit paths to plugin shared libraries.
+    pub paths: Option<Vec<String>>,
 }
 
 /// TypeScript-specific configuration.
@@ -269,6 +287,32 @@ impl TypewriterConfig {
             .as_ref()
             .and_then(|j| j.file_style.as_deref())
             .and_then(crate::naming::FileStyle::from_str)
+    }
+
+    /// Get the plugin directory path.
+    pub fn plugin_dir(&self) -> Option<&str> {
+        self.plugins
+            .as_ref()
+            .and_then(|p| p.dir.as_deref())
+    }
+
+    /// Get explicit plugin paths.
+    pub fn plugin_paths(&self) -> Vec<&str> {
+        self.plugins
+            .as_ref()
+            .and_then(|p| p.paths.as_ref())
+            .map(|paths| paths.iter().map(|s| s.as_str()).collect())
+            .unwrap_or_default()
+    }
+
+    /// Get plugin-specific configuration from the catch-all extra table.
+    ///
+    /// For example, `plugin_extra_table("ruby")` returns the `[ruby]` TOML table.
+    pub fn plugin_extra_table(&self, key: &str) -> Option<&toml::Table> {
+        self.extra
+            .as_ref()
+            .and_then(|t| t.get(key))
+            .and_then(|v| v.as_table())
     }
 }
 

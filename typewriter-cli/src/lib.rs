@@ -104,8 +104,10 @@ use std::ffi::OsString;
 use std::path::{Path, PathBuf};
 use std::sync::mpsc;
 use std::time::{Duration, Instant};
+use typewriter_engine::LanguageTarget;
 use typewriter_engine::drift::{self, DriftStatus};
-use typewriter_engine::emit::{self, language_label};
+use typewriter_engine::emit;
+use typewriter_engine::plugin_registry;
 use typewriter_engine::{parse_languages, project, scan};
 
 #[derive(Parser, Debug)]
@@ -160,6 +162,27 @@ enum Commands {
         #[arg(long, default_value_t = 50)]
         debounce_ms: u64,
     },
+    /// Manage typewriter plugins.
+    Plugin {
+        #[command(subcommand)]
+        action: PluginAction,
+    },
+}
+
+#[derive(Subcommand, Debug)]
+enum PluginAction {
+    /// List all loaded plugins.
+    List,
+    /// Validate a plugin shared library.
+    Validate {
+        /// Path to the plugin shared library.
+        path: PathBuf,
+    },
+    /// Show info about a specific loaded plugin.
+    Info {
+        /// Plugin language ID (e.g. "ruby", "php", "dart").
+        name: String,
+    },
 }
 
 pub fn run() -> Result<i32> {
@@ -191,7 +214,19 @@ where
             lang,
             debounce_ms,
         } => cmd_watch(path, lang, debounce_ms),
+        Commands::Plugin { action } => cmd_plugin(action),
     }
+}
+
+/// Extract only the built-in Language values from a list of LanguageTargets.
+fn extract_builtin_filter(targets: &[LanguageTarget]) -> Vec<typewriter_engine::Language> {
+    targets
+        .iter()
+        .filter_map(|t| match t {
+            LanguageTarget::BuiltIn(lang) => Some(*lang),
+            LanguageTarget::Plugin(_) => None,
+        })
+        .collect()
 }
 
 fn cmd_generate(file: Option<PathBuf>, all: bool, lang: Vec<String>, diff: bool) -> Result<i32> {
@@ -202,7 +237,9 @@ fn cmd_generate(file: Option<PathBuf>, all: bool, lang: Vec<String>, diff: bool)
     let cwd = std::env::current_dir()?;
     let project_root = project::discover_project_root(&cwd)?;
     let config = project::load_config(&project_root).unwrap_or_default();
-    let lang_filter = parse_languages(&lang)?;
+    let lang_targets = parse_languages(&lang)?;
+    let lang_filter = extract_builtin_filter(&lang_targets);
+    let registry = plugin_registry::build_registry_from_config(&config).unwrap_or_default();
 
     let specs = if all {
         scan::scan_project(&project_root)?
@@ -211,7 +248,9 @@ fn cmd_generate(file: Option<PathBuf>, all: bool, lang: Vec<String>, diff: bool)
         scan::scan_file(&source)?
     };
 
-    let rendered = emit::render_specs_deduped(&specs, &project_root, &config, &lang_filter, false)?;
+    let rendered = emit::render_specs_deduped_with_plugins(
+        &specs, &project_root, &config, &lang_filter, false, Some(&registry),
+    )?;
 
     let started = Instant::now();
     let mut updated = 0usize;
@@ -236,7 +275,7 @@ fn cmd_generate(file: Option<PathBuf>, all: bool, lang: Vec<String>, diff: bool)
                     "{} {} [{}]",
                     "Created".green(),
                     rel,
-                    language_label(file.language)
+                    file.language_label
                 );
                 if diff {
                     print_diff(&project_root, &file.output_path, "", &file.content);
@@ -248,7 +287,7 @@ fn cmd_generate(file: Option<PathBuf>, all: bool, lang: Vec<String>, diff: bool)
                     "{} {} [{}]",
                     "Unchanged".bright_black(),
                     rel,
-                    language_label(file.language)
+                    file.language_label
                 );
             }
             Some(existing) => {
@@ -257,7 +296,7 @@ fn cmd_generate(file: Option<PathBuf>, all: bool, lang: Vec<String>, diff: bool)
                     "{} {} [{}]",
                     "Updated".yellow(),
                     rel,
-                    language_label(file.language)
+                    file.language_label
                 );
                 if diff {
                     print_diff(&project_root, &file.output_path, existing, &file.content);
@@ -282,10 +321,14 @@ fn cmd_check(ci: bool, json: bool, json_out: Option<PathBuf>, lang: Vec<String>)
     let cwd = std::env::current_dir()?;
     let project_root = project::discover_project_root(&cwd)?;
     let config = project::load_config(&project_root).unwrap_or_default();
-    let lang_filter = parse_languages(&lang)?;
+    let lang_targets = parse_languages(&lang)?;
+    let lang_filter = extract_builtin_filter(&lang_targets);
+    let registry = plugin_registry::build_registry_from_config(&config).unwrap_or_default();
 
     let specs = scan::scan_project(&project_root)?;
-    let rendered = emit::render_specs_deduped(&specs, &project_root, &config, &lang_filter, false)?;
+    let rendered = emit::render_specs_deduped_with_plugins(
+        &specs, &project_root, &config, &lang_filter, false, Some(&registry),
+    )?;
 
     let report = drift::build_drift_report(&rendered, &project_root, &config, &lang_filter)?;
 
@@ -319,7 +362,9 @@ fn cmd_watch(path: Option<PathBuf>, lang: Vec<String>, debounce_ms: u64) -> Resu
     let project_root = project::discover_project_root(&cwd)?;
     let watch_root = resolve_input_path(path.unwrap_or_else(|| PathBuf::from("src")), &cwd);
     let config = project::load_config(&project_root).unwrap_or_default();
-    let lang_filter = parse_languages(&lang)?;
+    let lang_targets = parse_languages(&lang)?;
+    let lang_filter = extract_builtin_filter(&lang_targets);
+    let registry = plugin_registry::build_registry_from_config(&config).unwrap_or_default();
 
     let (tx, rx) = mpsc::channel();
     let mut watcher = RecommendedWatcher::new(
@@ -385,8 +430,9 @@ fn cmd_watch(path: Option<PathBuf>, lang: Vec<String>, debounce_ms: u64) -> Resu
             eprintln!("{} {}", "Detected TypeWriter type:".blue(), name);
         }
 
-        let rendered =
-            emit::render_specs_deduped(&specs, &project_root, &config, &lang_filter, false)?;
+        let rendered = emit::render_specs_deduped_with_plugins(
+            &specs, &project_root, &config, &lang_filter, false, Some(&registry),
+        )?;
 
         let mut updated = 0usize;
         for file in rendered {
@@ -402,7 +448,7 @@ fn cmd_watch(path: Option<PathBuf>, lang: Vec<String>, debounce_ms: u64) -> Resu
                 "{} {} [{}]",
                 "Regenerated".green(),
                 rel_path(&project_root, &file.output_path),
-                language_label(file.language)
+                file.language_label
             );
         }
 
@@ -412,6 +458,97 @@ fn cmd_watch(path: Option<PathBuf>, lang: Vec<String>, debounce_ms: u64) -> Resu
             updated,
             batch_started.elapsed().as_millis()
         );
+    }
+}
+
+fn cmd_plugin(action: PluginAction) -> Result<i32> {
+    let cwd = std::env::current_dir()?;
+    let project_root = project::discover_project_root(&cwd).unwrap_or(cwd);
+    let config = project::load_config(&project_root).unwrap_or_default();
+    let registry = plugin_registry::build_registry_from_config(&config)?;
+
+    match action {
+        PluginAction::List => {
+            let plugins = registry.list();
+            if plugins.is_empty() {
+                eprintln!("{}", "No plugins loaded.".bright_black());
+                eprintln!(
+                    "  Install plugins to {} or configure [plugins] in typewriter.toml",
+                    "~/.typewriter/plugins/"
+                );
+            } else {
+                eprintln!(
+                    "{} {} plugin(s) loaded:\n",
+                    "Plugins:".bold(),
+                    plugins.len()
+                );
+                for p in &plugins {
+                    eprintln!(
+                        "  {} {} v{}",
+                        "●".green(),
+                        p.language_name.bold(),
+                        p.version
+                    );
+                    eprintln!("    Language ID:  {}", p.language_id);
+                    eprintln!("    Extension:    .{}", p.file_extension);
+                    eprintln!("    Output dir:   {}", p.default_output_dir);
+                    if let Some(path) = &p.source_path {
+                        eprintln!("    Loaded from:  {}", path.display());
+                    }
+                    eprintln!();
+                }
+            }
+            Ok(0)
+        }
+        PluginAction::Validate { path } => {
+            eprintln!("Validating plugin: {}...", path.display());
+            let mut test_registry = typewriter_engine::PluginRegistry::new();
+            match test_registry.load_plugin(&path) {
+                Ok(()) => {
+                    let plugins = test_registry.list();
+                    if let Some(p) = plugins.first() {
+                        eprintln!(
+                            "{} Plugin is valid!",
+                            "✓".green().bold()
+                        );
+                        eprintln!("  Name:       {}", p.language_name);
+                        eprintln!("  Language:   {}", p.language_id);
+                        eprintln!("  Version:    {}", p.version);
+                        eprintln!("  Extension:  .{}", p.file_extension);
+                    }
+                    Ok(0)
+                }
+                Err(err) => {
+                    eprintln!(
+                        "{} Plugin validation failed: {}",
+                        "✗".red().bold(),
+                        err
+                    );
+                    Ok(1)
+                }
+            }
+        }
+        PluginAction::Info { name } => {
+            let plugins = registry.list();
+            if let Some(p) = plugins.iter().find(|p| p.language_id == name) {
+                eprintln!("{} {}", "Plugin:".bold(), p.language_name);
+                eprintln!("  Language ID:  {}", p.language_id);
+                eprintln!("  Version:      {}", p.version);
+                eprintln!("  Extension:    .{}", p.file_extension);
+                eprintln!("  Output dir:   {}", p.default_output_dir);
+                if let Some(path) = &p.source_path {
+                    eprintln!("  Loaded from:  {}", path.display());
+                }
+                Ok(0)
+            } else {
+                eprintln!(
+                    "{} No plugin found with language ID '{}'",
+                    "Error:".red().bold(),
+                    name
+                );
+                Ok(1)
+            }
+        }
     }
 }
 
@@ -500,8 +637,20 @@ mod tests {
         assert_eq!(
             parsed,
             vec![
-                typewriter_engine::Language::TypeScript,
-                typewriter_engine::Language::Python
+                LanguageTarget::BuiltIn(typewriter_engine::Language::TypeScript),
+                LanguageTarget::BuiltIn(typewriter_engine::Language::Python),
+            ]
+        );
+    }
+
+    #[test]
+    fn parses_plugin_languages() {
+        let parsed = parse_languages(&["ruby,php".to_string()]).unwrap();
+        assert_eq!(
+            parsed,
+            vec![
+                LanguageTarget::Plugin("ruby".to_string()),
+                LanguageTarget::Plugin("php".to_string()),
             ]
         );
     }

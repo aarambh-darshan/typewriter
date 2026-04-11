@@ -1,0 +1,395 @@
+//! # typewriter-plugin-php
+//!
+//! PHP emitter plugin for typewriter.
+//!
+//! Generates PHP 8.1+ readonly classes with constructor-promoted properties
+//! from Rust structs and enums.
+//!
+//! ## Type Mappings
+//!
+//! | Rust Type | PHP Type |
+//! |-----------|----------|
+//! | `String` | `string` |
+//! | `bool` | `bool` |
+//! | `u8`–`u128`, `i8`–`i128` | `int` |
+//! | `f32`, `f64` | `float` |
+//! | `Option<T>` | `?T` |
+//! | `Vec<T>` | `array` |
+//! | `HashMap<K, V>` | `array` |
+//! | `Uuid` | `string` |
+//! | `DateTime` | `\DateTimeInterface` |
+
+use typewriter_plugin::prelude::*;
+
+/// PHP language mapper.
+pub struct PhpMapper {
+    file_style: FileStyle,
+}
+
+impl PhpMapper {
+    pub fn new() -> Self {
+        Self {
+            file_style: FileStyle::PascalCase,
+        }
+    }
+
+    pub fn with_file_style(mut self, style: FileStyle) -> Self {
+        self.file_style = style;
+        self
+    }
+
+    fn indent(level: usize) -> String {
+        "    ".repeat(level)
+    }
+}
+
+impl Default for PhpMapper {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl TypeMapper for PhpMapper {
+    fn map_primitive(&self, ty: &PrimitiveType) -> String {
+        match ty {
+            PrimitiveType::String => "string".to_string(),
+            PrimitiveType::Bool => "bool".to_string(),
+            PrimitiveType::U8 | PrimitiveType::U16 | PrimitiveType::U32
+            | PrimitiveType::U64 | PrimitiveType::U128
+            | PrimitiveType::I8 | PrimitiveType::I16 | PrimitiveType::I32
+            | PrimitiveType::I64 | PrimitiveType::I128 => "int".to_string(),
+            PrimitiveType::F32 | PrimitiveType::F64 => "float".to_string(),
+            PrimitiveType::Uuid => "string".to_string(),
+            PrimitiveType::DateTime => "\\DateTimeInterface".to_string(),
+            PrimitiveType::NaiveDate => "\\DateTimeInterface".to_string(),
+            PrimitiveType::JsonValue => "mixed".to_string(),
+        }
+    }
+
+    fn map_option(&self, inner: &TypeKind) -> String {
+        format!("?{}", self.map_type(inner))
+    }
+
+    fn map_vec(&self, _inner: &TypeKind) -> String {
+        "array".to_string()
+    }
+
+    fn map_hashmap(&self, _key: &TypeKind, _value: &TypeKind) -> String {
+        "array".to_string()
+    }
+
+    fn map_tuple(&self, _elements: &[TypeKind]) -> String {
+        "array".to_string()
+    }
+
+    fn map_named(&self, name: &str) -> String {
+        name.to_string()
+    }
+
+    fn map_generic(&self, name: &str, _params: &[TypeKind]) -> String {
+        name.to_string()
+    }
+
+    fn emit_struct(&self, def: &StructDef) -> String {
+        let mut output = String::new();
+
+        // Doc comment
+        if let Some(doc) = &def.doc {
+            output.push_str(&format!("/**\n * {}\n */\n", doc.trim()));
+        }
+
+        output.push_str(&format!("readonly class {}\n{{\n", def.name));
+
+        // Constructor with promoted properties
+        output.push_str(&format!("{}public function __construct(\n", Self::indent(1)));
+
+        let visible_fields: Vec<&FieldDef> = def.fields.iter().filter(|f| !f.skip).collect();
+
+        // Sort: required fields first, then optional
+        let mut required: Vec<&FieldDef> = visible_fields.iter().filter(|f| !f.optional).copied().collect();
+        let mut optional: Vec<&FieldDef> = visible_fields.iter().filter(|f| f.optional).copied().collect();
+        let mut ordered = Vec::new();
+        ordered.append(&mut required);
+        ordered.append(&mut optional);
+
+        for (i, field) in ordered.iter().enumerate() {
+            let field_name = field.rename.as_deref().unwrap_or(&field.name);
+            let type_str = field
+                .type_override
+                .clone()
+                .unwrap_or_else(|| self.map_type(&field.ty));
+
+            // Doc comment
+            if let Some(doc) = &field.doc {
+                output.push_str(&format!("{}/** {} */\n", Self::indent(2), doc.trim()));
+            }
+
+            let trailing = if i < ordered.len() - 1 { "," } else { "," };
+
+            if field.optional {
+                output.push_str(&format!(
+                    "{}public {} ${} = null{}\n",
+                    Self::indent(2), type_str, field_name, trailing
+                ));
+            } else {
+                output.push_str(&format!(
+                    "{}public {} ${}{}\n",
+                    Self::indent(2), type_str, field_name, trailing
+                ));
+            }
+        }
+
+        output.push_str(&format!("{}) {{}}\n", Self::indent(1)));
+        output.push_str("}\n");
+        output
+    }
+
+    fn emit_enum(&self, def: &EnumDef) -> String {
+        let all_unit = def.variants.iter().all(|v| matches!(v.kind, VariantKind::Unit));
+
+        if all_unit {
+            self.emit_string_enum(def)
+        } else {
+            self.emit_interface_enum(def)
+        }
+    }
+
+    fn file_header(&self, type_name: &str) -> String {
+        format!(
+            "<?php\n\
+             // Auto-generated by typewriter v0.5.2. DO NOT EDIT.\n\
+             // Source: {}\n\
+             // Regenerate: cargo typewriter generate\n\n\
+             declare(strict_types=1);\n\n",
+            type_name
+        )
+    }
+
+    fn file_extension(&self) -> &str {
+        "php"
+    }
+
+    fn file_naming(&self, type_name: &str) -> String {
+        to_file_style(type_name, self.file_style)
+    }
+
+    fn emit_imports(&self, _def: &TypeDef) -> String {
+        String::new()
+    }
+}
+
+impl PhpMapper {
+    fn emit_string_enum(&self, def: &EnumDef) -> String {
+        let mut output = String::new();
+
+        if let Some(doc) = &def.doc {
+            output.push_str(&format!("/**\n * {}\n */\n", doc.trim()));
+        }
+
+        output.push_str(&format!("enum {}: string\n{{\n", def.name));
+
+        for variant in &def.variants {
+            let name = variant.rename.as_deref().unwrap_or(&variant.name);
+            if let Some(doc) = &variant.doc {
+                output.push_str(&format!("{}/** {} */\n", Self::indent(1), doc.trim()));
+            }
+            output.push_str(&format!("{}case {} = '{}';\n", Self::indent(1), name, name));
+        }
+
+        output.push_str("}\n");
+        output
+    }
+
+    fn emit_interface_enum(&self, def: &EnumDef) -> String {
+        let mut output = String::new();
+
+        if let Some(doc) = &def.doc {
+            output.push_str(&format!("/**\n * {}\n */\n", doc.trim()));
+        }
+
+        output.push_str(&format!("interface {} {{}}\n\n", def.name));
+
+        for variant in &def.variants {
+            let variant_name = variant.rename.as_deref().unwrap_or(&variant.name);
+
+            match &variant.kind {
+                VariantKind::Unit => {
+                    output.push_str(&format!(
+                        "readonly class {} implements {}\n{{\n{}public function __construct() {{}}\n}}\n\n",
+                        variant_name, def.name, Self::indent(1)
+                    ));
+                }
+                VariantKind::Struct(fields) => {
+                    output.push_str(&format!(
+                        "readonly class {} implements {}\n{{\n{}public function __construct(\n",
+                        variant_name, def.name, Self::indent(1)
+                    ));
+                    for (i, field) in fields.iter().filter(|f| !f.skip).enumerate() {
+                        let fname = field.rename.as_deref().unwrap_or(&field.name);
+                        let ftype = field
+                            .type_override
+                            .clone()
+                            .unwrap_or_else(|| self.map_type(&field.ty));
+                        let trailing = if i < fields.len() - 1 { "," } else { "," };
+                        output.push_str(&format!(
+                            "{}public {} ${}{}\n",
+                            Self::indent(2), ftype, fname, trailing
+                        ));
+                    }
+                    output.push_str(&format!("{}) {{}}\n}}\n\n", Self::indent(1)));
+                }
+                VariantKind::Tuple(types) => {
+                    output.push_str(&format!(
+                        "readonly class {} implements {}\n{{\n{}public function __construct(\n",
+                        variant_name, def.name, Self::indent(1)
+                    ));
+                    for (i, ty) in types.iter().enumerate() {
+                        let trailing = if i < types.len() - 1 { "," } else { "," };
+                        output.push_str(&format!(
+                            "{}public {} $value_{}{}\n",
+                            Self::indent(2), self.map_type(ty), i, trailing
+                        ));
+                    }
+                    output.push_str(&format!("{}) {{}}\n}}\n\n", Self::indent(1)));
+                }
+            }
+        }
+
+        output
+    }
+}
+
+/// PHP emitter plugin entry point.
+pub struct PhpPlugin;
+
+impl PhpPlugin {
+    pub fn new() -> Self {
+        Self
+    }
+}
+
+impl Default for PhpPlugin {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl EmitterPlugin for PhpPlugin {
+    fn language_id(&self) -> &str {
+        "php"
+    }
+
+    fn language_name(&self) -> &str {
+        "PHP"
+    }
+
+    fn version(&self) -> &str {
+        "0.1.0"
+    }
+
+    fn default_output_dir(&self) -> &str {
+        "./generated/php"
+    }
+
+    fn file_extension(&self) -> &str {
+        "php"
+    }
+
+    fn mapper(&self, config: &PluginConfig) -> Box<dyn TypeMapper> {
+        let mut mapper = PhpMapper::new();
+        if let Some(style_str) = config.file_style.as_deref() {
+            if let Some(style) = FileStyle::from_str(style_str) {
+                mapper = mapper.with_file_style(style);
+            }
+        }
+        Box::new(mapper)
+    }
+}
+
+typewriter_plugin::declare_plugin!(PhpPlugin);
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn mapper() -> PhpMapper {
+        PhpMapper::new()
+    }
+
+    #[test]
+    fn test_primitive_mappings() {
+        let m = mapper();
+        assert_eq!(m.map_primitive(&PrimitiveType::String), "string");
+        assert_eq!(m.map_primitive(&PrimitiveType::Bool), "bool");
+        assert_eq!(m.map_primitive(&PrimitiveType::U32), "int");
+        assert_eq!(m.map_primitive(&PrimitiveType::I64), "int");
+        assert_eq!(m.map_primitive(&PrimitiveType::F64), "float");
+        assert_eq!(m.map_primitive(&PrimitiveType::Uuid), "string");
+        assert_eq!(m.map_primitive(&PrimitiveType::DateTime), "\\DateTimeInterface");
+    }
+
+    #[test]
+    fn test_option_mapping() {
+        let m = mapper();
+        assert_eq!(
+            m.map_option(&TypeKind::Primitive(PrimitiveType::U32)),
+            "?int"
+        );
+    }
+
+    #[test]
+    fn test_emit_simple_struct() {
+        let m = mapper();
+        let def = StructDef {
+            name: "User".to_string(),
+            fields: vec![
+                FieldDef {
+                    name: "id".to_string(),
+                    ty: TypeKind::Primitive(PrimitiveType::String),
+                    optional: false, rename: None, doc: None,
+                    skip: false, flatten: false, type_override: None,
+                },
+                FieldDef {
+                    name: "age".to_string(),
+                    ty: TypeKind::Option(Box::new(TypeKind::Primitive(PrimitiveType::U32))),
+                    optional: true, rename: None, doc: None,
+                    skip: false, flatten: false, type_override: None,
+                },
+            ],
+            doc: None,
+            generics: vec![],
+        };
+
+        let output = m.emit_struct(&def);
+        assert!(output.contains("readonly class User"));
+        assert!(output.contains("public string $id,"));
+        assert!(output.contains("public ?int $age = null,"));
+    }
+
+    #[test]
+    fn test_emit_string_enum() {
+        let m = mapper();
+        let def = EnumDef {
+            name: "Role".to_string(),
+            variants: vec![
+                VariantDef { name: "Admin".to_string(), rename: None, kind: VariantKind::Unit, doc: None },
+                VariantDef { name: "User".to_string(), rename: None, kind: VariantKind::Unit, doc: None },
+            ],
+            representation: EnumRepr::External,
+            doc: None,
+        };
+
+        let output = m.emit_enum(&def);
+        assert!(output.contains("enum Role: string"));
+        assert!(output.contains("case Admin = 'Admin';"));
+        assert!(output.contains("case User = 'User';"));
+    }
+
+    #[test]
+    fn test_plugin_metadata() {
+        let plugin = PhpPlugin::new();
+        assert_eq!(plugin.language_id(), "php");
+        assert_eq!(plugin.language_name(), "PHP");
+        assert_eq!(plugin.file_extension(), "php");
+    }
+}

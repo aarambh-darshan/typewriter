@@ -1,15 +1,17 @@
 [package]
-name = "typewriter-typescript"
-version = "0.5.2"
+name = "typewriter-plugin"
+version = "0.1.0"
 edition = "2024"
-description = "TypeScript emitter for the typewriter type sync SDK"
+description = "Plugin API for typewriter custom language emitters"
 license = "Apache-2.0"
 repository = "https://github.com/aarambh-darshan/typewriter"
 homepage = "https://github.com/aarambh-darshan/typewriter"
 readme = "README.md"
-keywords = ["codegen", "typescript", "type-sync", "interface"]
+keywords = ["codegen", "plugin", "type-sync", "emitter"]
 categories = ["development-tools::build-utils"]
 authors = ["Darshan Vichhi <aarambhdarshan@gmail.com>"]
 
 [dependencies]
 typewriter-core = { path = "../typewriter-core", version = "0.5.2" }
+serde = { workspace = true }
+toml = { workspace = true }
