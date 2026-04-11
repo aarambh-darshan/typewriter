@@ -13,6 +13,72 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.5.2] - 2026-04-11
+
+### Added
+
+#### Plugin Architecture (`typewriter-plugin` crate)
+- New `typewriter-plugin` crate (v0.1.0) defining the plugin API contract
+- `EmitterPlugin` trait — the interface all external emitter plugins must implement
+- `declare_plugin!` macro — generates C ABI entry points for dynamic loading
+- `PluginConfig` struct — captures plugin-specific configuration from `typewriter.toml`
+- `PLUGIN_API_VERSION` constant for ABI compatibility checking
+- Convenience `prelude` module for plugin authors
+
+#### Plugin Registry (`typewriter-engine`)
+- `PluginRegistry` — dynamic loader for external emitter plugins via `libloading`
+- Automatic plugin discovery from `~/.typewriter/plugins/` directory
+- Explicit plugin loading from paths configured in `typewriter.toml`
+- API version validation at load time (rejects incompatible plugins)
+- Duplicate language ID detection
+- `render_specs_with_plugins()` and `render_specs_deduped_with_plugins()` for plugin-aware rendering
+
+#### `LanguageTarget` enum
+- New `LanguageTarget` enum wrapping both `BuiltIn(Language)` and `Plugin(String)`
+- `#[sync_to(ruby)]` now works — unknown languages are treated as plugin targets
+- `parse_languages()` no longer errors on unknown names; maps them to `Plugin` targets
+
+#### Ruby Emitter Plugin (`typewriter-plugin-ruby` v0.1.0)
+- Generates Sorbet-compatible `.rbi` type signature files
+- Supports `T::Struct`, `T::Enum`, sealed modules for complex enums
+- Type mappings: `Integer`, `Float`, `T::Boolean`, `T.nilable()`, `T::Array[]`, `T::Hash[]`
+- `typed: strict` file headers
+
+#### PHP Emitter Plugin (`typewriter-plugin-php` v0.1.0)
+- Generates PHP 8.1+ `readonly class` with constructor-promoted properties
+- Backed `enum` with `string` type for unit enums
+- `interface` + implementing classes for complex enums
+- `declare(strict_types=1)` file headers
+
+#### Dart/Flutter Emitter Plugin (`typewriter-plugin-dart` v0.1.0)
+- Generates `json_serializable`-compatible Dart classes
+- `@JsonSerializable()` annotations with `fromJson`/`toJson` factories
+- `sealed class` for complex enums (Dart 3.0+)
+- `@JsonKey(name:)` for field renaming, `@JsonValue()` for enum variants
+- Dart Record types `(T1, T2)` for tuple variants
+
+#### CLI Plugin Subcommand
+- `typewriter plugin list` — list all loaded plugins
+- `typewriter plugin validate <path>` — validate a plugin shared library
+- `typewriter plugin info <name>` — show info about a loaded plugin
+
+#### Configuration
+- `[plugins]` section in `typewriter.toml` for plugin directory and explicit paths
+- Plugin-specific TOML sections (e.g. `[ruby]`, `[php]`, `[dart]`) via serde `flatten`
+
+### Changed
+- `TypeSpec.targets` now uses `Vec<LanguageTarget>` instead of `Vec<Language>`
+- `GeneratedFile.language` field renamed to `language_label` (String)
+- `render_specs()` and `render_specs_deduped()` preserved as backwards-compatible wrappers
+- Proc-macro gracefully skips plugin language targets with a logged message
+- `parse_sync_to_attr()` returns `Vec<LanguageTarget>` (was `Vec<Language>`)
+- CLI `generate`, `check`, and `watch` commands now load plugin registry
+
+### Removed
+- `unknown_language.rs` compile-error test (unknown languages are now valid plugin targets)
+
+---
+
 ## [0.5.0] - 2026-04-08
 
 ### Added

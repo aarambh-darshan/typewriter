@@ -12,8 +12,9 @@ typewriter is a **Cargo workspace** split into focused, independently publishabl
 typewriter/
 │
 ├── typewriter-core/            ← 🧱 Shared IR types, traits, config (zero proc-macro deps)
-├── typewriter-engine/          ← ⚙️ Shared scan/parse/emit + drift orchestration
+├── typewriter-engine/          ← ⚙️ Shared scan/parse/emit + drift + plugin registry
 ├── typewriter-macros/          ← 🔧 Proc macro crate (#[derive(TypeWriter)])
+├── typewriter-plugin/          ← 🔌 Plugin API (EmitterPlugin trait + declare_plugin! macro)
 ├── typewriter-typescript/      ← 🟦 TypeScript emitter
 ├── typewriter-python/          ← 🐍 Python Pydantic emitter
 ├── typewriter-go/              ← 🐹 Go emitter
@@ -21,6 +22,9 @@ typewriter/
 ├── typewriter-kotlin/          ← 🚀 Kotlin emitter
 ├── typewriter-graphql/         ← 🔷 GraphQL SDL emitter
 ├── typewriter-json-schema/     ← 📋 JSON Schema emitter
+├── typewriter-plugin-ruby/     ← 💎 Ruby (Sorbet) emitter plugin
+├── typewriter-plugin-php/      ← 🐘 PHP emitter plugin
+├── typewriter-plugin-dart/     ← 🎯 Dart/Flutter emitter plugin
 ├── typewriter-cli/             ← 💻 CLI (typewriter + cargo-typewriter binaries)
 ├── typewriter/                 ← 📦 Main user-facing crate (re-exports)
 ├── typewriter-test/            ← 🧪 Integration + snapshot tests

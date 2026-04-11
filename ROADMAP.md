@@ -66,12 +66,12 @@
 
 ---
 
-## Phase 5 — Advanced Features *(Month 10–12)*
+## Phase 5 — Advanced Features `v0.5.2` *(in progress)*
 
 > **Goal:** Plugin ecosystem. Community-contributed backends. Monorepo support.
 
-- [ ] Custom emitter plugin API
-- [ ] Ruby, PHP, Dart (Flutter) emitters via plugin system
+- [x] Custom emitter plugin API (`typewriter-plugin` crate + `PluginRegistry`)
+- [x] Ruby, PHP, Dart (Flutter) emitters via plugin system
 - [ ] Migration guide generator (type change → changelog per language)
 - [ ] Bidirectional sync: detect foreign language types, suggest Rust structs
 - [ ] Web playground: paste Rust → see all language outputs live

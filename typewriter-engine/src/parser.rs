@@ -46,7 +46,10 @@ pub fn parse_type_def(input: &DeriveInput) -> syn::Result<TypeDef> {
 }
 
 /// Parse the `#[sync_to(typescript, python, ...)]` attribute.
-pub fn parse_sync_to_attr(input: &DeriveInput) -> syn::Result<Vec<Language>> {
+///
+/// Known language names are mapped to `LanguageTarget::BuiltIn`.
+/// Unknown names are treated as `LanguageTarget::Plugin` for plugin-provided languages.
+pub fn parse_sync_to_attr(input: &DeriveInput) -> syn::Result<Vec<crate::LanguageTarget>> {
     let mut targets = Vec::new();
 
     for attr in &input.attrs {
@@ -57,14 +60,11 @@ pub fn parse_sync_to_attr(input: &DeriveInput) -> syn::Result<Vec<Language>> {
         attr.parse_nested_meta(|meta| {
             if let Some(ident) = meta.path.get_ident() {
                 let lang_str = ident.to_string();
-                if let Some(language) = Language::from_str(&lang_str) {
-                    targets.push(language);
-                } else {
-                    return Err(meta.error(format!(
-                        "typewriter: unknown language '{}'. Supported: typescript, python, go, swift, kotlin",
-                        lang_str
-                    )));
-                }
+                let target = match Language::from_str(&lang_str) {
+                    Some(language) => crate::LanguageTarget::BuiltIn(language),
+                    None => crate::LanguageTarget::Plugin(lang_str),
+                };
+                targets.push(target);
             }
             Ok(())
         })?;
@@ -529,7 +529,10 @@ mod tests {
         };
 
         let targets = parse_sync_to_attr(&input).unwrap();
-        assert_eq!(targets, vec![Language::TypeScript, Language::Python]);
+        assert_eq!(targets, vec![
+            crate::LanguageTarget::BuiltIn(Language::TypeScript),
+            crate::LanguageTarget::BuiltIn(Language::Python),
+        ]);
     }
 
     #[test]

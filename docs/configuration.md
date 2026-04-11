@@ -224,3 +224,50 @@ pub struct SpecialType { ... }
 ```
 
 See [Custom Attributes](custom-attributes.md) for the full attribute reference.
+
+---
+
+## Plugin Configuration
+
+### `[plugins]` Section
+
+Configure the plugin system:
+
+```toml
+[plugins]
+# Directory to scan for plugin shared libraries
+dir = "~/.typewriter/plugins/"
+
+# Explicit paths to individual plugin shared libraries
+paths = [
+    "/opt/typewriter/plugins/libtypewriter_plugin_ruby.so",
+    "./my-plugins/libtypewriter_plugin_custom.so",
+]
+```
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `dir` | `String` | `~/.typewriter/plugins/` | Directory to automatically scan for `.so`/`.dylib`/`.dll` plugins |
+| `paths` | `Vec<String>` | `[]` | Explicit paths to plugin shared libraries |
+
+### Plugin-Specific Sections
+
+Each plugin can have its own TOML section named after its `language_id`:
+
+```toml
+[ruby]
+output_dir = "./generated/ruby"
+file_style = "snake_case"
+
+[php]
+output_dir = "./generated/php"
+file_style = "PascalCase"
+
+[dart]
+output_dir = "./generated/dart"
+file_style = "snake_case"
+```
+
+All keys in plugin-specific sections are passed to the plugin's `PluginConfig.extra` table. The `output_dir` and `file_style` keys are standardized across all plugins.
+
+See [Plugin System](plugins.md) for the full plugin documentation.

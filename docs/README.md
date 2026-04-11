@@ -21,6 +21,10 @@
 | [Kotlin Emitter](kotlin-emitter.md) | kotlinx.serialization data classes and sealed classes |
 | [GraphQL Emitter](graphql-emitter.md) | SDL types, enums, unions, custom scalars |
 | [JSON Schema Emitter](json-schema-emitter.md) | Draft 2020-12 object schemas, string enums, oneOf composition |
+| [Plugin System](plugins.md) | Writing plugins, plugin discovery, CLI commands, API reference |
+| [Ruby Emitter](ruby-emitter.md) | Sorbet `.rbi` type signatures (plugin) |
+| [PHP Emitter](php-emitter.md) | PHP 8.1+ readonly classes (plugin) |
+| [Dart Emitter](dart-emitter.md) | Flutter `json_serializable` classes (plugin) |
 
 ---
 
@@ -44,4 +48,6 @@ If you're new to typebridge, we recommend reading in this order:
 4. **[Serde Compatibility](serde-compatibility.md)** — leverage your existing serde attributes
 5. **[Custom Attributes](custom-attributes.md)** — fine-tune output with `#[tw(...)]`
 6. **[Configuration](configuration.md)** — customize output directories and file naming
-7. **[TypeScript Emitter](typescript-emitter.md)** / **[Python Emitter](python-emitter.md)** / **[GraphQL Emitter](graphql-emitter.md)** / **[JSON Schema Emitter](json-schema-emitter.md)** — language-specific details
+7. **[Plugin System](plugins.md)** — extend typewriter with community plugins
+8. **[TypeScript Emitter](typescript-emitter.md)** / **[Python Emitter](python-emitter.md)** / **[GraphQL Emitter](graphql-emitter.md)** / **[JSON Schema Emitter](json-schema-emitter.md)** — language-specific details
+9. **[Ruby Emitter](ruby-emitter.md)** / **[PHP Emitter](php-emitter.md)** / **[Dart Emitter](dart-emitter.md)** — plugin emitters

@@ -79,7 +79,7 @@ pub fn build_drift_report(
 
         entries.push(DriftEntry {
             type_name: file.type_name.clone(),
-            language: language_label(file.language).to_string(),
+            language: file.language_label.clone(),
             output_path: rel_path(project_root, path),
             status,
             reason,

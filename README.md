@@ -1,7 +1,7 @@
 # 🖊️ typewriter
 
 > **Cross-Language Type Synchronization SDK for Rust**
-> Define your types once in Rust. Get perfectly matching types in TypeScript, Python, Go, Swift, Kotlin, GraphQL, and JSON Schema — automatically, forever.
+> Define your types once in Rust. Get perfectly matching types in TypeScript, Python, Go, Swift, Kotlin, GraphQL, JSON Schema, Ruby, PHP, and Dart — automatically, forever.
 
 [![Crates.io](https://img.shields.io/crates/v/typebridge.svg)](https://crates.io/crates/typebridge)
 [![Docs.rs](https://docs.rs/typebridge/badge.svg)](https://docs.rs/typebridge)
@@ -13,7 +13,7 @@
 
 | 🦀 Rust Core | 🌐 Polyglot | ⚡ Zero Drift | 🔧 Proc Macro |
 |:---:|:---:|:---:|:---:|
-| proc macro powered | 7+ languages | forever in sync | zero boilerplate |
+| proc macro powered | 10+ languages | forever in sync | zero boilerplate |
 
 </div>
 
@@ -78,7 +78,7 @@ pub struct UserProfile {
 
 ```toml
 [dependencies]
-typebridge = "0.5.0"
+typebridge = "0.5.2"
 serde = { version = "1", features = ["derive"] }
 ```
 
