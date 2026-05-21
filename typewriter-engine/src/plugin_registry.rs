@@ -88,8 +88,9 @@ impl PluginRegistry {
         let expanded = expand_tilde(path);
 
         unsafe {
-            let lib = libloading::Library::new(&expanded)
-                .with_context(|| format!("failed to load shared library: {}", expanded.display()))?;
+            let lib = libloading::Library::new(&expanded).with_context(|| {
+                format!("failed to load shared library: {}", expanded.display())
+            })?;
 
             // Check API version first
             let api_version_fn: libloading::Symbol<unsafe extern "C" fn() -> u32> = lib
@@ -124,7 +125,10 @@ impl PluginRegistry {
 
             let plugin_ptr = create_fn();
             if plugin_ptr.is_null() {
-                bail!("plugin {} returned null from _tw_plugin_create", expanded.display());
+                bail!(
+                    "plugin {} returned null from _tw_plugin_create",
+                    expanded.display()
+                );
             }
 
             let plugin = Box::from_raw(plugin_ptr);
@@ -241,10 +245,10 @@ fn is_shared_library(path: &Path) -> bool {
 /// Expand `~` to the user's home directory.
 fn expand_tilde(path: &Path) -> PathBuf {
     let path_str = path.to_string_lossy();
-    if path_str.starts_with("~/") {
-        if let Ok(home) = std::env::var("HOME") {
-            return PathBuf::from(format!("{}{}", home, &path_str[1..]));
-        }
+    if path_str.starts_with("~/")
+        && let Ok(home) = std::env::var("HOME")
+    {
+        return PathBuf::from(format!("{}{}", home, &path_str[1..]));
     }
     path.to_path_buf()
 }

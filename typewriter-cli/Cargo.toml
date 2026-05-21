@@ -1,6 +1,6 @@
 [package]
 name = "typebridge-cli"
-version = "0.3.2"
+version = "1.0.0"
 edition = "2024"
 description = "Standalone CLI for typewriter generation, drift checks, and watch mode"
 license = "Apache-2.0"
@@ -9,9 +9,17 @@ homepage = "https://github.com/aarambh-darshan/typewriter"
 readme = "README.md"
 authors = ["Darshan Vichhi <aarambhdarshan@gmail.com>"]
 
+[package.metadata.dist]
+dist = true
+display-name = "typebridge"
+
+[[bin]]
+name = "typebridge"
+path = "src/main.rs"
+
 [[bin]]
 name = "typewriter"
-path = "src/main.rs"
+path = "src/bin/typewriter.rs"
 
 [[bin]]
 name = "cargo-typewriter"
@@ -24,6 +32,7 @@ colored = "2"
 notify = "6"
 serde_json = "1"
 similar = "2"
+toml = { workspace = true }
 typewriter-core = { path = "../typewriter-core", version = "0.5.2" }
 typewriter-engine = { path = "../typewriter-engine", version = "0.5.2" }
 

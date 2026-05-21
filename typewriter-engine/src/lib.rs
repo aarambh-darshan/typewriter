@@ -76,8 +76,8 @@ pub mod scan;
 
 use std::path::PathBuf;
 
-pub use typewriter_core::{config::TypewriterConfig, ir::Language, ir::TypeDef};
 pub use plugin_registry::PluginRegistry;
+pub use typewriter_core::{config::TypewriterConfig, ir::Language, ir::TypeDef};
 
 /// A target language — either a built-in language or a plugin-provided one.
 ///

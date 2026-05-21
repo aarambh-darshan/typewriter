@@ -18,7 +18,8 @@
 #[cfg(test)]
 mod tests {
     #[test]
-    fn placeholder() {
-        assert!(true);
+    fn crate_docs_mention_mdbook() {
+        let docs = env!("CARGO_PKG_DESCRIPTION");
+        assert!(docs.contains("mdBook"));
     }
 }

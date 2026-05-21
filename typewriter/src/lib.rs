@@ -60,9 +60,9 @@
 //! ```bash
 //! cargo install typebridge-cli
 //!
-//! typewriter generate --all     # Generate all types
-//! typewriter check --ci         # Check for drift
-//! typewriter watch              # Watch for changes
+//! typebridge generate --all     # Generate all types
+//! typebridge check --ci         # Check for drift
+//! typebridge watch              # Watch for changes
 //! ```
 //!
 //! See [`typebridge_cli`](https://crates.io/crates/typebridge-cli) for more.

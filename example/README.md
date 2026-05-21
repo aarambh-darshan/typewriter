@@ -14,6 +14,14 @@ This generates type definitions automatically in:
 - `generated/go/` — Go structs and interface unions
 - `generated/graphql/` — GraphQL SDL types, enums, and unions
 
+You can also run the v1 CLI workflow from this example directory:
+
+```bash
+typebridge generate --all
+typebridge check --ci
+typebridge doctor
+```
+
 ## Examples Included
 
 | # | Type | Demonstrates |

@@ -54,10 +54,16 @@ impl TypeMapper for PhpMapper {
         match ty {
             PrimitiveType::String => "string".to_string(),
             PrimitiveType::Bool => "bool".to_string(),
-            PrimitiveType::U8 | PrimitiveType::U16 | PrimitiveType::U32
-            | PrimitiveType::U64 | PrimitiveType::U128
-            | PrimitiveType::I8 | PrimitiveType::I16 | PrimitiveType::I32
-            | PrimitiveType::I64 | PrimitiveType::I128 => "int".to_string(),
+            PrimitiveType::U8
+            | PrimitiveType::U16
+            | PrimitiveType::U32
+            | PrimitiveType::U64
+            | PrimitiveType::U128
+            | PrimitiveType::I8
+            | PrimitiveType::I16
+            | PrimitiveType::I32
+            | PrimitiveType::I64
+            | PrimitiveType::I128 => "int".to_string(),
             PrimitiveType::F32 | PrimitiveType::F64 => "float".to_string(),
             PrimitiveType::Uuid => "string".to_string(),
             PrimitiveType::DateTime => "\\DateTimeInterface".to_string(),
@@ -101,18 +107,29 @@ impl TypeMapper for PhpMapper {
         output.push_str(&format!("readonly class {}\n{{\n", def.name));
 
         // Constructor with promoted properties
-        output.push_str(&format!("{}public function __construct(\n", Self::indent(1)));
+        output.push_str(&format!(
+            "{}public function __construct(\n",
+            Self::indent(1)
+        ));
 
         let visible_fields: Vec<&FieldDef> = def.fields.iter().filter(|f| !f.skip).collect();
 
         // Sort: required fields first, then optional
-        let mut required: Vec<&FieldDef> = visible_fields.iter().filter(|f| !f.optional).copied().collect();
-        let mut optional: Vec<&FieldDef> = visible_fields.iter().filter(|f| f.optional).copied().collect();
+        let mut required: Vec<&FieldDef> = visible_fields
+            .iter()
+            .filter(|f| !f.optional)
+            .copied()
+            .collect();
+        let mut optional: Vec<&FieldDef> = visible_fields
+            .iter()
+            .filter(|f| f.optional)
+            .copied()
+            .collect();
         let mut ordered = Vec::new();
         ordered.append(&mut required);
         ordered.append(&mut optional);
 
-        for (i, field) in ordered.iter().enumerate() {
+        for field in &ordered {
             let field_name = field.rename.as_deref().unwrap_or(&field.name);
             let type_str = field
                 .type_override
@@ -124,17 +141,23 @@ impl TypeMapper for PhpMapper {
                 output.push_str(&format!("{}/** {} */\n", Self::indent(2), doc.trim()));
             }
 
-            let trailing = if i < ordered.len() - 1 { "," } else { "," };
+            let trailing = ",";
 
             if field.optional {
                 output.push_str(&format!(
                     "{}public {} ${} = null{}\n",
-                    Self::indent(2), type_str, field_name, trailing
+                    Self::indent(2),
+                    type_str,
+                    field_name,
+                    trailing
                 ));
             } else {
                 output.push_str(&format!(
                     "{}public {} ${}{}\n",
-                    Self::indent(2), type_str, field_name, trailing
+                    Self::indent(2),
+                    type_str,
+                    field_name,
+                    trailing
                 ));
             }
         }
@@ -145,7 +168,10 @@ impl TypeMapper for PhpMapper {
     }
 
     fn emit_enum(&self, def: &EnumDef) -> String {
-        let all_unit = def.variants.iter().all(|v| matches!(v.kind, VariantKind::Unit));
+        let all_unit = def
+            .variants
+            .iter()
+            .all(|v| matches!(v.kind, VariantKind::Unit));
 
         if all_unit {
             self.emit_string_enum(def)
@@ -222,18 +248,23 @@ impl PhpMapper {
                 VariantKind::Struct(fields) => {
                     output.push_str(&format!(
                         "readonly class {} implements {}\n{{\n{}public function __construct(\n",
-                        variant_name, def.name, Self::indent(1)
+                        variant_name,
+                        def.name,
+                        Self::indent(1)
                     ));
-                    for (i, field) in fields.iter().filter(|f| !f.skip).enumerate() {
+                    for field in fields.iter().filter(|f| !f.skip) {
                         let fname = field.rename.as_deref().unwrap_or(&field.name);
                         let ftype = field
                             .type_override
                             .clone()
                             .unwrap_or_else(|| self.map_type(&field.ty));
-                        let trailing = if i < fields.len() - 1 { "," } else { "," };
+                        let trailing = ",";
                         output.push_str(&format!(
                             "{}public {} ${}{}\n",
-                            Self::indent(2), ftype, fname, trailing
+                            Self::indent(2),
+                            ftype,
+                            fname,
+                            trailing
                         ));
                     }
                     output.push_str(&format!("{}) {{}}\n}}\n\n", Self::indent(1)));
@@ -241,13 +272,18 @@ impl PhpMapper {
                 VariantKind::Tuple(types) => {
                     output.push_str(&format!(
                         "readonly class {} implements {}\n{{\n{}public function __construct(\n",
-                        variant_name, def.name, Self::indent(1)
+                        variant_name,
+                        def.name,
+                        Self::indent(1)
                     ));
                     for (i, ty) in types.iter().enumerate() {
-                        let trailing = if i < types.len() - 1 { "," } else { "," };
+                        let trailing = ",";
                         output.push_str(&format!(
                             "{}public {} $value_{}{}\n",
-                            Self::indent(2), self.map_type(ty), i, trailing
+                            Self::indent(2),
+                            self.map_type(ty),
+                            i,
+                            trailing
                         ));
                     }
                     output.push_str(&format!("{}) {{}}\n}}\n\n", Self::indent(1)));
@@ -297,10 +333,10 @@ impl EmitterPlugin for PhpPlugin {
 
     fn mapper(&self, config: &PluginConfig) -> Box<dyn TypeMapper> {
         let mut mapper = PhpMapper::new();
-        if let Some(style_str) = config.file_style.as_deref() {
-            if let Some(style) = FileStyle::from_str(style_str) {
-                mapper = mapper.with_file_style(style);
-            }
+        if let Some(style_str) = config.file_style.as_deref()
+            && let Some(style) = FileStyle::from_str(style_str)
+        {
+            mapper = mapper.with_file_style(style);
         }
         Box::new(mapper)
     }
@@ -325,7 +361,10 @@ mod tests {
         assert_eq!(m.map_primitive(&PrimitiveType::I64), "int");
         assert_eq!(m.map_primitive(&PrimitiveType::F64), "float");
         assert_eq!(m.map_primitive(&PrimitiveType::Uuid), "string");
-        assert_eq!(m.map_primitive(&PrimitiveType::DateTime), "\\DateTimeInterface");
+        assert_eq!(
+            m.map_primitive(&PrimitiveType::DateTime),
+            "\\DateTimeInterface"
+        );
     }
 
     #[test]
@@ -346,14 +385,22 @@ mod tests {
                 FieldDef {
                     name: "id".to_string(),
                     ty: TypeKind::Primitive(PrimitiveType::String),
-                    optional: false, rename: None, doc: None,
-                    skip: false, flatten: false, type_override: None,
+                    optional: false,
+                    rename: None,
+                    doc: None,
+                    skip: false,
+                    flatten: false,
+                    type_override: None,
                 },
                 FieldDef {
                     name: "age".to_string(),
                     ty: TypeKind::Option(Box::new(TypeKind::Primitive(PrimitiveType::U32))),
-                    optional: true, rename: None, doc: None,
-                    skip: false, flatten: false, type_override: None,
+                    optional: true,
+                    rename: None,
+                    doc: None,
+                    skip: false,
+                    flatten: false,
+                    type_override: None,
                 },
             ],
             doc: None,
@@ -372,8 +419,18 @@ mod tests {
         let def = EnumDef {
             name: "Role".to_string(),
             variants: vec![
-                VariantDef { name: "Admin".to_string(), rename: None, kind: VariantKind::Unit, doc: None },
-                VariantDef { name: "User".to_string(), rename: None, kind: VariantKind::Unit, doc: None },
+                VariantDef {
+                    name: "Admin".to_string(),
+                    rename: None,
+                    kind: VariantKind::Unit,
+                    doc: None,
+                },
+                VariantDef {
+                    name: "User".to_string(),
+                    rename: None,
+                    kind: VariantKind::Unit,
+                    doc: None,
+                },
             ],
             representation: EnumRepr::External,
             doc: None,

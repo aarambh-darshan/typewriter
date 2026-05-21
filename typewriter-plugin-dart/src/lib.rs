@@ -67,10 +67,16 @@ impl TypeMapper for DartMapper {
         match ty {
             PrimitiveType::String => "String".to_string(),
             PrimitiveType::Bool => "bool".to_string(),
-            PrimitiveType::U8 | PrimitiveType::U16 | PrimitiveType::U32
-            | PrimitiveType::U64 | PrimitiveType::U128
-            | PrimitiveType::I8 | PrimitiveType::I16 | PrimitiveType::I32
-            | PrimitiveType::I64 | PrimitiveType::I128 => "int".to_string(),
+            PrimitiveType::U8
+            | PrimitiveType::U16
+            | PrimitiveType::U32
+            | PrimitiveType::U64
+            | PrimitiveType::U128
+            | PrimitiveType::I8
+            | PrimitiveType::I16
+            | PrimitiveType::I32
+            | PrimitiveType::I64
+            | PrimitiveType::I128 => "int".to_string(),
             PrimitiveType::F32 | PrimitiveType::F64 => "double".to_string(),
             PrimitiveType::Uuid => "String".to_string(),
             PrimitiveType::DateTime | PrimitiveType::NaiveDate => "DateTime".to_string(),
@@ -132,7 +138,9 @@ impl TypeMapper for DartMapper {
 
         // Fields
         for field in &def.fields {
-            if field.skip { continue; }
+            if field.skip {
+                continue;
+            }
 
             if let Some(doc) = &field.doc {
                 output.push_str(&format!("  /// {}\n", doc.trim()));
@@ -158,7 +166,9 @@ impl TypeMapper for DartMapper {
         // Constructor
         output.push_str(&format!("  const {}({{\n", def.name));
         for field in &def.fields {
-            if field.skip { continue; }
+            if field.skip {
+                continue;
+            }
             let field_name = field.rename.as_deref().unwrap_or(&field.name);
             let dart_field_name = Self::to_camel_case(field_name);
 
@@ -185,7 +195,10 @@ impl TypeMapper for DartMapper {
     }
 
     fn emit_enum(&self, def: &EnumDef) -> String {
-        let all_unit = def.variants.iter().all(|v| matches!(v.kind, VariantKind::Unit));
+        let all_unit = def
+            .variants
+            .iter()
+            .all(|v| matches!(v.kind, VariantKind::Unit));
 
         if all_unit {
             self.emit_dart_enum(def)
@@ -273,10 +286,7 @@ impl DartMapper {
                 }
                 VariantKind::Struct(fields) => {
                     output.push_str("@JsonSerializable()\n");
-                    output.push_str(&format!(
-                        "class {} extends {} {{\n",
-                        variant_name, def.name
-                    ));
+                    output.push_str(&format!("class {} extends {} {{\n", variant_name, def.name));
 
                     for field in fields.iter().filter(|f| !f.skip) {
                         let fname = field.rename.as_deref().unwrap_or(&field.name);
@@ -311,15 +321,9 @@ impl DartMapper {
                     output.push_str("}\n\n");
                 }
                 VariantKind::Tuple(types) => {
-                    output.push_str(&format!(
-                        "class {} extends {} {{\n",
-                        variant_name, def.name
-                    ));
+                    output.push_str(&format!("class {} extends {} {{\n", variant_name, def.name));
                     for (i, ty) in types.iter().enumerate() {
-                        output.push_str(&format!(
-                            "  final {} value{};\n",
-                            self.map_type(ty), i
-                        ));
+                        output.push_str(&format!("  final {} value{};\n", self.map_type(ty), i));
                     }
                     output.push_str(&format!("\n  const {}(", variant_name));
                     let params: Vec<String> = (0..types.len())
@@ -374,10 +378,10 @@ impl EmitterPlugin for DartPlugin {
 
     fn mapper(&self, config: &PluginConfig) -> Box<dyn TypeMapper> {
         let mut mapper = DartMapper::new();
-        if let Some(style_str) = config.file_style.as_deref() {
-            if let Some(style) = FileStyle::from_str(style_str) {
-                mapper = mapper.with_file_style(style);
-            }
+        if let Some(style_str) = config.file_style.as_deref()
+            && let Some(style) = FileStyle::from_str(style_str)
+        {
+            mapper = mapper.with_file_style(style);
         }
         Box::new(mapper)
     }
@@ -445,14 +449,22 @@ mod tests {
                 FieldDef {
                     name: "id".to_string(),
                     ty: TypeKind::Primitive(PrimitiveType::String),
-                    optional: false, rename: None, doc: None,
-                    skip: false, flatten: false, type_override: None,
+                    optional: false,
+                    rename: None,
+                    doc: None,
+                    skip: false,
+                    flatten: false,
+                    type_override: None,
                 },
                 FieldDef {
                     name: "age".to_string(),
                     ty: TypeKind::Option(Box::new(TypeKind::Primitive(PrimitiveType::U32))),
-                    optional: true, rename: None, doc: None,
-                    skip: false, flatten: false, type_override: None,
+                    optional: true,
+                    rename: None,
+                    doc: None,
+                    skip: false,
+                    flatten: false,
+                    type_override: None,
                 },
             ],
             doc: None,
@@ -476,8 +488,18 @@ mod tests {
         let def = EnumDef {
             name: "Role".to_string(),
             variants: vec![
-                VariantDef { name: "Admin".to_string(), rename: None, kind: VariantKind::Unit, doc: None },
-                VariantDef { name: "User".to_string(), rename: None, kind: VariantKind::Unit, doc: None },
+                VariantDef {
+                    name: "Admin".to_string(),
+                    rename: None,
+                    kind: VariantKind::Unit,
+                    doc: None,
+                },
+                VariantDef {
+                    name: "User".to_string(),
+                    rename: None,
+                    kind: VariantKind::Unit,
+                    doc: None,
+                },
             ],
             representation: EnumRepr::External,
             doc: None,

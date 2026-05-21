@@ -1,49 +1,23 @@
 # Plugin CLI Commands
 
-Manage plugins using the `typewriter plugin` subcommand.
+Plugin commands are experimental in v1.0.0. They support local plugin inspection and validation only; there is no `plugin add` command or registry.
 
-## `typewriter plugin list`
-
-List all loaded plugins:
+## `typebridge plugin list`
 
 ```bash
-$ typewriter plugin list
-Plugins: 3 plugin(s) loaded:
-
-  ● Ruby (Sorbet) v0.1.0
-    Language ID:  ruby
-    Extension:    .rbi
-    Output dir:   ./generated/ruby
-
-  ● PHP v0.1.0
-    Language ID:  php
-    Extension:    .php
-    Output dir:   ./generated/php
+typebridge plugin list
+typebridge --format json plugin list
 ```
 
-## `typewriter plugin validate <path>`
-
-Validate a plugin shared library before installing:
+## `typebridge plugin validate <path>`
 
 ```bash
-$ typewriter plugin validate ./target/release/libtypewriter_plugin_ruby.so
-✓ Plugin is valid!
-  Name:       Ruby (Sorbet)
-  Language:   ruby
-  Version:    0.1.0
-  Extension:  .rbi
+typebridge plugin validate ./target/release/libtypewriter_plugin_ruby.so
 ```
 
-## `typewriter plugin info <name>`
-
-Show details about a loaded plugin:
+## `typebridge plugin info <name>`
 
 ```bash
-$ typewriter plugin info ruby
-Plugin: Ruby (Sorbet)
-  Language ID:  ruby
-  Version:      0.1.0
-  Extension:    .rbi
-  Output dir:   ./generated/ruby
-  Loaded from:  /home/user/.typewriter/plugins/libtypewriter_plugin_ruby.so
+typebridge plugin info ruby
+typebridge --format json plugin info ruby
 ```

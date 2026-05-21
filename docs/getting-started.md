@@ -8,6 +8,7 @@ This guide walks you through adding typewriter to your Rust project and generati
 
 - Rust stable toolchain (1.70+)
 - A Cargo project with `serde` for serialization
+- Rust is only required for the Rust crate/proc-macro workflow. Released `typebridge` CLI binaries can be installed without Rust.
 
 ---
 
@@ -42,6 +43,20 @@ typebridge = { version = "0.5.0", default-features = false, features = ["kotlin"
 # GraphQL only
 typebridge = { version = "0.5.0", default-features = false, features = ["graphql"] }
 ```
+
+Install the CLI for project-wide generation and drift checks:
+
+```bash
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/aarambh-darshan/typewriter/releases/latest/download/typebridge-installer.sh | sh
+```
+
+Windows:
+
+```powershell
+powershell -ExecutionPolicy Bypass -c "irm https://github.com/aarambh-darshan/typewriter/releases/latest/download/typebridge-installer.ps1 | iex"
+```
+
+The primary command is `typebridge`; `typewriter` remains as a compatibility alias.
 
 ---
 
@@ -83,6 +98,14 @@ cargo build
 
 typewriter generates files during compilation. You'll see output like:
 
+```
+
+You can also generate explicitly with the CLI:
+
+```bash
+typebridge generate --all
+typebridge check --ci
+typebridge watch
 ```
   typewriter: Product → ./generated/typescript/product.ts
   typewriter: Product → ./generated/typescript/product.schema.ts

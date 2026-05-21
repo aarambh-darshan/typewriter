@@ -9,7 +9,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-*No unreleased changes yet.*
+### Added
+
+- Added `typebridge` as the primary CLI binary while keeping `typewriter` as a compatibility alias.
+- Added CLI `init` and `doctor` commands.
+- Added global CLI options: `--config`, `--format text|json`, `--verbose`, and `--dry-run`.
+- Added `--version` support and fixed Clap help/version handling so help exits successfully.
+- Added CLI integration tests for primary binary behavior, config handling, dry-run, init, and doctor.
+- Added real Rust CI with formatting, clippy, tests, and workspace build.
+- Added cargo-dist release metadata and generated release workflow for prebuilt binaries, checksums, GitHub Releases, and shell/PowerShell installers.
+
+### Changed
+
+- Documented v1.0.0 as a polished Rust-source generation CLI release rather than an any-to-any conversion release.
+- Marked plugin support as experimental for v1.0.0.
+
+### Fixed
+
+- Fixed existing formatting and clippy issues in the workspace.
 
 ---
 
@@ -378,4 +395,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.1.2]: https://github.com/aarambh-darshan/typewriter/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/aarambh-darshan/typewriter/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/aarambh-darshan/typewriter/releases/tag/v0.1.0
-

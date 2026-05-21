@@ -154,9 +154,7 @@ macro_rules! declare_plugin {
 /// use typewriter_plugin::prelude::*;
 /// ```
 pub mod prelude {
-    pub use super::{
-        EmitterPlugin, PLUGIN_API_VERSION, PluginConfig,
-    };
+    pub use super::{EmitterPlugin, PLUGIN_API_VERSION, PluginConfig};
     pub use typewriter_core::ir::*;
     pub use typewriter_core::mapper::TypeMapper;
     pub use typewriter_core::naming::{FileStyle, to_file_style};

@@ -8,6 +8,12 @@ typewriter is configured via a `typewriter.toml` file at your project root. **Al
 
 Create a `typewriter.toml` file in your project root:
 
+```bash
+typebridge init
+```
+
+Or create it manually:
+
 ```toml
 [typescript]
 output_dir = "../frontend/src/types"
@@ -177,6 +183,15 @@ typewriter looks for `typewriter.toml` in this order:
 
 This means you can place one `typewriter.toml` at your workspace root and it applies to all crates.
 
+The CLI also accepts an explicit config path:
+
+```bash
+typebridge --config ./config/typewriter.toml generate --all
+typebridge --config ./config/typewriter.toml check --ci
+```
+
+Relative `--config` paths are resolved from the current working directory.
+
 ---
 
 ## Type-Level Zod Overrides
@@ -228,6 +243,8 @@ See [Custom Attributes](custom-attributes.md) for the full attribute reference.
 ---
 
 ## Plugin Configuration
+
+Plugin support is experimental in v1.0.0. Local plugin loading is available for testing, but there is no `plugin add` command, public plugin registry, or stable plugin ABI yet.
 
 ### `[plugins]` Section
 

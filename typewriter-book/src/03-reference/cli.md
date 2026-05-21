@@ -1,73 +1,81 @@
 # CLI Commands
 
+The primary CLI is `typebridge`. The `typewriter` binary is kept as a compatibility alias, and `cargo typewriter` remains available via `cargo-typewriter`.
+
 ## Installation
 
 ```bash
-cargo install typebridge-cli
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/aarambh-darshan/typewriter/releases/latest/download/typebridge-installer.sh | sh
 ```
+
+```powershell
+powershell -ExecutionPolicy Bypass -c "irm https://github.com/aarambh-darshan/typewriter/releases/latest/download/typebridge-installer.ps1 | iex"
+```
+
+## Global Options
+
+- `--config <PATH>`
+- `--format text|json`
+- `--verbose`
+- `--dry-run`
+- `--version`
 
 ## Commands
 
-### `typewriter generate`
-
-Generate type files from Rust source definitions.
+### `typebridge generate`
 
 ```bash
-# Generate from a single file
-typewriter generate src/models.rs
-
-# Generate from all Rust files
-typewriter generate --all
-
-# Generate only specific languages
-typewriter generate --all --lang typescript,python
-
-# Show unified diffs for changed files
-typewriter generate --all --diff
+typebridge generate src/models.rs
+typebridge generate --all
+typebridge generate --all --lang typescript,python
+typebridge generate --all --diff
 ```
 
-### `typewriter check`
-
-Check if generated files are in sync with Rust source.
+### `typebridge check`
 
 ```bash
-# Check all types
-typewriter check
-
-# Exit non-zero on drift (for CI)
-typewriter check --ci
-
-# Output as JSON
-typewriter check --json
-
-# Write JSON report to file
-typewriter check --json-out drift-report.json
-
-# Check specific languages
-typewriter check --lang typescript,python
+typebridge check
+typebridge check --ci
+typebridge check --json
+typebridge check --json-out drift-report.json
+typebridge check --lang typescript,python
 ```
 
-### `typewriter watch`
-
-Watch Rust files and regenerate on save.
+### `typebridge watch`
 
 ```bash
-# Watch src directory
-typewriter watch
+typebridge watch
+typebridge watch src/models/
+typebridge watch --lang typescript,python
+typebridge watch --debounce-ms 100
+```
 
-# Watch custom path
-typewriter watch src/models/
+### `typebridge init`
 
-# Specific languages
-typewriter watch --lang typescript,python
+```bash
+typebridge init
+typebridge init --force
+typebridge --dry-run init
+```
 
-# Adjust debounce interval (ms)
-typewriter watch --debounce-ms 100
+### `typebridge doctor`
+
+```bash
+typebridge doctor
+typebridge --format json doctor
+```
+
+### `typebridge plugin`
+
+Plugin commands are experimental in v1.0.0:
+
+```bash
+typebridge plugin list
+typebridge plugin validate ./target/release/libtypewriter_plugin_ruby.so
+typebridge plugin info ruby
 ```
 
 ## Cargo Plugin
-
-After installing, use via cargo:
 
 ```bash
 cargo typewriter generate --all
@@ -79,5 +87,6 @@ cargo typewriter watch
 
 | Code | Meaning |
 |------|---------|
-| 0 | Success (no drift for `check --ci`) |
-| 1 | Error or drift detected |
+| 0 | Success, help/version output, or no drift for `check --ci` |
+| 1 | Runtime error or drift detected |
+| 2 | Invalid CLI usage |

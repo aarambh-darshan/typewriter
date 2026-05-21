@@ -43,7 +43,7 @@ OpenAPI codegen? Only works for HTTP APIs. Protobuf? Heavy toolchain. Manual syn
 
 ## ✅ The Solution
 
-**`typewriter`** makes your Rust structs and enums the **single, permanent source of truth** for all your type definitions.
+**typewriter** makes your Rust structs and enums the **single, permanent source of truth** for generated type definitions. The released CLI is installed and invoked as **`typebridge`**.
 
 Annotate once → generate everywhere. When the Rust type changes, every generated file updates automatically. No hand-maintained schema file. No intermediary format. No drift. Ever.
 
@@ -74,6 +74,30 @@ pub struct UserProfile {
 
 ## 🚀 Quick Start
 
+### Install the CLI
+
+End users do not need Rust installed to use the released CLI.
+
+macOS/Linux:
+
+```bash
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/aarambh-darshan/typewriter/releases/latest/download/typebridge-installer.sh | sh
+```
+
+Windows:
+
+```powershell
+powershell -ExecutionPolicy Bypass -c "irm https://github.com/aarambh-darshan/typewriter/releases/latest/download/typebridge-installer.ps1 | iex"
+```
+
+Rust users can also install from crates.io:
+
+```bash
+cargo install typebridge-cli
+```
+
+The primary binary is `typebridge`. The `typewriter` binary remains as a compatibility alias, and `cargo typewriter` remains available for Cargo-plugin workflows.
+
 ### 1. Add to Cargo.toml
 
 ```toml
@@ -101,13 +125,21 @@ pub struct User {
 }
 ```
 
-### 3. Build
+### 3. Generate
 
 ```bash
 cargo build
 ```
 
-That's it. Check `./generated/typescript/`, `./generated/python/`, and `./generated/go/` for your generated files.
+Or use the CLI:
+
+```bash
+typebridge generate --all
+typebridge check --ci
+typebridge watch
+```
+
+Check `./generated/typescript/`, `./generated/python/`, and `./generated/go/` for your generated files.
 
 ---
 
@@ -212,21 +244,26 @@ type User struct {
 - **Feature-gated emitters** — compile only what you need
 - **TOML config** — `typewriter.toml` for output directories, file naming styles, readonly mode
 
-### ✅ Phase 3 CLI (v0.3.1)
+### ✅ Professional CLI (v1.0.0 scope)
 
-- `typewriter generate <file>` and `typewriter generate --all`
-- `typewriter check --ci` with drift detection gate
-- `typewriter check --json` / `--json-out` structured report output
-- `typewriter watch [path]` auto-regeneration on Rust file save
+- `typebridge generate <file>` and `typebridge generate --all`
+- `typebridge check --ci` with drift detection gate
+- `typebridge watch [path]` auto-regeneration on Rust file save
+- `typebridge init` to create `typewriter.toml`
+- `typebridge doctor` for project and installation diagnostics
+- Global `--config`, `--format text|json`, `--verbose`, and `--dry-run`
+- `typebridge --version` and help output with CI-safe exit codes
 - `cargo typewriter ...` subcommand support via `cargo-typewriter`
-- `typebridge-cli` package published as version `0.2.2`.
+- Prebuilt release artifacts with shell and PowerShell installers, checksums, and GitHub Releases via cargo-dist
+
+`convert`, JSON Schema input, OpenAPI input, and any-to-any conversion are not part of v1.0.0. The v1 CLI focuses on the current Rust-source generation workflow.
 
 See [CLI Guide](docs/cli.md) for full command reference and JSON schema.
 
 ### 🔮 Coming Soon
 
 - VSCode / Neovim extensions
-- Plugin API for custom language backends
+- Stable plugin ABI and plugin registry
 
 See the full [Roadmap](ROADMAP.md) for details.
 
@@ -329,7 +366,7 @@ typewriter/
 ├── typewriter-kotlin/      ← Kotlin emitter
 ├── typewriter-graphql/     ← GraphQL SDL emitter
 ├── typewriter-json-schema/ ← JSON Schema emitter
-├── typewriter-cli/         ← `typebridge-cli` package (`typewriter` + `cargo-typewriter` binaries)
+├── typewriter-cli/         ← `typebridge-cli` package (`typebridge`, `typewriter`, `cargo-typewriter` binaries)
 ├── typewriter/             ← Main user-facing crate (re-exports)
 ├── typewriter-test/        ← Snapshot tests
 └── example/                ← Working usage examples
