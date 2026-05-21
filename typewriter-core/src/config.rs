@@ -291,9 +291,7 @@ impl TypewriterConfig {
 
     /// Get the plugin directory path.
     pub fn plugin_dir(&self) -> Option<&str> {
-        self.plugins
-            .as_ref()
-            .and_then(|p| p.dir.as_deref())
+        self.plugins.as_ref().and_then(|p| p.dir.as_deref())
     }
 
     /// Get explicit plugin paths.

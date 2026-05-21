@@ -529,10 +529,13 @@ mod tests {
         };
 
         let targets = parse_sync_to_attr(&input).unwrap();
-        assert_eq!(targets, vec![
-            crate::LanguageTarget::BuiltIn(Language::TypeScript),
-            crate::LanguageTarget::BuiltIn(Language::Python),
-        ]);
+        assert_eq!(
+            targets,
+            vec![
+                crate::LanguageTarget::BuiltIn(Language::TypeScript),
+                crate::LanguageTarget::BuiltIn(Language::Python),
+            ]
+        );
     }
 
     #[test]

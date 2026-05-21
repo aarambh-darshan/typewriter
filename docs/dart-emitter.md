@@ -156,7 +156,7 @@ dev_dependencies:
 2. Generate your types:
 
 ```bash
-typewriter generate --all --lang dart
+typebridge generate --all --lang dart
 ```
 
 3. Run build_runner:

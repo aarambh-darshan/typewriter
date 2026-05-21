@@ -119,7 +119,7 @@ cp target/release/libtypewriter_plugin_mylang.so ~/.typewriter/plugins/
 ## 6. Validate
 
 ```bash
-typewriter plugin validate ./target/release/libtypewriter_plugin_mylang.so
+typebridge plugin validate ./target/release/libtypewriter_plugin_mylang.so
 ```
 
 ## 7. Use
@@ -131,5 +131,5 @@ pub struct User { ... }
 ```
 
 ```bash
-typewriter generate --all
+typebridge generate --all
 ```

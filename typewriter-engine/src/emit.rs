@@ -10,8 +10,8 @@ use typewriter_core::config::TypewriterConfig;
 use typewriter_core::ir::{Language, TypeDef};
 use typewriter_core::mapper::TypeMapper;
 
-use crate::{LanguageTarget, TypeSpec};
 use crate::plugin_registry::PluginRegistry;
+use crate::{LanguageTarget, TypeSpec};
 
 #[derive(Debug, Clone)]
 pub struct GeneratedFile {
@@ -30,7 +30,14 @@ pub fn render_specs(
     lang_filter: &[Language],
     skip_unavailable: bool,
 ) -> Result<Vec<GeneratedFile>> {
-    render_specs_with_plugins(specs, project_root, config, lang_filter, skip_unavailable, None)
+    render_specs_with_plugins(
+        specs,
+        project_root,
+        config,
+        lang_filter,
+        skip_unavailable,
+        None,
+    )
 }
 
 /// Render all expected generated files, with plugin registry support.
@@ -46,16 +53,16 @@ pub fn render_specs_with_plugins(
 
     for spec in specs {
         for target in effective_targets(&spec.targets, lang_filter) {
-            let mut rendered = render_single(
-                &spec.type_def,
-                spec.source_path.clone(),
-                spec.zod_schema,
-                &target,
+            let mut rendered = render_single(RenderRequest {
+                type_def: &spec.type_def,
+                source_path: spec.source_path.clone(),
+                zod_override: spec.zod_schema,
+                language: &target,
                 project_root,
                 config,
                 skip_unavailable,
                 plugin_registry,
-            )?;
+            })?;
             files.append(&mut rendered);
         }
     }
@@ -71,7 +78,14 @@ pub fn render_specs_deduped(
     lang_filter: &[Language],
     skip_unavailable: bool,
 ) -> Result<Vec<GeneratedFile>> {
-    render_specs_deduped_with_plugins(specs, project_root, config, lang_filter, skip_unavailable, None)
+    render_specs_deduped_with_plugins(
+        specs,
+        project_root,
+        config,
+        lang_filter,
+        skip_unavailable,
+        None,
+    )
 }
 
 /// Render with deduplication, with plugin registry support.
@@ -83,7 +97,14 @@ pub fn render_specs_deduped_with_plugins(
     skip_unavailable: bool,
     plugin_registry: Option<&PluginRegistry>,
 ) -> Result<Vec<GeneratedFile>> {
-    let files = render_specs_with_plugins(specs, project_root, config, lang_filter, skip_unavailable, plugin_registry)?;
+    let files = render_specs_with_plugins(
+        specs,
+        project_root,
+        config,
+        lang_filter,
+        skip_unavailable,
+        plugin_registry,
+    )?;
     let mut by_path = BTreeMap::new();
     for file in files {
         by_path.insert(file.output_path.clone(), file);
@@ -137,7 +158,10 @@ pub fn output_dir_for_language(config: &TypewriterConfig, language: Language) ->
     }
 }
 
-fn effective_targets(spec_targets: &[LanguageTarget], lang_filter: &[Language]) -> Vec<LanguageTarget> {
+fn effective_targets(
+    spec_targets: &[LanguageTarget],
+    lang_filter: &[Language],
+) -> Vec<LanguageTarget> {
     if lang_filter.is_empty() {
         return spec_targets.to_vec();
     }
@@ -152,31 +176,38 @@ fn effective_targets(spec_targets: &[LanguageTarget], lang_filter: &[Language]) 
         .collect()
 }
 
-fn render_single(
-    type_def: &TypeDef,
+struct RenderRequest<'a> {
+    type_def: &'a TypeDef,
     source_path: PathBuf,
     zod_override: Option<bool>,
-    language: &LanguageTarget,
-    project_root: &Path,
-    config: &TypewriterConfig,
-    _skip_unavailable: bool,
-    plugin_registry: Option<&PluginRegistry>,
-) -> Result<Vec<GeneratedFile>> {
-    match language {
+    language: &'a LanguageTarget,
+    project_root: &'a Path,
+    config: &'a TypewriterConfig,
+    skip_unavailable: bool,
+    plugin_registry: Option<&'a PluginRegistry>,
+}
+
+fn render_single(request: RenderRequest<'_>) -> Result<Vec<GeneratedFile>> {
+    match request.language {
         LanguageTarget::BuiltIn(lang) => render_builtin(
-            type_def,
-            source_path,
-            zod_override,
+            request.type_def,
+            request.source_path,
+            request.zod_override,
             *lang,
-            project_root,
-            config,
-            _skip_unavailable,
+            request.project_root,
+            request.config,
+            request.skip_unavailable,
         ),
         LanguageTarget::Plugin(id) => {
-            if let Some(registry) = plugin_registry {
-                let plugin_config = build_plugin_config(config, id);
-                registry.render_with_plugin(id, type_def, &plugin_config, project_root)
-            } else if _skip_unavailable {
+            if let Some(registry) = request.plugin_registry {
+                let plugin_config = build_plugin_config(request.config, id);
+                registry.render_with_plugin(
+                    id,
+                    request.type_def,
+                    &plugin_config,
+                    request.project_root,
+                )
+            } else if request.skip_unavailable {
                 Ok(vec![])
             } else {
                 anyhow::bail!(
@@ -190,7 +221,10 @@ fn render_single(
 }
 
 /// Build a PluginConfig from the typewriter config for a specific plugin.
-fn build_plugin_config(config: &TypewriterConfig, language_id: &str) -> typewriter_plugin::PluginConfig {
+fn build_plugin_config(
+    config: &TypewriterConfig,
+    language_id: &str,
+) -> typewriter_plugin::PluginConfig {
     if let Some(table) = config.plugin_extra_table(language_id) {
         // Deserialize the table into PluginConfig
         let toml_value = toml::Value::Table(table.clone());

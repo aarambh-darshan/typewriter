@@ -1,6 +1,6 @@
 [package]
 name = "typewriter-plugin"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2024"
 description = "Plugin API for typewriter custom language emitters"
 license = "Apache-2.0"
@@ -12,6 +12,6 @@ categories = ["development-tools::build-utils"]
 authors = ["Darshan Vichhi <aarambhdarshan@gmail.com>"]
 
 [dependencies]
-typewriter-core = { path = "../typewriter-core", version = "0.5.2" }
+typewriter-core = { path = "../typewriter-core", version = "1.0.0" }
 serde = { workspace = true }
 toml = { workspace = true }

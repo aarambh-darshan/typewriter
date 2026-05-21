@@ -79,6 +79,42 @@
 
 ---
 
+## v1.0.0 — Professional CLI Release *(current focus)*
+
+> **Goal:** A stable Rust-powered CLI that developers can install globally without Rust and use for the current Rust-source generation workflow.
+
+- [x] Keep Rust as the main CLI and engine implementation
+- [x] Make `typebridge` the primary binary while keeping `typewriter` as a compatibility alias
+- [x] Add `init` for starter `typewriter.toml` creation
+- [x] Add `doctor` diagnostics
+- [x] Add global `--config`, `--format text|json`, `--verbose`, and practical `--dry-run`
+- [x] Fix CLI help/version behavior and CI-suitable exit codes
+- [x] Add CLI integration tests
+- [x] Add real CI for fmt, clippy, tests, and build
+- [x] Add cargo-dist release setup for prebuilt binaries, shell/PowerShell installers, checksums, and GitHub Releases
+- [ ] Publish v1.0.0 release artifacts
+
+Out of scope for v1.0.0:
+
+- JSON Schema or OpenAPI input adapters
+- Full any-to-any conversion
+- `convert` command
+- `plugin add`, plugin registry marketplace, or stable plugin ABI
+
+---
+
+## Post-v1 — Conversion Platform
+
+> **Goal:** Evolve from Rust-source generation into a universal conversion platform.
+
+- [ ] Input language adapters: Rust, JSON Schema, OpenAPI, and selected model/DTO formats
+- [ ] Universal IR versioning and compatibility policy
+- [ ] Emitter/target adapters for TypeScript, Python, Go, Zod, and additional targets
+- [ ] `typebridge convert --from ... --to ...`
+- [ ] Plugin architecture design for community adapters, including registry and stable ABI strategy
+
+---
+
 <div align="center">
 
 *Have a feature request? [Open an issue](https://github.com/aarambh-darshan/typewriter/issues) on GitHub!*

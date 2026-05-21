@@ -49,10 +49,16 @@ impl TypeMapper for RubyMapper {
         match ty {
             PrimitiveType::String => "String".to_string(),
             PrimitiveType::Bool => "T::Boolean".to_string(),
-            PrimitiveType::U8 | PrimitiveType::U16 | PrimitiveType::U32
-            | PrimitiveType::U64 | PrimitiveType::U128
-            | PrimitiveType::I8 | PrimitiveType::I16 | PrimitiveType::I32
-            | PrimitiveType::I64 | PrimitiveType::I128 => "Integer".to_string(),
+            PrimitiveType::U8
+            | PrimitiveType::U16
+            | PrimitiveType::U32
+            | PrimitiveType::U64
+            | PrimitiveType::U128
+            | PrimitiveType::I8
+            | PrimitiveType::I16
+            | PrimitiveType::I32
+            | PrimitiveType::I64
+            | PrimitiveType::I128 => "Integer".to_string(),
             PrimitiveType::F32 | PrimitiveType::F64 => "Float".to_string(),
             PrimitiveType::Uuid => "String".to_string(),
             PrimitiveType::DateTime => "Time".to_string(),
@@ -140,7 +146,10 @@ impl TypeMapper for RubyMapper {
     }
 
     fn emit_enum(&self, def: &EnumDef) -> String {
-        let all_unit = def.variants.iter().all(|v| matches!(v.kind, VariantKind::Unit));
+        let all_unit = def
+            .variants
+            .iter()
+            .all(|v| matches!(v.kind, VariantKind::Unit));
 
         if all_unit {
             self.emit_string_enum(def)
@@ -187,10 +196,7 @@ impl RubyMapper {
             if let Some(doc) = &variant.doc {
                 output.push_str(&format!("    # {}\n", doc.trim()));
             }
-            output.push_str(&format!(
-                "    {} = new('{}')\n",
-                name, name
-            ));
+            output.push_str(&format!("    {} = new('{}')\n", name, name));
         }
 
         output.push_str("  end\nend\n");
@@ -225,7 +231,9 @@ impl RubyMapper {
                         variant_name, def.name
                     ));
                     for field in fields {
-                        if field.skip { continue; }
+                        if field.skip {
+                            continue;
+                        }
                         let fname = field.rename.as_deref().unwrap_or(&field.name);
                         let ftype = field
                             .type_override
@@ -243,7 +251,8 @@ impl RubyMapper {
                     for (i, ty) in types.iter().enumerate() {
                         output.push_str(&format!(
                             "    const :field_{}, {}\n",
-                            i, self.map_type(ty)
+                            i,
+                            self.map_type(ty)
                         ));
                     }
                     output.push_str("  end\n\n");
@@ -294,10 +303,10 @@ impl EmitterPlugin for RubyPlugin {
 
     fn mapper(&self, config: &PluginConfig) -> Box<dyn TypeMapper> {
         let mut mapper = RubyMapper::new();
-        if let Some(style_str) = config.file_style.as_deref() {
-            if let Some(style) = FileStyle::from_str(style_str) {
-                mapper = mapper.with_file_style(style);
-            }
+        if let Some(style_str) = config.file_style.as_deref()
+            && let Some(style) = FileStyle::from_str(style_str)
+        {
+            mapper = mapper.with_file_style(style);
         }
         Box::new(mapper)
     }
@@ -365,14 +374,22 @@ mod tests {
                 FieldDef {
                     name: "id".to_string(),
                     ty: TypeKind::Primitive(PrimitiveType::Uuid),
-                    optional: false, rename: None, doc: None,
-                    skip: false, flatten: false, type_override: None,
+                    optional: false,
+                    rename: None,
+                    doc: None,
+                    skip: false,
+                    flatten: false,
+                    type_override: None,
                 },
                 FieldDef {
                     name: "age".to_string(),
                     ty: TypeKind::Option(Box::new(TypeKind::Primitive(PrimitiveType::U32))),
-                    optional: true, rename: None, doc: None,
-                    skip: false, flatten: false, type_override: None,
+                    optional: true,
+                    rename: None,
+                    doc: None,
+                    skip: false,
+                    flatten: false,
+                    type_override: None,
                 },
             ],
             doc: None,
@@ -391,8 +408,18 @@ mod tests {
         let def = EnumDef {
             name: "Role".to_string(),
             variants: vec![
-                VariantDef { name: "Admin".to_string(), rename: None, kind: VariantKind::Unit, doc: None },
-                VariantDef { name: "User".to_string(), rename: None, kind: VariantKind::Unit, doc: None },
+                VariantDef {
+                    name: "Admin".to_string(),
+                    rename: None,
+                    kind: VariantKind::Unit,
+                    doc: None,
+                },
+                VariantDef {
+                    name: "User".to_string(),
+                    rename: None,
+                    kind: VariantKind::Unit,
+                    doc: None,
+                },
             ],
             representation: EnumRepr::External,
             doc: None,

@@ -1,6 +1,6 @@
 # Plugin System Overview
 
-typewriter v0.5.2 introduces a **dynamic plugin architecture** that allows community-contributed language emitters to be developed as standalone crates.
+typewriter v0.5.2 introduced a dynamic plugin architecture. In v1.0.0 this remains **experimental**: local plugin loading is available, but there is no `plugin add` command, registry marketplace, or stable community plugin ABI.
 
 ## How It Works
 
@@ -13,7 +13,7 @@ typewriter v0.5.2 introduces a **dynamic plugin architecture** that allows commu
 
 ```text
 ┌─────────────────┐       ┌──────────────────┐
-│  typewriter-cli │──────▶│  PluginRegistry   │
+│  typebridge CLI │──────▶│  PluginRegistry   │
 └─────────────────┘       └────────┬─────────┘
                                    │
                     ┌──────────────┼──────────────┐
@@ -45,4 +45,4 @@ typewriter v0.5.2 introduces a **dynamic plugin architecture** that allows commu
 
 - **CLI only** — plugins are loaded at CLI startup, not during `cargo build` proc-macro expansion
 - **No hot reload** — plugins are loaded once; restart CLI after changes
-- **ABI versioning** — plugins must match `PLUGIN_API_VERSION`
+- **ABI versioning** — plugins must match `PLUGIN_API_VERSION`, and the ABI is not stable in v1.0.0

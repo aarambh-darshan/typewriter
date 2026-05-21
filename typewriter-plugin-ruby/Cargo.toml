@@ -1,6 +1,6 @@
 [package]
 name = "typewriter-plugin-ruby"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2024"
 description = "Ruby (Sorbet) emitter plugin for typewriter"
 license = "Apache-2.0"
@@ -11,5 +11,5 @@ authors = ["Darshan Vichhi <aarambhdarshan@gmail.com>"]
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-typewriter-plugin = { path = "../typewriter-plugin", version = "0.1.0" }
-typewriter-core = { path = "../typewriter-core", version = "0.5.2" }
+typewriter-plugin = { path = "../typewriter-plugin", version = "1.0.0" }
+typewriter-core = { path = "../typewriter-core", version = "1.0.0" }

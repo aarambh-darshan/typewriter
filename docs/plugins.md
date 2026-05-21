@@ -1,12 +1,12 @@
 # Plugin System
 
-typewriter supports external language emitter plugins through a dynamic loading architecture. This allows community-contributed emitters to be developed as standalone crates without modifying the core typewriter workspace.
+Plugin support is **experimental** in v1.0.0. typewriter can load local external language emitter plugins through a dynamic loading architecture, but there is no `plugin add` command, registry marketplace, or stable community plugin ABI yet.
 
 ## Architecture
 
 ```text
 ┌──────────────────┐     ┌─────────────────┐     ┌──────────────────┐
-│  typewriter-cli  │────▶│  PluginRegistry  │────▶│  .so / .dylib    │
+│  typebridge CLI  │────▶│  PluginRegistry  │────▶│  .so / .dylib    │
 │                  │     │  (load + verify) │     │  (plugin crate)  │
 └──────────────────┘     └─────────────────┘     └──────────────────┘
                               │                         │
@@ -46,6 +46,8 @@ file_style = "snake_case"
 ```
 
 ## Writing a Plugin
+
+This API is intended for local experimentation in v1.0.0. Plugins must be rebuilt when the plugin API changes.
 
 ### 1. Create a new Rust crate
 
@@ -179,17 +181,17 @@ pub struct User {
 ```
 
 ```bash
-typewriter generate --all
+typebridge generate --all
 ```
 
 ## CLI Commands
 
-### `typewriter plugin list`
+### `typebridge plugin list`
 
 List all loaded plugins:
 
 ```bash
-$ typewriter plugin list
+$ typebridge plugin list
 Plugins: 3 plugin(s) loaded:
 
   ● Ruby (Sorbet) v0.1.0
@@ -208,25 +210,25 @@ Plugins: 3 plugin(s) loaded:
     Output dir:   ./generated/dart
 ```
 
-### `typewriter plugin validate <path>`
+### `typebridge plugin validate <path>`
 
 Validate a plugin shared library before installing:
 
 ```bash
-$ typewriter plugin validate ./target/release/libtypewriter_plugin_ruby.so
-✓ Plugin is valid!
+$ typebridge plugin validate ./target/release/libtypewriter_plugin_ruby.so
+OK: Plugin is valid.
   Name:       Ruby (Sorbet)
   Language:   ruby
   Version:    0.1.0
   Extension:  .rbi
 ```
 
-### `typewriter plugin info <name>`
+### `typebridge plugin info <name>`
 
 Show details about a loaded plugin:
 
 ```bash
-$ typewriter plugin info ruby
+$ typebridge plugin info ruby
 Plugin: Ruby (Sorbet)
   Language ID:  ruby
   Version:      0.1.0
@@ -237,7 +239,7 @@ Plugin: Ruby (Sorbet)
 
 ## API Version
 
-Plugins are versioned with `PLUGIN_API_VERSION`. When the `EmitterPlugin` or `TypeMapper` trait changes in a backward-incompatible way, this version is incremented. Plugins built against a different version are rejected at load time.
+Plugins are versioned with `PLUGIN_API_VERSION`. When the `EmitterPlugin` or `TypeMapper` trait changes in a backward-incompatible way, this version is incremented. Plugins built against a different version are rejected at load time. This should not be treated as a stable ABI guarantee in v1.0.0.
 
 Current API version: **1**
 
@@ -253,6 +255,6 @@ typewriter ships with three proof-of-concept plugins:
 
 ## Limitations
 
-- **CLI only.** Plugin-based languages are only supported through the CLI (`typewriter generate`). The proc-macro (`#[derive(TypeWriter)]`) silently skips plugin targets at compile time.
+- **CLI only.** Plugin-based languages are only supported through the CLI (`typebridge generate`). The proc-macro (`#[derive(TypeWriter)]`) silently skips plugin targets at compile time.
 - **No hot reload.** Plugins are loaded once at startup. Changes require restarting the CLI.
 - **ABI stability.** Plugins must be rebuilt when `PLUGIN_API_VERSION` changes.
