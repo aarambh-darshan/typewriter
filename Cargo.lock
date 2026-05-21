@@ -858,7 +858,7 @@ dependencies = [
 
 [[package]]
 name = "typebridge"
-version = "0.5.2"
+version = "1.0.0"
 dependencies = [
  "typewriter-core",
  "typewriter-macros",
@@ -888,7 +888,7 @@ version = "0.5.0"
 
 [[package]]
 name = "typewriter-core"
-version = "0.5.2"
+version = "1.0.0"
 dependencies = [
  "anyhow",
  "serde",
@@ -897,7 +897,7 @@ dependencies = [
 
 [[package]]
 name = "typewriter-engine"
-version = "0.5.2"
+version = "1.0.0"
 dependencies = [
  "anyhow",
  "libloading",
@@ -919,7 +919,7 @@ dependencies = [
 
 [[package]]
 name = "typewriter-example"
-version = "0.1.1"
+version = "1.0.0"
 dependencies = [
  "serde",
  "typebridge",
@@ -927,21 +927,21 @@ dependencies = [
 
 [[package]]
 name = "typewriter-go"
-version = "0.5.2"
+version = "1.0.0"
 dependencies = [
  "typewriter-core",
 ]
 
 [[package]]
 name = "typewriter-graphql"
-version = "0.5.2"
+version = "1.0.0"
 dependencies = [
  "typewriter-core",
 ]
 
 [[package]]
 name = "typewriter-json-schema"
-version = "0.5.2"
+version = "1.0.0"
 dependencies = [
  "serde_json",
  "typewriter-core",
@@ -949,14 +949,14 @@ dependencies = [
 
 [[package]]
 name = "typewriter-kotlin"
-version = "0.5.2"
+version = "1.0.0"
 dependencies = [
  "typewriter-core",
 ]
 
 [[package]]
 name = "typewriter-macros"
-version = "0.5.2"
+version = "1.0.0"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -967,7 +967,7 @@ dependencies = [
 
 [[package]]
 name = "typewriter-plugin"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "serde",
  "toml 0.8.23",
@@ -976,7 +976,7 @@ dependencies = [
 
 [[package]]
 name = "typewriter-plugin-dart"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "typewriter-core",
  "typewriter-plugin",
@@ -984,7 +984,7 @@ dependencies = [
 
 [[package]]
 name = "typewriter-plugin-php"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "typewriter-core",
  "typewriter-plugin",
@@ -992,7 +992,7 @@ dependencies = [
 
 [[package]]
 name = "typewriter-plugin-ruby"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "typewriter-core",
  "typewriter-plugin",
@@ -1000,21 +1000,21 @@ dependencies = [
 
 [[package]]
 name = "typewriter-python"
-version = "0.5.2"
+version = "1.0.0"
 dependencies = [
  "typewriter-core",
 ]
 
 [[package]]
 name = "typewriter-swift"
-version = "0.5.2"
+version = "1.0.0"
 dependencies = [
  "typewriter-core",
 ]
 
 [[package]]
 name = "typewriter-test"
-version = "0.4.2"
+version = "1.0.0"
 dependencies = [
  "insta",
  "trybuild",
@@ -1031,7 +1031,7 @@ dependencies = [
 
 [[package]]
 name = "typewriter-typescript"
-version = "0.5.2"
+version = "1.0.0"
 dependencies = [
  "typewriter-core",
 ]

@@ -33,8 +33,8 @@ notify = "6"
 serde_json = "1"
 similar = "2"
 toml = { workspace = true }
-typewriter-core = { path = "../typewriter-core", version = "0.5.2" }
-typewriter-engine = { path = "../typewriter-engine", version = "0.5.2" }
+typewriter-core = { path = "../typewriter-core", version = "1.0.0" }
+typewriter-engine = { path = "../typewriter-engine", version = "1.0.0" }
 
 [dev-dependencies]
 assert_cmd = "2"

@@ -1,6 +1,6 @@
 [package]
 name = "typewriter-engine"
-version = "0.5.2"
+version = "1.0.0"
 edition = "2024"
 description = "Shared parser and generation engine for typewriter proc-macro and CLI"
 license = "Apache-2.0"
@@ -14,16 +14,16 @@ anyhow = { workspace = true }
 syn = { workspace = true }
 serde = { workspace = true }
 toml = { workspace = true }
-typewriter-core = { path = "../typewriter-core", version = "0.5.2" }
-typewriter-plugin = { path = "../typewriter-plugin", version = "0.1.0" }
+typewriter-core = { path = "../typewriter-core", version = "1.0.0" }
+typewriter-plugin = { path = "../typewriter-plugin", version = "1.0.0" }
 libloading = "0.8"
-typewriter-typescript = { path = "../typewriter-typescript", version = "0.5.2", optional = true }
-typewriter-python = { path = "../typewriter-python", version = "0.5.2", optional = true }
-typewriter-go = { path = "../typewriter-go", version = "0.5.2", optional = true }
-typewriter-swift = { path = "../typewriter-swift", version = "0.5.2", optional = true }
-typewriter-kotlin = { path = "../typewriter-kotlin", version = "0.5.2", optional = true }
-typewriter-graphql = { path = "../typewriter-graphql", version = "0.5.2", optional = true }
-typewriter-json-schema = { path = "../typewriter-json-schema", version = "0.5.2", optional = true }
+typewriter-typescript = { path = "../typewriter-typescript", version = "1.0.0", optional = true }
+typewriter-python = { path = "../typewriter-python", version = "1.0.0", optional = true }
+typewriter-go = { path = "../typewriter-go", version = "1.0.0", optional = true }
+typewriter-swift = { path = "../typewriter-swift", version = "1.0.0", optional = true }
+typewriter-kotlin = { path = "../typewriter-kotlin", version = "1.0.0", optional = true }
+typewriter-graphql = { path = "../typewriter-graphql", version = "1.0.0", optional = true }
+typewriter-json-schema = { path = "../typewriter-json-schema", version = "1.0.0", optional = true }
 walkdir = "2"
 
 [dev-dependencies]
