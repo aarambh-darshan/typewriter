@@ -32,6 +32,11 @@ serde_json = "1"
 anyhow = "1"
 insta = "1"
 
+# The profile cargo-dist builds with
+[profile.dist]
+inherits = "release"
+lto = "thin"
+
 [workspace.metadata.dist]
 allow-dirty = ["ci"]
 cargo-dist-version = "0.31.0"
